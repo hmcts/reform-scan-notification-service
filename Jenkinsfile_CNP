@@ -1,0 +1,98 @@
+#!groovy
+
+@Library("Infrastructure")
+
+import uk.gov.hmcts.contino.DockerImage
+import uk.gov.hmcts.contino.GradleBuilder
+import uk.gov.hmcts.contino.Kubectl
+import uk.gov.hmcts.pipeline.TeamConfig
+
+def type = "java"
+def product = "reform-scan"
+def component = "notification-service"
+
+def channel = '#bsp-build-notices'
+
+def combinedSecrets = [
+   'reform-scan-${env}': [
+     // Base64-encoded PKCS 12 key store, containing client's private key and certificate known to the API
+     secret('test-valid-key-store', 'TEST_VALID_KEY_STORE'),
+     secret('test-valid-key-store-password', 'TEST_VALID_KEY_STORE_PASSWORD'),
+
+     // Base64-encoded PKCS 12 key store containing private key and certificate known to the API, but expired
+     secret('test-expired-key-store', 'TEST_EXPIRED_KEY_STORE'),
+     secret('test-expired-key-store-password', 'TEST_EXPIRED_KEY_STORE_PASSWORD'),
+
+     // Base64-encoded PKCS12 key store containing private key and certificate known to the API, but not yet valid
+     secret('test-not-yet-valid-key-store', 'TEST_NOT_YET_VALID_KEY_STORE'),
+     secret('test-not-yet-valid-key-store-password', 'TEST_NOT_YET_VALID_KEY_STORE_PASSWORD'),
+
+     secret('test-subscription-key', 'TEST_SUBSCRIPTION_KEY'),
+
+     secret('storage-account-secondary-key', 'TEST_STORAGE_ACCOUNT_KEY'),
+     secret('storage-account-name', 'TEST_STORAGE_ACCOUNT_NAME'),
+   ]
+ ]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [$class     : 'AzureKeyVaultSecret',
+   secretType : 'Secret',
+   name       : secretName,
+   version    : '',
+   envVariable: envVar
+  ]
+}
+
+static String previewAccountName(Kubectl kubectl, String secretName, String namespace) {
+  kubectl.getSecret(secretName, namespace, "{.data.storageAccountName}")
+}
+
+static String previewAccountKey(Kubectl kubectl, String secretName, String namespace) {
+  kubectl.getSecret(secretName, namespace, "{.data.accessKey}")
+}
+
+GradleBuilder builder = new GradleBuilder(this, product)
+
+withPipeline(type, product, component) {
+  after('test') {
+    builder.gradle('integration')
+  }
+
+  enableDbMigration('reform-scan') // vault 'prefix'
+  enableAksStagingDeployment()
+  installCharts()
+  enableSlackNotifications(channel)
+  disableLegacyDeployment()
+
+  onNonPR() {
+    loadVaultSecrets(combinedSecrets)
+  }
+
+  onPR(){
+    loadVaultSecrets(smokeTestSecrets)
+  }
+
+  // Vars needed for smoke / functional testing
+  env.TEST_STORAGE_CONTAINER_NAME = 'bulkscan'
+  env.TEST_STORAGE_ACCOUNT_URL = 'https://reformscanaat.blob.core.windows.net'
+  env.API_GATEWAY_URL = "https://core-api-mgmt-aat.azure-api.net/reform-scan"
+
+  before('smoketest:preview') {
+    withAksClient('nonprod') {
+      def dockerImage = new DockerImage(product, component, null, env.BRANCH_NAME, env.GIT_COMMIT)
+      def subscription = env.SUBSCRIPTION_NAME
+      def aksServiceName = dockerImage.getAksServiceName().toLowerCase()
+      def storageSecret = "storage-secret-${aksServiceName}"
+      def crimeStorageAccountSecret = "storage-secret-crime-${aksServiceName}"
+
+      def namespace = new TeamConfig(this).getNameSpace(product)
+      def kubectl = new Kubectl(this, subscription, namespace)
+      kubectl.login()
+
+      // Get storage account details from kubernetes
+      env.TEST_STORAGE_ACCOUNT_NAME = previewAccountName(kubectl, storageSecret, namespace)
+      env.TEST_STORAGE_ACCOUNT_URL = "https://${env.TEST_STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
+      env.TEST_STORAGE_ACCOUNT_KEY = previewAccountKey(kubectl, storageSecret, namespace)
+    }
+  }
+}

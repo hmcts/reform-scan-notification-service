@@ -1,102 +1,9 @@
-# Spring Boot application template
+# Reform Scan Notification Service
 
-[![Build Status](https://travis-ci.org/hmcts/spring-boot-template.svg?branch=master)](https://travis-ci.org/hmcts/spring-boot-template)
-
-## Purpose
-
-The purpose of this template is to speed up the creation of new Spring applications within HMCTS
-and help keep the same standards across multiple teams. If you need to create a new app, you can
-simply use this one as a starting point and build on top of it.
-
-## What's inside
-
-The template is a working application with a minimal setup. It contains:
- * application skeleton
- * setup script to prepare project
- * common plugins and libraries
- * docker setup
- * swagger configuration for api documentation ([see how to publish your api documentation to shared repository](https://github.com/hmcts/reform-api-docs#publish-swagger-docs))
- * code quality tools already set up
- * integration with Travis CI
- * Hystrix circuit breaker enabled
- * MIT license and contribution information
- * Helm chart using chart-java.
-
-The application exposes health endpoint (http://localhost:4550/health) and metrics endpoint
-(http://localhost:4550/metrics).
-
-## Plugins
-
-The template contains the following plugins:
-
-  * checkstyle
-
-    https://docs.gradle.org/current/userguide/checkstyle_plugin.html
-
-    Performs code style checks on Java source files using Checkstyle and generates reports from these checks.
-    The checks are included in gradle's *check* task (you can run them by executing `./gradlew check` command).
-
-  * pmd
-
-    https://docs.gradle.org/current/userguide/pmd_plugin.html
-
-    Performs static code analysis to finds common programming flaws. Included in gradle `check` task.
-
-
-  * jacoco
-
-    https://docs.gradle.org/current/userguide/jacoco_plugin.html
-
-    Provides code coverage metrics for Java code via integration with JaCoCo.
-    You can create the report by running the following command:
-
-    ```bash
-      ./gradlew jacocoTestReport
-    ```
-
-    The report will be created in build/reports subdirectory in your project directory.
-
-  * io.spring.dependency-management
-
-    https://github.com/spring-gradle-plugins/dependency-management-plugin
-
-    Provides Maven-like dependency management. Allows you to declare dependency management
-    using `dependency 'groupId:artifactId:version'`
-    or `dependency group:'group', name:'name', version:version'`.
-
-  * org.springframework.boot
-
-    http://projects.spring.io/spring-boot/
-
-    Reduces the amount of work needed to create a Spring application
-
-  * org.owasp.dependencycheck
-
-    https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/index.html
-
-    Provides monitoring of the project's dependent libraries and creating a report
-    of known vulnerable components that are included in the build. To run it
-    execute `gradle dependencyCheck` command.
-
-  * com.github.ben-manes.versions
-
-    https://github.com/ben-manes/gradle-versions-plugin
-
-    Provides a task to determine which dependencies have updates. Usage:
-
-    ```bash
-      ./gradlew dependencyUpdates -Drevision=release
-    ```
-
-## Setup
-
-Located in `./bin/init.sh`. Simply run and follow the explanation how to execute it.
-
-## Notes
-
-Since Spring Boot 2.1 bean overriding is disabled. If you want to enable it you will need to set `spring.main.allow-bean-definition-overriding` to `true`.
-
-JUnit 5 is now enabled by default in the project. Please refrain from using JUnit4 and use the next generation
+![](https://github.com/hmcts/reform-scan-notification-service/workflows/CI/badge.svg)
+[![](https://github.com/hmcts/reform-scan-notification-service/workflows/Publish%20Swagger%20Specs/badge.svg)](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/reform-scan-notification-service.json)
+[![codecov](https://codecov.io/gh/hmcts/reform-scan-notification-service/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/reform-scan-notification-service)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c99af8bcd53947deb32e8f0a7c500676)](https://www.codacy.com/manual/HMCTS/reform-scan-notification-service)
 
 ## Building and deploying the application
 
@@ -125,7 +32,7 @@ Create docker image:
   docker-compose build
 ```
 
-Run the distribution (created in `build/install/spring-boot-template` directory)
+Run the distribution (created in `build/install/reform-scan-notification-service` directory)
 by executing the following command:
 
 ```bash
@@ -133,12 +40,12 @@ by executing the following command:
 ```
 
 This will start the API container exposing the application's port
-(set to `4550` in this template app).
+(set to `8585` in this app).
 
 In order to test if the application is up, you can call its health endpoint:
 
 ```bash
-  curl http://localhost:4550/health
+  curl http://localhost:8585/health
 ```
 
 You should get a response similar to this:
@@ -147,58 +54,80 @@ You should get a response similar to this:
   {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
 ```
 
-### Alternative script to run application
+## API (gateway)
 
-To skip all the setting up and building, just execute the following command:
+Reform Scan Notification Service uses an (Azure API Management) API to protect its SAS token dispensing endpoint.
+The API allows only HTTPS requests with approved client certificates and valid subscription keys to reach
+the service.
 
-```bash
-./bin/run-in-docker.sh
+Azure API Management is based on public swagger specs.
+As part of creating API in there documentation had to be [published](.github/workflows/swagger.yml).
+The full url to documentation can be found [here](infrastructure/api-mgmt.tf).
+
+If SAS dispensing endpoint has changed in some incompatible way which causes amended specs - the management needs to be notified.
+This means tiny alteration in [terraform file](infrastructure/api-mgmt.tf).
+
+In case any new endpoint needs to be included - same treatment must be applied.
+
+### Calling the API
+
+In order to talk to the SAS dispensing endpoint through the API, you need to have the following pieces
+of information:
+
+- a certificate whose thumbprint is known to the API (has to be added to the list of allowed thumbprints in `var.allowed_client_certificate_thumbprints` terraform variable)
+- a valid subscription key
+- name of an existing client service (e.g. `test`)
+
+### Preparing client certificate
+
+First, generate client private key, a certificate for that key and import both into a key store:
+
+```
+# generate private key
+openssl genrsa 2048 > private.pem
+
+# generate certificate
+openssl req -x509 -new -key private.pem -out cert.pem -days 365
+
+# create the key store
+# when asked for password, provide one
+openssl pkcs12 -export -in cert.pem -inkey private.pem -out cert.pfx -noiter -nomaciter
 ```
 
-For more information:
+Next, calculate the thumbprint of your certificate:
 
-```bash
-./bin/run-in-docker.sh -h
+```
+openssl x509 -noout -fingerprint -inform pem -in cert.pem | sed -e s/://g
 ```
 
-Script includes bare minimum environment variables necessary to start api instance. Whenever any variable is changed or any other script regarding docker image/container build, the suggested way to ensure all is cleaned up properly is by this command:
+Finally, add this thumbprint to `allowed_client_certificate_thumbprints` terraform variable for the target environment (e.g. in `aat.tfvars` file). Your definition may look similar to this:
 
-```bash
-docker-compose rm
+```
+allowed_client_certificate_thumbprints = ["2FC66765E63BB2436F0F9E4F59E951A6D1D20D43"]
 ```
 
-It clears stopped containers correctly. Might consider removing clutter of images too, especially the ones fiddled with:
+Once you're run the deployment, the API will recognise your certificate.
 
-```bash
-docker images
+### Retrieving subscription key
 
-docker image rm <image-id>
+You can get your subscription key for the API using Azure Portal. In order to do this, perform the following steps:
+
+- Search for the right API Management service instance (`core-api-mgmt-{environment}`) and navigate to its page
+- From the API Management service page, navigate to Developer portal (`Developer portal` link at the top bar)
+- In developer portal navigate to `Products` tab and click on `reform-scan-notification-service`
+- Navigate to `Subscriptions` which holds the list of them. At least 1 (default) should be present
+- Click on the `...` at the right of selected subscription and choose `Show/hide keys`. This will toggle the keys. You will need to provide one of the Primary/Secondary value in your request to the API.
+
+### Getting the token through the API
+
+You can call the API using the following curl command (assuming your current directory contains the private key
+and certificate you've created earlier):
+
+```
+curl -v --key private.pem --cert cert.pem https://core-api-mgmt-{environment}.azure-api.net/reform-scan/token/{service name} -H "Ocp-Apim-Subscription-Key:{subscription key}"
 ```
 
-There is no need to remove postgres and java or similar core images.
-
-## Hystrix
-
-[Hystrix](https://github.com/Netflix/Hystrix/wiki) is a library that helps you control the interactions
-between your application and other services by adding latency tolerance and fault tolerance logic. It does this
-by isolating points of access between the services, stopping cascading failures across them,
-and providing fallback options. We recommend you to use Hystrix in your application if it calls any services.
-
-### Hystrix circuit breaker
-
-This template API has [Hystrix Circuit Breaker](https://github.com/Netflix/Hystrix/wiki/How-it-Works#circuit-breaker)
-already enabled. It monitors and manages all the`@HystrixCommand` or `HystrixObservableCommand` annotated methods
-inside `@Component` or `@Service` annotated classes.
-
-### Other
-
-Hystrix offers much more than Circuit Breaker pattern implementation or command monitoring.
-Here are some other functionalities it provides:
- * [Separate, per-dependency thread pools](https://github.com/Netflix/Hystrix/wiki/How-it-Works#isolation)
- * [Semaphores](https://github.com/Netflix/Hystrix/wiki/How-it-Works#semaphores), which you can use to limit
- the number of concurrent calls to any given dependency
- * [Request caching](https://github.com/Netflix/Hystrix/wiki/How-it-Works#request-caching), allowing
- different code paths to execute Hystrix Commands without worrying about duplicating work
+You should get a response with status 200 and a token in the body.
 
 ## License
 

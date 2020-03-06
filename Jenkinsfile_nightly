@@ -9,7 +9,7 @@ properties([
 
 def type = "java"
 def product = "rpe"
-def component = "spring-boot-template"
+def component = "reform-scan-notification-service"
 
 withNightlyPipeline(type, product, component) {
   enableSlackNotifications('#rpe-build-notices')
