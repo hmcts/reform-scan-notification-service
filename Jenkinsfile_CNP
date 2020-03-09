@@ -1,0 +1,20 @@
+#!groovy @Library("Infrastructure") @Library("Infrastructure")
+@Library("Infrastructure")
+import uk.gov.hmcts.contino.GradleBuilder
+
+def type = "java"
+def product = "reform-scan"
+def component = "notification-service"
+
+def channel = '#bsp-build-notices'
+
+GradleBuilder builder = new GradleBuilder(this, product)
+
+withPipeline(type, product, component) {
+  after('test') {
+    builder.gradle('integration')
+  }
+
+  enableSlackNotifications(channel)
+  disableLegacyDeployment()
+}
