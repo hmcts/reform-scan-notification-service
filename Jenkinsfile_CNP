@@ -1,51 +1,12 @@
-#!groovy
+#!groovy @Library("Infrastructure") @Library("Infrastructure")
 @Library("Infrastructure")
 import uk.gov.hmcts.contino.GradleBuilder
-import uk.gov.hmcts.contino.Kubectl
 
 def type = "java"
 def product = "reform-scan"
 def component = "notification-service"
 
 def channel = '#bsp-build-notices'
-
-def combinedSecrets = [
-   'reform-scan-${env}': [
-     // Base64-encoded PKCS 12 key store, containing client's private key and certificate known to the API
-     secret('test-valid-key-store', 'TEST_VALID_KEY_STORE'),
-     secret('test-valid-key-store-password', 'TEST_VALID_KEY_STORE_PASSWORD'),
-
-     // Base64-encoded PKCS 12 key store containing private key and certificate known to the API, but expired
-     secret('test-expired-key-store', 'TEST_EXPIRED_KEY_STORE'),
-     secret('test-expired-key-store-password', 'TEST_EXPIRED_KEY_STORE_PASSWORD'),
-
-     // Base64-encoded PKCS12 key store containing private key and certificate known to the API, but not yet valid
-     secret('test-not-yet-valid-key-store', 'TEST_NOT_YET_VALID_KEY_STORE'),
-     secret('test-not-yet-valid-key-store-password', 'TEST_NOT_YET_VALID_KEY_STORE_PASSWORD'),
-
-     secret('test-subscription-key', 'TEST_SUBSCRIPTION_KEY'),
-
-     secret('storage-account-secondary-key', 'TEST_STORAGE_ACCOUNT_KEY'),
-     secret('storage-account-name', 'TEST_STORAGE_ACCOUNT_NAME'),
-   ]
- ]
-
-static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
-  [$class     : 'AzureKeyVaultSecret',
-   secretType : 'Secret',
-   name       : secretName,
-   version    : '',
-   envVariable: envVar
-  ]
-}
-
-static String previewAccountName(Kubectl kubectl, String secretName, String namespace) {
-  kubectl.getSecret(secretName, namespace, "{.data.storageAccountName}")
-}
-
-static String previewAccountKey(Kubectl kubectl, String secretName, String namespace) {
-  kubectl.getSecret(secretName, namespace, "{.data.accessKey}")
-}
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
@@ -54,13 +15,6 @@ withPipeline(type, product, component) {
     builder.gradle('integration')
   }
 
-  enableDbMigration('reform-scan') // vault 'prefix'
-  enableAksStagingDeployment()
-  installCharts()
   enableSlackNotifications(channel)
   disableLegacyDeployment()
-
-  onNonPR() {
-    loadVaultSecrets(combinedSecrets)
-  }
 }
