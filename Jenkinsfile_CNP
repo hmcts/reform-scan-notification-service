@@ -63,8 +63,4 @@ withPipeline(type, product, component) {
   onNonPR() {
     loadVaultSecrets(combinedSecrets)
   }
-
-  onPR(){
-    loadVaultSecrets(smokeTestSecrets)
-  }
 }
