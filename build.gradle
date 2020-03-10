@@ -45,7 +45,9 @@ test {
   failFast = true
 }
 
-task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
+task integration(type: Test) {
+  description = 'Runs the integration tests.'
+  group = 'Verification'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
