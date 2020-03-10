@@ -33,12 +33,22 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
+tasks.withType(Test) {
+  useJUnitPlatform()
+
+  testLogging {
+    exceptionFormat = 'full'
+  }
+}
+
+test {
+  failFast = true
+}
+
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  useJUnitPlatform()
-  // set your environment variables here
-  // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+  failFast = true
 }
 
 checkstyle {
@@ -154,11 +164,6 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
-}
-
-test {
-  useJUnitPlatform()
-  failFast = true
 }
 
 mainClassName = 'uk.gov.hmcts.reform.notificationservice.Application'
