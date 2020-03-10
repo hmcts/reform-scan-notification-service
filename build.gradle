@@ -167,7 +167,9 @@ test {
 mainClassName = 'uk.gov.hmcts.reform.notificationservice.Application'
 
 bootJar {
-  archiveName = 'reform-scan-notification-service.jar'
+  getArchiveFileName().set(provider {
+    'reform-scan-notification-service.jar'
+  })
 
   manifest {
     attributes('Implementation-Version': project.version.toString())
