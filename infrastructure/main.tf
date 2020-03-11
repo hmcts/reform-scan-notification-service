@@ -2,7 +2,7 @@ provider "azurerm" {
   version = "=1.42.0"
 }
 
-module "reform-blob-router-db" {
+module "reform-notifications-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.product}-${var.component}"
   location           = var.location_db
@@ -27,31 +27,31 @@ data "azurerm_key_vault" "reform_scan_key_vault" {
 resource "azurerm_key_vault_secret" "db_user" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-POSTGRES-USER"
-  value        = module.reform-blob-router-db.user_name
+  value        = module.reform-notifications-db.user_name
 }
 
 resource "azurerm_key_vault_secret" "db_password" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-POSTGRES-PASS"
-  value        = module.reform-blob-router-db.postgresql_password
+  value        = module.reform-notifications-db.postgresql_password
 }
 
 resource "azurerm_key_vault_secret" "db_host" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-POSTGRES-HOST"
-  value        = module.reform-blob-router-db.host_name
+  value        = module.reform-notifications-db.host_name
 }
 
 resource "azurerm_key_vault_secret" "db_port" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-POSTGRES-PORT"
-  value        = module.reform-blob-router-db.postgresql_listen_port
+  value        = module.reform-notifications-db.postgresql_listen_port
 }
 
 resource "azurerm_key_vault_secret" "db_database" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-POSTGRES-DATABASE"
-  value        = module.reform-blob-router-db.postgresql_database
+  value        = module.reform-notifications-db.postgresql_database
 }
 
 # endregion
