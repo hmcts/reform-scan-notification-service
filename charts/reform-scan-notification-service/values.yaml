@@ -1,3 +1,5 @@
 java:
   applicationPort: 8585
+  ingressHost: reform-scan-notification-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: reform-scan
+  image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
