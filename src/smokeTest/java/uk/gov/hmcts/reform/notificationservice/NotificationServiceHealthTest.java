@@ -16,6 +16,8 @@ class NotificationServiceHealthTest {
 
     @Test
     void notification_service_is_healthy() {
+        // TODO: this test is there so that a test report can be created for smoke tests
+        // (otherwise the build fails). Remove when actual smoke tests have been written.
         RestAssured
             .given()
             .relaxedHTTPSValidation()
