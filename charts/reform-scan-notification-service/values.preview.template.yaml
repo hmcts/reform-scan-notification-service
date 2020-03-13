@@ -12,7 +12,7 @@ java:
     DB_CONN_OPTIONS: ""
 
     FLYWAY_SKIP_MIGRATIONS: false
-    QUEUE_NOTIFICATIONS_READ: "$(SB_CONN_STRING);EntityPath=notifications-reform"
+    QUEUE_NOTIFICATIONS_READ: "$(SB_CONN_STRING);EntityPath=notifications"
 
   # Don't modify below here
   image: ${IMAGE_NAME}
@@ -30,5 +30,5 @@ servicebus:
   serviceplan: basic
   setup:
     queues:
-      - name: notifications-reform
+      - name: notifications
   enabled: true
