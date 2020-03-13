@@ -5,11 +5,9 @@ import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.hamcrest.Matchers.equalTo;
 
-@TestPropertySource("classpath:application.conf")
 class NotificationServiceHealthTest {
 
     private static final String TEST_URL = ConfigFactory.load().getString("test-url");
