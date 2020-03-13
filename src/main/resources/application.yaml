@@ -14,3 +14,6 @@ management:
 spring:
   application:
     name: Reform Scan Notification Service
+
+flyway:
+  skip-migrations: ${FLYWAY_SKIP_MIGRATIONS}
