@@ -198,6 +198,12 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
 
+  // region: feign clients
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
+  implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.8'
+  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.8'
+  // end region
+
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
@@ -206,6 +212,11 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+
+  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.2.RELEASE', {
+    exclude group: 'com.github.tomakehurst', module: 'wiremock-jre8-standalone'
+  }
+  integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.26.3'
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation libraries.junit5
