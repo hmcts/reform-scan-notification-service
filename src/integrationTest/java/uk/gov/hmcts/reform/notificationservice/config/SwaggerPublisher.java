@@ -37,7 +37,7 @@ class SwaggerPublisher {
 
     @BeforeEach
     void setUp() {
-        WebRequestTrackingFilter filter = new WebRequestTrackingFilter();
+        var filter = new WebRequestTrackingFilter();
         filter.init(new MockFilterConfig());
         mvc = webAppContextSetup(wac).addFilters(filter).build();
     }
