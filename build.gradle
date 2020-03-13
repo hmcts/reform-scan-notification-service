@@ -95,6 +95,8 @@ checkstyle {
 
 pmd {
   toolVersion = "6.21.0"
+  ignoreFailures = true
+  incrementalAnalysis = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
