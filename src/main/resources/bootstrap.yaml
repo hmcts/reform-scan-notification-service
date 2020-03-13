@@ -15,3 +15,4 @@ spring:
         notification-service-POSTGRES-DATABASE: DB_NAME
         notification-service-POSTGRES-HOST: DB_HOST
         notification-service-POSTGRES-PORT: DB_PORT
+        notifications-queue-listen-connection-string: QUEUE_NOTIFICATIONS_READ
