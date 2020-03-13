@@ -27,6 +27,24 @@ sourceSets {
     }
     resources.srcDir file('src/integrationTest/resources')
   }
+
+  smokeTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/smokeTest/java')
+    }
+    resources.srcDir file('src/smokeTest/resources')
+  }
+
+  functionalTest {
+    java {
+      compileClasspath += main.output
+      runtimeClasspath += main.output
+      srcDir file('src/functionalTest/java')
+    }
+    resources.srcDir file('src/functionalTest/resources')
+  }
 }
 
 tasks.withType(JavaCompile) {
@@ -51,6 +69,22 @@ task integration(type: Test) {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
   failFast = true
+}
+
+task smoke(type: Test) {
+  description = "Runs Smoke Tests"
+  group = "Verification"
+
+  testClassesDirs = sourceSets.smokeTest.output.classesDirs
+  classpath = sourceSets.smokeTest.runtimeClasspath
+}
+
+task functional(type: Test) {
+  description = "Runs the functional tests."
+  group = "Verification"
+
+  testClassesDirs = sourceSets.functionalTest.output.classesDirs
+  classpath = sourceSets.functionalTest.runtimeClasspath
 }
 
 checkstyle {
@@ -170,6 +204,22 @@ dependencies {
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
+
+  smokeTestImplementation sourceSets.main.runtimeClasspath
+  smokeTestImplementation libraries.junit5
+  smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.14.0'
+  smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.0'
+  smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured', {
+    exclude group: 'junit', module: 'junit'
+  }
+
+  functionalTestImplementation sourceSets.main.runtimeClasspath
+  functionalTestImplementation libraries.junit5
+  functionalTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.15.0'
+  functionalTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.0'
+  functionalTestImplementation group: 'io.rest-assured', name: 'rest-assured', {
+    exclude group: 'junit', module: 'junit'
+  }
 }
 
 mainClassName = 'uk.gov.hmcts.reform.notificationservice.Application'
