@@ -111,6 +111,13 @@ jacocoTestReport {
     csv.enabled = false
     xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
   }
+  afterEvaluate {
+    getClassDirectories().from = getClassDirectories().files.collect {
+      fileTree(dir: it, exclude: [
+        'uk/gov/hmcts/reform/notificationservice/config/**'
+      ])
+    }
+  }
 }
 
 project.tasks['sonarqube'].dependsOn jacocoTestReport
