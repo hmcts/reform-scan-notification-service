@@ -1,5 +1,20 @@
 java:
   environment:
+    DB_HOST: "{{ .Release.Name }}-postgresql"
+    DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    DB_USER: "{{ .Values.postgresql.postgresqlUsername}}"
+    DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    DB_PORT: '5432'
+    DB_CONN_OPTIONS: ""
+
+    FLYWAY_SKIP_MIGRATIONS: false
+
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+
+  postgresql:
+    enabled: true
+    postgresqlUsername: db_user
+    postgresqlPassword: db_password
+    postgresqlDatabase: db_database
