@@ -2,4 +2,13 @@ java:
   applicationPort: 8585
   ingressHost: reform-scan-notification-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: reform-scan
+  keyVaults:
+    reform-scan:
+      resourceGroup: reform-scan
+      secrets:
+        - app-insights-instrumentation-key
+        - error-notifications-password
+        - error-notifications-url
+        - error-notifications-username
+
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'

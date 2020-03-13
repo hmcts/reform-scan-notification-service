@@ -1,0 +1,12 @@
+spring:
+  cloud:
+    propertiesvolume:
+      enabled: true
+      prefixed: false
+      paths: /mnt/secrets/reform-scan
+      name: reform-scan
+      aliases:
+        app-insights-instrumentation-key: azure.application-insights.instrumentation-key
+        error-notifications-password: clients.error-notifications.password
+        error-notifications-url: clients.error-notifications.url
+        error-notifications-username: clients.error-notifications.username
