@@ -10,3 +10,8 @@ spring:
         error-notifications-password: clients.error-notifications.password
         error-notifications-url: clients.error-notifications.url
         error-notifications-username: clients.error-notifications.username
+        notification-service-POSTGRES-PASS: DB_PASSWORD
+        notification-service-POSTGRES-USER: DB_USER
+        notification-service-POSTGRES-DATABASE: DB_NAME
+        notification-service-POSTGRES-HOST: DB_HOST
+        notification-service-POSTGRES-PORT: DB_PORT
