@@ -1,6 +1,7 @@
-package uk.gov.hmcts.reform.notificationservice.model.servicebus.in;
+package uk.gov.hmcts.reform.notificationservice.model.request.incomming;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 public class NotificationMsg {
 

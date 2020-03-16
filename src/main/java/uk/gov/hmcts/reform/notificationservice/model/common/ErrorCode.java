@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notificationservice.model.servicebus.in;
+package uk.gov.hmcts.reform.notificationservice.model.common;
 
 public enum ErrorCode {
 
