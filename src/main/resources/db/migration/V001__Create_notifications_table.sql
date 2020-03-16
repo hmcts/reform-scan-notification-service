@@ -11,4 +11,4 @@ CREATE TABLE notifications (
   processed_at              TIMESTAMP     NULL,
   status                    VARCHAR(50)   NOT NULL
 );
-CREATE INDEX notifications_zipfilename_service_idx ON events (zip_file_name, service);
+CREATE INDEX notifications_zipfilename_service_idx ON notifications (zip_file_name, service);

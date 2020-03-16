@@ -187,6 +187,7 @@ ext.libraries = [
 ]
 
 dependencies {
+  implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.10'
   implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.1.4'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
