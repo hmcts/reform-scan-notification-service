@@ -22,3 +22,5 @@ java:
     FLYWAY_SKIP_MIGRATIONS: true
 
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
+servicebus:
+  enabled: false
