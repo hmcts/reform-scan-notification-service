@@ -15,9 +15,12 @@ java:
         - notification-service-POSTGRES-HOST
         - notification-service-POSTGRES-PORT
         - notification-service-POSTGRES-DATABASE
+        - notifications-queue-listen-connection-string
 
   environment:
     DB_CONN_OPTIONS: ?sslmode=require
     FLYWAY_SKIP_MIGRATIONS: true
 
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
+servicebus:
+  enabled: false

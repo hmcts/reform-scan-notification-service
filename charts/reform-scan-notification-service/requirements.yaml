@@ -2,3 +2,7 @@ dependencies:
   - name: java
     version: ~2.16.1
     repository: '@hmctspublic'
+  - name: servicebus
+    version: ~0.2.2
+    repository: '@hmctspublic'
+    condition: servicebus.enabled

@@ -30,3 +30,9 @@ spring:
 
 flyway:
   skip-migrations: ${FLYWAY_SKIP_MIGRATIONS}
+
+queue:
+  notifications:
+    read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
+    queue-name: notifications
+
