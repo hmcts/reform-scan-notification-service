@@ -199,10 +199,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
 
-  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.1.5', {
-    exclude group: 'javax.mail', module: 'mail'
-    exclude group: 'net.minidev', module: 'json-smart'
-  }
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.1.5'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
