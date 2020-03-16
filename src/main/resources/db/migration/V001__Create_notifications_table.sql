@@ -6,7 +6,7 @@ CREATE TABLE notifications (
   service                   VARCHAR(100)  NOT NULL,
   document_control_number   VARCHAR(100)  NULL,
   error_code                VARCHAR(25)   NOT NULL,
-  error_description         VARCHAR(255)  NULL,
+  error_description         VARCHAR(255)  NOT NULL,
   created_at                TIMESTAMP     NOT NULL,
   processed_at              TIMESTAMP     NULL,
   status                    VARCHAR(50)   NOT NULL
