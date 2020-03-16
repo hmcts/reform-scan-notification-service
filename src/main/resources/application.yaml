@@ -14,3 +14,8 @@ management:
 spring:
   application:
     name: Reform Scan Notification Service
+
+queue:
+  notifications:
+    read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
+    queue-name: notifications-reform

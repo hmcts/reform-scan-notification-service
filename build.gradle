@@ -120,6 +120,7 @@ sonarqube {
     property "sonar.projectName", "Reform :: reform-scan-notification-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:reform-scan-notification-service"
     property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
+    property "sonar.exclusions", "**/config/**"
   }
 }
 
@@ -197,6 +198,8 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
+
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.1.5'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
