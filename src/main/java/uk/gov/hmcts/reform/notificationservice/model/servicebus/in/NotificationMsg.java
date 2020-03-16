@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class NotificationMsg {
 
-    public final String id;
     public final String zipFileName;
     public final String jurisdiction;
     public final String poBox;
@@ -15,8 +14,6 @@ public class NotificationMsg {
 
     @SuppressWarnings("squid:S00107") // number of params
     public NotificationMsg(
-        @JsonProperty(value = "id", required = true) String id,
-        @JsonProperty(value = "eventId", required = true) Long eventId,
         @JsonProperty(value = "zipFileName", required = true) String zipFileName,
         @JsonProperty("jurisdiction") String jurisdiction,
         @JsonProperty("poBox") String poBox,
@@ -25,7 +22,6 @@ public class NotificationMsg {
         @JsonProperty(value = "errorDescription", required = true) String errorDescription,
         @JsonProperty(value = "service", required = true) String service
     ) {
-        this.id = id;
         this.zipFileName = zipFileName;
         this.jurisdiction = jurisdiction;
         this.poBox = poBox;
