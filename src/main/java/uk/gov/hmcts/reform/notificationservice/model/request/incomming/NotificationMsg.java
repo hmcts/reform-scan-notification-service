@@ -15,12 +15,12 @@ public class NotificationMsg {
 
     @SuppressWarnings("squid:S00107") // number of params
     public NotificationMsg(
-        @JsonProperty(value = "zipFileName", required = true) String zipFileName,
+        @JsonProperty(value = "zip_file_name", required = true) String zipFileName,
         @JsonProperty("jurisdiction") String jurisdiction,
-        @JsonProperty("poBox") String poBox,
-        @JsonProperty("documentControlNumber") String documentControlNumber,
-        @JsonProperty(value = "errorCode", required = true) ErrorCode errorCode,
-        @JsonProperty(value = "errorDescription", required = true) String errorDescription,
+        @JsonProperty("po_box") String poBox,
+        @JsonProperty("document_control_number") String documentControlNumber,
+        @JsonProperty(value = "error_code", required = true) ErrorCode errorCode,
+        @JsonProperty(value = "error_description", required = true) String errorDescription,
         @JsonProperty(value = "service", required = true) String service
     ) {
         this.zipFileName = zipFileName;
