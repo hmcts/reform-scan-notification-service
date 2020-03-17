@@ -52,7 +52,7 @@ public class NotificationMessageParser {
         if (binaryData == null) {
             throw new InvalidMessageException(ERROR_CAUSE);
         }
-        return CollectionUtils.isEmpty(binaryData) ? null : binaryData.get(0);
+        return binaryData.isEmpty() ? null : binaryData.get(0);
     }
 
 }
