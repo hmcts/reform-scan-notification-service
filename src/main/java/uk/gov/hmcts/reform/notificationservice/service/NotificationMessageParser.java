@@ -20,7 +20,6 @@ public class NotificationMessageParser {
 
     private final ObjectMapper objectMapper;
 
-
     public NotificationMessageParser(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
@@ -53,7 +52,6 @@ public class NotificationMessageParser {
         if (binaryData == null) {
             throw new InvalidMessageException(ERROR_CAUSE);
         }
-
         return CollectionUtils.isEmpty(binaryData) ? null : binaryData.get(0);
     }
 
