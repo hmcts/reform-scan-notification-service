@@ -27,17 +27,17 @@ public class NotificationMessageParser {
     public NotificationMsg parse(MessageBody messageBody) {
         try {
             NotificationMsg notificationMsg =
-                    objectMapper.readValue(getBinaryData(messageBody), NotificationMsg.class);
+                objectMapper.readValue(getBinaryData(messageBody), NotificationMsg.class);
             LOGGER.info(
-                    "Parsed notification message, Zip File Name: {}, Error Code: {}, Error Description: {} "
-                            + "Jurisdiction: {}, PO Box: {}, Service: {}, Document Control Number: {}",
-                    notificationMsg.zipFileName,
-                    notificationMsg.errorCode,
-                    notificationMsg.errorDescription,
-                    notificationMsg.jurisdiction,
-                    notificationMsg.poBox,
-                    notificationMsg.service,
-                    notificationMsg.documentControlNumber
+                "Parsed notification message, Zip File Name: {}, Error Code: {}, Error Description: {} "
+                    + "Jurisdiction: {}, PO Box: {}, Service: {}, Document Control Number: {}",
+                notificationMsg.zipFileName,
+                notificationMsg.errorCode,
+                notificationMsg.errorDescription,
+                notificationMsg.jurisdiction,
+                notificationMsg.poBox,
+                notificationMsg.service,
+                notificationMsg.documentControlNumber
             );
 
             return notificationMsg;
