@@ -50,7 +50,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
                 assertThat(n.errorDescription).isEqualTo(newNotification.errorDescription);
                 assertThat(n.createdAt).isNotNull();
-                assertThat(n.processedAt).isNotNull();
+                assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(NotificationStatus.PENDING);
             });
     }
