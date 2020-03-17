@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.notificationservice.model.request.incomming.Notificat
 
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.PostConstruct;
 
 @Service
 public class NotificationMessageParser {
@@ -21,6 +22,11 @@ public class NotificationMessageParser {
 
     public NotificationMessageParser(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @PostConstruct
+    public void post() {
+        logger.info("Called PostConstruct xxxx");
     }
 
     public NotificationMsg parse(MessageBody messageBody) {
