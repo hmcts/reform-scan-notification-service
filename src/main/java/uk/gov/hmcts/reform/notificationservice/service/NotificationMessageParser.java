@@ -49,10 +49,10 @@ public class NotificationMessageParser {
 
     private static byte[] getBinaryData(MessageBody messageBody) {
         List<byte[]> binaryData = messageBody.getBinaryData();
-        if (binaryData == null) {
+        if (CollectionUtils.isEmpty(binaryData)) {
             throw new InvalidMessageException(ERROR_CAUSE);
         }
-        return binaryData.isEmpty() ? null : binaryData.get(0);
+        return binaryData.get(0);
     }
 
 }
