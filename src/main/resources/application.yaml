@@ -24,6 +24,15 @@ spring:
       minimumIdle: 2
       maximumPoolSize: 10
       idleTimeout: 10000
-      poolName: RouterHikariCP
+      poolName: NotificationHikariCP
       maxLifetime: 7200000
       connectionTimeout: 30000
+
+flyway:
+  skip-migrations: ${FLYWAY_SKIP_MIGRATIONS}
+
+queue:
+  notifications:
+    read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
+    queue-name: notifications
+

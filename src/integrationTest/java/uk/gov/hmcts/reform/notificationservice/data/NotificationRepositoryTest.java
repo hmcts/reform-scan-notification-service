@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.notificationservice.data;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +18,6 @@ import static uk.gov.hmcts.reform.notificationservice.data.notifications.Status.
 
 @ActiveProfiles({"db-test"})
 @SpringBootTest
-@Disabled
 public class NotificationRepositoryTest {
 
     @Autowired private NotificationRepository repo;
@@ -58,7 +56,7 @@ public class NotificationRepositoryTest {
         // then
         assertThat(notifications)
             .isNotEmpty()
-            .hasSize(3)
+            .hasSize(1)
             .extracting(this::getTupleFromNotification)
             .containsExactly(
                 tuple(

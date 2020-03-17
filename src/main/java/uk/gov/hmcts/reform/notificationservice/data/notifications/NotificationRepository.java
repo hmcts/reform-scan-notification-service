@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static uk.gov.hmcts.reform.notificationservice.data.notifications.Status.PENDING;
+
 @Repository
 public class NotificationRepository {
 
@@ -21,7 +23,7 @@ public class NotificationRepository {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE zip_file_name = :zipFileName AND service = :service",
             new MapSqlParameterSource()
-                .addValue("zip_file_name", zipFileName)
+                .addValue("zipFileName", zipFileName)
                 .addValue("service", service),
             this.mapper
         );
@@ -40,7 +42,7 @@ public class NotificationRepository {
                 .addValue("errorCode", notification.errorCode)
                 .addValue("errorDescription", notification.errorDescription)
                 .addValue("service", notification.service)
-                .addValue("status", Status.PENDING)
+                .addValue("status", PENDING.name())
         );
     }
 }
