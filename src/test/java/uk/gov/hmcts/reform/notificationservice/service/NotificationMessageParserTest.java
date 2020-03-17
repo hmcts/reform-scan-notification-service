@@ -26,14 +26,14 @@ public class NotificationMessageParserTest {
     public void should_return_valid_notificationMessage_when_queue_message_is_valid()
             throws JSONException {
         NotificationMsg expected = new NotificationMsg(
-                        "fileName.zip",
-                        "divorce",
-                        "pobox",
-                        "1234567890123456",
-                        ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
-                        "size too big",
-                        "orchestrator"
-                );
+                "fileName.zip",
+                "divorce",
+                "pobox",
+                "1234567890123456",
+                ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+                "size too big",
+                "orchestrator"
+        );
 
         NotificationMsg notificationMessage =
                 notificationMsgParser.parse(
@@ -58,18 +58,16 @@ public class NotificationMessageParserTest {
     @Test
     public void should_throw_invalidMessageException_when_queue_message_is_invalid() {
         assertThatThrownBy(() -> notificationMsgParser.parse(
-                                fromBinaryData(ImmutableList.of("parse exception".getBytes())))
+                fromBinaryData(ImmutableList.of("parse exception".getBytes())))
         ).isInstanceOf(InvalidMessageException.class);
     }
 
     @Test
     public void should_throw_InvalidMessageException_when_queue_message_is_null() {
-
         MessageBody nullBinaryData = fromSequenceData(ImmutableList.of(ImmutableList.of(new Object())));
         assertThatThrownBy(() -> notificationMsgParser.parse(nullBinaryData))
                 .isInstanceOf(InvalidMessageException.class)
                 .hasMessage("Message Binary data is null");
-        ;
     }
 
     private static String notificationMessageAsJsonString(

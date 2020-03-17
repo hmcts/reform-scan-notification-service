@@ -31,7 +31,7 @@ public class NotificationMessageParser {
                     objectMapper.readValue(getBinaryData(messageBody), NotificationMsg.class);
             LOGGER.info(
                     "Parsed notification message, Zip File Name: {}, Error Code: {}, Error Description: {} "
-                          + "Jurisdiction: {}, PO Box: {}, Service: {}, Document Control Number: {}",
+                            + "Jurisdiction: {}, PO Box: {}, Service: {}, Document Control Number: {}",
                     notificationMsg.zipFileName,
                     notificationMsg.errorCode,
                     notificationMsg.errorDescription,
