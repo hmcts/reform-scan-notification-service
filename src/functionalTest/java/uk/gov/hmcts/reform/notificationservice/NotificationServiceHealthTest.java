@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.bulkscan.payment.processor;
+package uk.gov.hmcts.reform.notificationservice;
 
 import com.typesafe.config.ConfigFactory;
 import io.restassured.RestAssured;
