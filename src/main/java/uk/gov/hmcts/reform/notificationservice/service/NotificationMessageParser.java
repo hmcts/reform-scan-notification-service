@@ -42,7 +42,7 @@ public class NotificationMessageParser {
 
             return notificationMsg;
         } catch (IOException exc) {
-            LOGGER.error("Notification queue message parse error:", exc);
+            LOGGER.error("Notification queue message parse error", exc);
             throw new InvalidMessageException(exc);
         }
     }
