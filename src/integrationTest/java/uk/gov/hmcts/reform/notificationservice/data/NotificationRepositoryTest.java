@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
@@ -29,17 +30,10 @@ public class NotificationRepositoryTest {
     @Test
     void should_save_and_read_notification() {
         // given
-        var newNotification = new NewNotification(
-            "zip_file_name",
-            "po_box",
-            "service",
-            "dcn",
-            ErrorCode.ERR_AV_FAILED,
-            "error_description"
-        );
+        var newNotification = createNewNotification();
+        long id = notificationRepository.insert(newNotification);
 
         // when
-        long id = notificationRepository.insert(newNotification);
         var notification = notificationRepository.find(id);
 
         // then
@@ -243,9 +237,45 @@ public class NotificationRepositoryTest {
         ;
     }
 
+    @Test
+    void should_return_all_pending_notifications_to_be_sent_out() {
+        // given
+        var newNotification = createNewNotification();
+        long idPending = notificationRepository.insert(newNotification);
+        long idSentStillPending = notificationRepository.insert(createNewNotification());
+        jdbcTemplate.update(
+            "UPDATE notifications SET notification_id = 'SOME_ID' WHERE id = :id",
+            new MapSqlParameterSource("id", idSentStillPending)
+        );
+
+        // when
+        var notifications = notificationRepository.findPending();
+
+        // then
+        assertThat(notifications)
+            .hasSize(1)
+            .first()
+            .satisfies(notification -> {
+                assertThat(notification.id).isEqualTo(idPending);
+                assertThat(notification.status).isEqualTo(PENDING);
+                assertThat(notification.notificationId).isNull();
+            });
+    }
+
     private Tuple getTupleFromNotification(Notification data) {
         return tuple(
             data.zipFileName, data.poBox, data.service, data.documentControlNumber, data.errorCode,
             data.errorDescription, data.processedAt, data.status);
+    }
+
+    private NewNotification createNewNotification() {
+        return new NewNotification(
+            "zip_file_name",
+            "po_box",
+            "service",
+            "dcn",
+            ErrorCode.ERR_AV_FAILED,
+            "error_description"
+        );
     }
 }
