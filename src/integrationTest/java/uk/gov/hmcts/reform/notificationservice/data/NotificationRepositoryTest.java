@@ -72,7 +72,7 @@ public class NotificationRepositoryTest {
         jdbcTemplate.update(
             "UPDATE notifications SET status = :sent WHERE id = :id",
             new MapSqlParameterSource()
-                .addValue("sent", SENT)
+                .addValue("sent", SENT.name())
                 .addValue("id", idSent)
         );
 
