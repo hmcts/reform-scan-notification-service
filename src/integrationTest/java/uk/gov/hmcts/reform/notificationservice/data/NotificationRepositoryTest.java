@@ -66,13 +66,17 @@ public class NotificationRepositoryTest {
         );
 
         // when
-        var notifications = notificationRepository.findByStatus(NotificationStatus.PENDING);
+        var notifications = notificationRepository.findPending();
 
         // then
         assertThat(notifications)
             .hasSize(1)
-            .extracting(n -> n.id)
-            .containsOnly(idPending);
+            .first()
+            .satisfies(notification -> {
+                assertThat(notification.id).isEqualTo(idPending);
+                assertThat(notification.status).isEqualTo(NotificationStatus.PENDING);
+                assertThat(notification.notificationId).isNull();
+            });
     }
 
     private NewNotification createNewNotification() {

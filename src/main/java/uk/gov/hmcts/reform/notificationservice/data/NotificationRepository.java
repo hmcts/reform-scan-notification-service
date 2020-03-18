@@ -39,10 +39,10 @@ public class NotificationRepository {
         }
     }
 
-    public List<Notification> findByStatus(NotificationStatus status) {
+    public List<Notification> findPending() {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and notification_id IS NULL",
-            new MapSqlParameterSource("status", status.name()),
+            new MapSqlParameterSource("status", NotificationStatus.PENDING.name()),
             this.mapper
         );
     }
