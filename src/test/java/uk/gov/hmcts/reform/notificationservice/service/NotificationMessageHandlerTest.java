@@ -6,9 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
-import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
-import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
+import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
+import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
@@ -26,14 +25,14 @@ public class NotificationMessageHandlerTest {
     private NotificationMessageHandler notificationMessageHandler;
 
     @Mock
-    private ErrorNotificationRequestMapper errorNotificationRequestMapper;
+    private NotificationMapper notificationMapper;
     @Mock
-    private ErrorNotificationClient errorNotificationClient;
+    private NotificationRepository notificationRepository;
 
     @BeforeEach
     void setUp() {
         notificationMessageHandler =
-            new NotificationMessageHandler(errorNotificationRequestMapper, errorNotificationClient);
+            new NotificationMessageHandler(notificationMapper, notificationRepository);
     }
 
     @Test
@@ -49,23 +48,25 @@ public class NotificationMessageHandlerTest {
                 "processor"
             );
 
-        ErrorNotificationRequest request =
-            new ErrorNotificationRequest(
+        NewNotification newNotification =
+            new NewNotification(
                 "Zipfile.zip",
                 "A123",
-                "ERR_AV_FAILED",
+                "processor",
+                "A1342411414214",
+                ErrorCode.ERR_AV_FAILED,
                 "error description Av not valid"
             );
 
-        when(errorNotificationRequestMapper.map(notificationMsg)).thenReturn(request);
-        when(errorNotificationClient.notify(request))
-            .thenReturn(new ErrorNotificationResponse("312313-22311231-21321"));
+        when(notificationMapper.map(notificationMsg)).thenReturn(newNotification);
+        when(notificationRepository.insert(newNotification))
+            .thenReturn(21321312L);
 
         notificationMessageHandler.handleNotificationMessage(notificationMsg);
 
         // then
-        verify(errorNotificationRequestMapper).map(notificationMsg);
-        verify(errorNotificationClient).notify(request);
+        verify(notificationMapper).map(notificationMsg);
+        verify(notificationRepository).insert(newNotification);
     }
 
     @Test
@@ -81,25 +82,29 @@ public class NotificationMessageHandlerTest {
                 "processor"
             );
 
-        ErrorNotificationRequest request =
-            new ErrorNotificationRequest(
+        NewNotification newNotification =
+            new NewNotification(
                 "file.txt",
                 "123213",
-                "ERR_SERVICE_DISABLED",
+                "processor",
+                "32313223",
+                ErrorCode.ERR_SERVICE_DISABLED,
                 "error description service disabled"
             );
-        when(errorNotificationRequestMapper.map(notificationMsg)).thenReturn(request);
+
+
+        when(notificationMapper.map(notificationMsg)).thenReturn(newNotification);
 
         FeignException exception = mock(FeignException.class);
-        doThrow(exception).when(errorNotificationClient).notify(request);
+        doThrow(exception).when(notificationRepository).insert(newNotification);
 
         // when
         assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
             .isSameAs(exception);
 
         // then
-        verify(errorNotificationRequestMapper).map(notificationMsg);
-        verify(errorNotificationClient).notify(request);
+        verify(notificationMapper).map(notificationMsg);
+        verify(notificationRepository).insert(newNotification);
     }
 
     @Test
@@ -116,14 +121,14 @@ public class NotificationMessageHandlerTest {
             );
 
         InvalidMessageException exception = new InvalidMessageException("Parsed Failed");
-        doThrow(exception).when(errorNotificationRequestMapper).map(notificationMsg);
+        doThrow(exception).when(notificationMapper).map(notificationMsg);
 
         // when
         assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
             .isSameAs(exception);
 
         // then
-        verify(errorNotificationRequestMapper).map(notificationMsg);
-        verifyNoMoreInteractions(errorNotificationClient);
+        verify(notificationMapper).map(notificationMsg);
+        verifyNoMoreInteractions(notificationRepository);
     }
 }

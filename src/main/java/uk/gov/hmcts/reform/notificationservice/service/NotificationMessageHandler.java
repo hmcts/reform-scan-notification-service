@@ -3,36 +3,35 @@ package uk.gov.hmcts.reform.notificationservice.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
+import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
 
 @Service
 public class NotificationMessageHandler {
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageHandler.class);
 
-    private final ErrorNotificationRequestMapper errorNotificationRequestMapper;
-    private final ErrorNotificationClient errorNotificationClient;
+    private final NotificationMapper notificationMapper;
+    private final NotificationRepository notificationRepository;
 
     public NotificationMessageHandler(
-        ErrorNotificationRequestMapper errorNotificationRequestMapper,
-        ErrorNotificationClient errorNotificationClient
+        NotificationMapper notificationMapper,
+        NotificationRepository notificationRepository
     ) {
-        this.errorNotificationRequestMapper = errorNotificationRequestMapper;
-        this.errorNotificationClient = errorNotificationClient;
+        this.notificationMapper = notificationMapper;
+        this.notificationRepository = notificationRepository;
     }
 
 
     public void handleNotificationMessage(NotificationMsg notificationMsg) {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 
-        var request = errorNotificationRequestMapper.map(notificationMsg);
+        var newNotification = notificationMapper.map(notificationMsg);
 
-        var response = errorNotificationClient.notify(request);
-
+        long id = notificationRepository.insert(newNotification);
         log.info(
-            "Handle notification message successful, Zip File: {}, Response Notification ID: {}",
+            "Handle notification message successful, Zip File: {}, Inserted Notification ID: {}",
             notificationMsg.zipFileName,
-            response.getNotificationId()
+            id
         );
 
     }
