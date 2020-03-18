@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 
 @SpringBootTest
@@ -43,6 +41,7 @@ public class NotificationRepositoryTest {
             .satisfies(n -> {
                 assertThat(n.zipFileName).isEqualTo(newNotification.zipFileName);
                 assertThat(n.poBox).isEqualTo(newNotification.poBox);
+                assertThat(n.service).isEqualTo(newNotification.service);
                 assertThat(n.service).isEqualTo(newNotification.service);
                 assertThat(n.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
                 assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
@@ -82,21 +81,20 @@ public class NotificationRepositoryTest {
         // then
         assertThat(notifications)
             .isNotEmpty()
-            .hasSize(1)
-            .extracting(this::getTupleFromNotification)
-            .containsExactlyInAnyOrder(
-                tuple(
-                    zipFileName,
-                    newNotification.poBox,
-                    service,
-                    newNotification.documentControlNumber,
-                    newNotification.errorCode,
-                    newNotification.errorDescription,
-                    null,
-                    PENDING
-                )
-            )
-        ;
+            .hasSize(1);
+        assertThat(notifications.get(0))
+            .satisfies(n -> {
+                assertThat(n.zipFileName).isEqualTo(newNotification.zipFileName);
+                assertThat(n.poBox).isEqualTo(newNotification.poBox);
+                assertThat(n.service).isEqualTo(newNotification.service);
+                assertThat(n.service).isEqualTo(newNotification.service);
+                assertThat(n.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
+                assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
+                assertThat(n.errorDescription).isEqualTo(newNotification.errorDescription);
+                assertThat(n.createdAt).isNotNull();
+                assertThat(n.processedAt).isNull();
+                assertThat(n.status).isEqualTo(PENDING);
+            });
     }
 
     @Test
@@ -121,19 +119,19 @@ public class NotificationRepositoryTest {
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2"
         );
-        final var newNotification2 = new NewNotification(
+        final var newNotification3 = new NewNotification(
             zipFileName,
-            "po_box2",
+            "po_box3",
             service,
-            "dcn2",
+            "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
-            "error_description2"
+            "error_description3"
         );
 
         // when
-        notificationRepository.insert(newNotification1);
+        var id1 = notificationRepository.insert(newNotification1);
         notificationRepository.insert(newNotificationFromOtherService);
-        notificationRepository.insert(newNotification2);
+        var id3 = notificationRepository.insert(newNotification3);
 
         // and
         List<Notification> notifications = notificationRepository.find(zipFileName, service);
@@ -142,25 +140,31 @@ public class NotificationRepositoryTest {
         assertThat(notifications)
             .isNotEmpty()
             .hasSize(2)
-            .extracting(this::getTupleFromNotification)
+            .usingElementComparatorIgnoringFields("notificationId", "createdAt", "processedAt")
             .containsExactlyInAnyOrder(
-                tuple(
-                    zipFileName,
+                new Notification(
+                    id1,
+                    "someNotificationId",
+                    newNotification1.zipFileName,
                     newNotification1.poBox,
-                    service,
+                    newNotification1.service,
                     newNotification1.documentControlNumber,
                     newNotification1.errorCode,
                     newNotification1.errorDescription,
                     null,
+                    null,
                     PENDING
                 ),
-                tuple(
-                    zipFileName,
-                    newNotification2.poBox,
-                    service,
-                    newNotification2.documentControlNumber,
-                    newNotification2.errorCode,
-                    newNotification2.errorDescription,
+                new Notification(
+                    id3,
+                    "someOtherNotificationId",
+                    newNotification3.zipFileName,
+                    newNotification3.poBox,
+                    newNotification3.service,
+                    newNotification3.documentControlNumber,
+                    newNotification3.errorCode,
+                    newNotification3.errorDescription,
+                    null,
                     null,
                     PENDING
                 )
@@ -190,19 +194,19 @@ public class NotificationRepositoryTest {
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2"
         );
-        final var newNotification2 = new NewNotification(
+        final var newNotification3 = new NewNotification(
             zipFileName,
-            "po_box2",
+            "po_box3",
             service,
-            "dcn2",
+            "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
-            "error_description2"
+            "error_description3"
         );
 
         // when
-        notificationRepository.insert(newNotification1);
+        var id1 = notificationRepository.insert(newNotification1);
         notificationRepository.insert(newNotificationForOtherZipFile);
-        notificationRepository.insert(newNotification2);
+        var id3 = notificationRepository.insert(newNotification3);
 
         // and
         List<Notification> notifications = notificationRepository.find(zipFileName, service);
@@ -211,25 +215,31 @@ public class NotificationRepositoryTest {
         assertThat(notifications)
             .isNotEmpty()
             .hasSize(2)
-            .extracting(this::getTupleFromNotification)
+            .usingElementComparatorIgnoringFields("notificationId", "createdAt", "processedAt")
             .containsExactlyInAnyOrder(
-                tuple(
-                    zipFileName,
+                new Notification(
+                    id1,
+                    "someNotificationId",
+                    newNotification1.zipFileName,
                     newNotification1.poBox,
-                    service,
+                    newNotification1.service,
                     newNotification1.documentControlNumber,
                     newNotification1.errorCode,
                     newNotification1.errorDescription,
                     null,
+                    null,
                     PENDING
                 ),
-                tuple(
-                    zipFileName,
-                    newNotification2.poBox,
-                    service,
-                    newNotification2.documentControlNumber,
-                    newNotification2.errorCode,
-                    newNotification2.errorDescription,
+                new Notification(
+                    id3,
+                    "someOtherNotificationId",
+                    newNotification3.zipFileName,
+                    newNotification3.poBox,
+                    newNotification3.service,
+                    newNotification3.documentControlNumber,
+                    newNotification3.errorCode,
+                    newNotification3.errorDescription,
+                    null,
                     null,
                     PENDING
                 )
@@ -260,12 +270,6 @@ public class NotificationRepositoryTest {
                 assertThat(notification.status).isEqualTo(PENDING);
                 assertThat(notification.notificationId).isNull();
             });
-    }
-
-    private Tuple getTupleFromNotification(Notification data) {
-        return tuple(
-            data.zipFileName, data.poBox, data.service, data.documentControlNumber, data.errorCode,
-            data.errorDescription, data.processedAt, data.status);
     }
 
     private NewNotification createNewNotification() {
