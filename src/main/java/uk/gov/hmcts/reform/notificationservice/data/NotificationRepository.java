@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
 @Repository
 public class NotificationRepository {
@@ -71,5 +72,27 @@ public class NotificationRepository {
         );
 
         return (long) keyHolder.getKey();
+    }
+
+    /**
+     * Mark notification as sent.
+     * @param id notification ID
+     * @param notificationId ID of notification provided by API
+     * @return update was successful
+     */
+    public boolean markAsSent(long id, String notificationId) {
+        int rowsUpdated = jdbcTemplate.update(
+            "UPDATE notifications "
+                + "SET notification_id = :notificationId, "
+                + "  processed_at = NOW(), "
+                + "  status = :status "
+                + "WHERE id = :id",
+            new MapSqlParameterSource()
+                .addValue("notificationId", notificationId)
+                .addValue("status", SENT.name())
+                .addValue("id", id)
+        );
+
+        return rowsUpdated == 1;
     }
 }

@@ -17,6 +17,8 @@ import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SE
 @SpringBootTest
 public class NotificationRepositoryTest {
 
+    private static final String NOTIFICATION_ID = "notification ID";
+
     @Autowired NamedParameterJdbcTemplate jdbcTemplate;
     @Autowired NotificationRepository notificationRepository;
 
@@ -85,6 +87,37 @@ public class NotificationRepositoryTest {
                 assertThat(notification.id).isEqualTo(idPending);
                 assertThat(notification.status).isEqualTo(PENDING);
                 assertThat(notification.notificationId).isNull();
+            });
+    }
+
+    @Test
+    void should_return_flag_false_when_mark_as_sent_did_not_find_any_notification_to_update() {
+        // when
+        boolean isMarked = notificationRepository.markAsSent(1_000, NOTIFICATION_ID);
+
+        // then
+        assertThat(isMarked).isFalse();
+    }
+
+    @Test
+    void should_return_flag_true_when_mark_as_sent_was_successful() {
+        // given
+        long id = notificationRepository.insert(createNewNotification());
+
+        // when
+        boolean isMarked = notificationRepository.markAsSent(id, NOTIFICATION_ID);
+
+        // then
+        assertThat(isMarked).isTrue();
+
+        // and
+        assertThat(notificationRepository.find(id))
+            .isNotEmpty()
+            .get()
+            .satisfies(notification -> {
+                assertThat(notification.notificationId).isEqualTo(NOTIFICATION_ID);
+                assertThat(notification.status).isEqualTo(SENT);
+                assertThat(notification.processedAt).isNotNull();
             });
     }
 
