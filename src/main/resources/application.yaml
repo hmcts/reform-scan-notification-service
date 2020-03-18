@@ -27,6 +27,8 @@ spring:
       poolName: NotificationHikariCP
       maxLifetime: 7200000
       connectionTimeout: 30000
+  sleuth:
+    traceId128: true
 
 flyway:
   skip-migrations: ${FLYWAY_SKIP_MIGRATIONS}
@@ -35,3 +37,6 @@ queue:
   notifications:
     read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
 
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{traceId}/%X{spanId}] %-5p %logger{36} [%t] %C{2} - %m%n"
