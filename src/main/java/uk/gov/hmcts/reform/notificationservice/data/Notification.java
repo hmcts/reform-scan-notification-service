@@ -1,41 +1,46 @@
-package uk.gov.hmcts.reform.notificationservice.data.notifications;
+package uk.gov.hmcts.reform.notificationservice.data;
+
+import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 import java.time.Instant;
 
 public class Notification {
 
     public final long id;
+    public final String notificationId;
     public final String zipFileName;
     public final String poBox;
+    public final String service;
     public final String documentControlNumber;
-    public final String errorCode;
+    public final ErrorCode errorCode;
     public final String errorDescription;
     public final Instant createdAt;
     public final Instant processedAt;
-    public final String service;
-    public final Status status;
+    public final NotificationStatus status;
 
     public Notification(
         long id,
+        String notificationId,
         String zipFileName,
         String poBox,
+        String service,
         String documentControlNumber,
-        String errorCode,
+        ErrorCode errorCode,
         String errorDescription,
         Instant createdAt,
         Instant processedAt,
-        String service,
-        Status status
+        NotificationStatus status
     ) {
         this.id = id;
+        this.notificationId = notificationId;
         this.zipFileName = zipFileName;
         this.poBox = poBox;
+        this.service = service;
         this.documentControlNumber = documentControlNumber;
         this.errorCode = errorCode;
         this.errorDescription = errorDescription;
         this.createdAt = createdAt;
         this.processedAt = processedAt;
-        this.service = service;
         this.status = status;
     }
 }
