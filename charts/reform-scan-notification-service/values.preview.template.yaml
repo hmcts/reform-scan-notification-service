@@ -14,6 +14,13 @@ java:
     FLYWAY_SKIP_MIGRATIONS: false
     QUEUE_NOTIFICATIONS_READ: "$(SB_CONN_STRING);EntityPath=notifications"
 
+  keyVaults:
+    reform-scan:
+      resourceGroup: reform-scan
+      secrets:
+        - error-notifications-password
+        - error-notifications-url
+        - error-notifications-username
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
