@@ -12,6 +12,7 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
 @SpringBootTest
 public class NotificationRepositoryTest {
@@ -64,6 +65,13 @@ public class NotificationRepositoryTest {
         jdbcTemplate.update(
             "UPDATE notifications SET notification_id = 'SOME_ID' WHERE id = :id",
             new MapSqlParameterSource("id", idSentStillPending)
+        );
+        long idSent = notificationRepository.insert(createNewNotification());
+        jdbcTemplate.update(
+            "UPDATE notifications SET status = :sent WHERE id = :id",
+            new MapSqlParameterSource()
+                .addValue("sent", SENT)
+                .addValue("id", idSent)
         );
 
         // when
