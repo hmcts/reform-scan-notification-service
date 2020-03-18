@@ -25,17 +25,10 @@ public class NotificationRepositoryTest {
     @Test
     void should_save_and_read_notification() {
         // given
-        var newNotification = new NewNotification(
-            "zip_file_name",
-            "po_box",
-            "service",
-            "dcn",
-            ErrorCode.ERR_AV_FAILED,
-            "error_description"
-        );
+        var newNotification = createNewNotification();
+        long id = notificationRepository.insert(newNotification);
 
         // when
-        long id = notificationRepository.insert(newNotification);
         var notification = notificationRepository.find(id);
 
         // then
@@ -58,5 +51,16 @@ public class NotificationRepositoryTest {
     @Test
     void should_return_empty_optional_when_there_is_no_notification_in_db() {
         assertThat(notificationRepository.find(1_000)).isEmpty();
+    }
+
+    private NewNotification createNewNotification() {
+        return new NewNotification(
+            "zip_file_name",
+            "po_box",
+            "service",
+            "dcn",
+            ErrorCode.ERR_AV_FAILED,
+            "error_description"
+        );
     }
 }
