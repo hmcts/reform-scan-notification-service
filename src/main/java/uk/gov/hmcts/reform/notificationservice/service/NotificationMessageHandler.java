@@ -29,8 +29,11 @@ public class NotificationMessageHandler {
 
         var response = errorNotificationClient.notify(request);
 
-        log.info("Handle notification message success, Zip File: {}, Response Notification ID: {}",
-            notificationMsg.zipFileName, response.getNotificationId());
+        log.info(
+            "Handle notification message successful, Zip File: {}, Response Notification ID: {}",
+            notificationMsg.zipFileName,
+            response.getNotificationId()
+        );
 
     }
 }

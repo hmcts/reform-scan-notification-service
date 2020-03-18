@@ -93,9 +93,8 @@ public class NotificationMessageHandlerTest {
         doThrow(exception).when(errorNotificationClient).notify(request);
 
         // when
-        assertThatThrownBy(
-            () -> notificationMessageHandler.handleNotificationMessage(notificationMsg)
-        ).isSameAs(exception);
+        assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
+            .isSameAs(exception);
     }
 
     @Test
@@ -115,8 +114,7 @@ public class NotificationMessageHandlerTest {
         doThrow(exception).when(errorNotificationRequestMapper).map(notificationMsg);
 
         // when
-        assertThatThrownBy(
-            () -> notificationMessageHandler.handleNotificationMessage(notificationMsg)
-        ).isSameAs(exception);
+        assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
+            .isSameAs(exception);
     }
 }
