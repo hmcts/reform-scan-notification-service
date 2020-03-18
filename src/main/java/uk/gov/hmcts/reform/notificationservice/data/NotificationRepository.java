@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -36,6 +37,14 @@ public class NotificationRepository {
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
+    }
+
+    public List<Notification> findByStatus(NotificationStatus status) {
+        return jdbcTemplate.query(
+            "SELECT * FROM notifications WHERE status = :status and notification_id IS NULL",
+            new MapSqlParameterSource("status", status.name()),
+            this.mapper
+        );
     }
 
     public long insert(NewNotification notification) {
