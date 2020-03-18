@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
+
 @Repository
 public class NotificationRepository {
 
@@ -42,7 +44,7 @@ public class NotificationRepository {
     public List<Notification> findPending() {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and notification_id IS NULL",
-            new MapSqlParameterSource("status", NotificationStatus.PENDING.name()),
+            new MapSqlParameterSource("status", PENDING.name()),
             this.mapper
         );
     }
@@ -63,7 +65,7 @@ public class NotificationRepository {
                 .addValue("DCN", notification.documentControlNumber)
                 .addValue("errorCode", notification.errorCode.name())
                 .addValue("errorDescription", notification.errorDescription)
-                .addValue("status", NotificationStatus.PENDING.name()),
+                .addValue("status", PENDING.name()),
             keyHolder,
             new String[]{ "id" }
         );

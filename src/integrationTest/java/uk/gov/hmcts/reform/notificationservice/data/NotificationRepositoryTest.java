@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 
 @SpringBootTest
 public class NotificationRepositoryTest {
@@ -45,7 +46,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.errorDescription).isEqualTo(newNotification.errorDescription);
                 assertThat(n.createdAt).isNotNull();
                 assertThat(n.processedAt).isNull();
-                assertThat(n.status).isEqualTo(NotificationStatus.PENDING);
+                assertThat(n.status).isEqualTo(PENDING);
             });
     }
 
@@ -74,7 +75,7 @@ public class NotificationRepositoryTest {
             .first()
             .satisfies(notification -> {
                 assertThat(notification.id).isEqualTo(idPending);
-                assertThat(notification.status).isEqualTo(NotificationStatus.PENDING);
+                assertThat(notification.status).isEqualTo(PENDING);
                 assertThat(notification.notificationId).isNull();
             });
     }
