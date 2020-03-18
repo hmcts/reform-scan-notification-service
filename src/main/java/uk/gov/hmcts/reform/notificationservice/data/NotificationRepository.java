@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -36,6 +37,16 @@ public class NotificationRepository {
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
+    }
+
+    public List<Notification> find(String zipFileName, String service) {
+        return jdbcTemplate.query(
+            "SELECT * FROM notifications WHERE zip_file_name = :zipFileName AND service = :service",
+            new MapSqlParameterSource()
+                .addValue("zipFileName", zipFileName)
+                .addValue("service", service),
+            this.mapper
+        );
     }
 
     public long insert(NewNotification notification) {
