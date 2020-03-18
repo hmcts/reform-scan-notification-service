@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -95,6 +96,10 @@ public class NotificationMessageHandlerTest {
         // when
         assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
             .isSameAs(exception);
+
+        // then
+        verify(errorNotificationRequestMapper).map(notificationMsg);
+        verify(errorNotificationClient).notify(request);
     }
 
     @Test
@@ -116,5 +121,9 @@ public class NotificationMessageHandlerTest {
         // when
         assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
             .isSameAs(exception);
+
+        // then
+        verify(errorNotificationRequestMapper).map(notificationMsg);
+        verifyNoMoreInteractions(errorNotificationClient);
     }
 }

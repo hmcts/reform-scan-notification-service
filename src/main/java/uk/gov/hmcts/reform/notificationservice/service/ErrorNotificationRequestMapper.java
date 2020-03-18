@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.notificationservice.model.request.incomming.Notificat
 public class ErrorNotificationRequestMapper {
 
     public ErrorNotificationRequest map(NotificationMsg notificationMsg) {
-        return new ErrorNotificationRequest(notificationMsg.zipFileName,
+        return new ErrorNotificationRequest(
+            notificationMsg.zipFileName,
             notificationMsg.poBox,
             notificationMsg.errorCode.name(),
-            notificationMsg.errorDescription);
+            notificationMsg.errorDescription
+        );
     }
 }
