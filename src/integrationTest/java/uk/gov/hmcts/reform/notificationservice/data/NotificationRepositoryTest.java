@@ -56,7 +56,7 @@ public class NotificationRepositoryTest {
     }
 
     @Test
-    void should_all_pending_notifications_to_be_sent_out() {
+    void should_return_all_pending_notifications_to_be_sent_out() {
         // given
         var newNotification = createNewNotification();
         long idPending = notificationRepository.insert(newNotification);
