@@ -20,6 +20,7 @@ java:
   environment:
     DB_CONN_OPTIONS: ?sslmode=require
     FLYWAY_SKIP_MIGRATIONS: true
+    QUEUE_NOTIFICATIONS_MAX_RETRY: 5
 
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
 servicebus:
