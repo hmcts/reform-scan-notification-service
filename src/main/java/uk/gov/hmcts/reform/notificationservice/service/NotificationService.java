@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.notificationservice.service;
 
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
@@ -46,7 +47,8 @@ public class NotificationService {
         );
     }
 
-    private void processNotifications(Notification notification) {
+    @Transactional
+    public void processNotifications(Notification notification) {
         ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
         notificationRepository.markAsSent(notification.id, response.getNotificationId());
