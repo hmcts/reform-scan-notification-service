@@ -42,6 +42,16 @@ public class NotificationRepository {
         }
     }
 
+    public List<Notification> find(String zipFileName, String service) {
+        return jdbcTemplate.query(
+            "SELECT * FROM notifications WHERE zip_file_name = :zipFileName AND service = :service",
+            new MapSqlParameterSource()
+                .addValue("zipFileName", zipFileName)
+                .addValue("service", service),
+            this.mapper
+        );
+    }
+
     public List<Notification> findPending() {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and notification_id IS NULL",
