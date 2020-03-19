@@ -7,9 +7,9 @@ import uk.gov.hmcts.reform.notificationservice.model.request.incomming.Notificat
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NotificationMapperTest {
+public class NotificationMessageMapperTest {
 
-    private NotificationMapper notificationMapper = new NotificationMapper();
+    private NotificationMessageMapper notificationMessageMapper = new NotificationMessageMapper();
 
     @Test
     public void should_return_valid_NewNotification_when_NotificationMsg_is_valid() {
@@ -24,7 +24,7 @@ public class NotificationMapperTest {
                 "orchestrator"
             );
 
-        NewNotification request = notificationMapper.map(notificationMsg);
+        NewNotification request = notificationMessageMapper.map(notificationMsg);
         assertThat(request.zipFileName).isEqualTo("zipfile.zip");
         assertThat(request.poBox).isEqualTo("pobox");
         assertThat(request.documentControlNumber).isEqualTo("1342411414214");

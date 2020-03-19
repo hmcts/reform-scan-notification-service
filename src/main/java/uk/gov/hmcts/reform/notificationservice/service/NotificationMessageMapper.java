@@ -5,7 +5,7 @@ import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
 
 @Component
-public class NotificationMapper {
+public class NotificationMessageMapper {
 
     public NewNotification map(NotificationMsg notificationMsg) {
         return new NewNotification(

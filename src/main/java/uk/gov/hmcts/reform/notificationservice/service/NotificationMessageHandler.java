@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.notificationservice.model.request.incomming.Notificat
 public class NotificationMessageHandler {
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageHandler.class);
 
-    private final NotificationMapper notificationMapper;
+    private final NotificationMessageMapper notificationMessageMapper;
     private final NotificationRepository notificationRepository;
 
     public NotificationMessageHandler(
-        NotificationMapper notificationMapper,
+        NotificationMessageMapper notificationMessageMapper,
         NotificationRepository notificationRepository
     ) {
-        this.notificationMapper = notificationMapper;
+        this.notificationMessageMapper = notificationMessageMapper;
         this.notificationRepository = notificationRepository;
     }
 
@@ -25,7 +25,7 @@ public class NotificationMessageHandler {
     public void handleNotificationMessage(NotificationMsg notificationMsg) {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 
-        var newNotification = notificationMapper.map(notificationMsg);
+        var newNotification = notificationMessageMapper.map(notificationMsg);
 
         long id = notificationRepository.insert(newNotification);
         log.info(

@@ -25,14 +25,14 @@ public class NotificationMessageHandlerTest {
     private NotificationMessageHandler notificationMessageHandler;
 
     @Mock
-    private NotificationMapper notificationMapper;
+    private NotificationMessageMapper notificationMessageMapper;
     @Mock
     private NotificationRepository notificationRepository;
 
     @BeforeEach
     void setUp() {
         notificationMessageHandler =
-            new NotificationMessageHandler(notificationMapper, notificationRepository);
+            new NotificationMessageHandler(notificationMessageMapper, notificationRepository);
     }
 
     @Test
@@ -58,14 +58,14 @@ public class NotificationMessageHandlerTest {
                 "error description Av not valid"
             );
 
-        when(notificationMapper.map(notificationMsg)).thenReturn(newNotification);
+        when(notificationMessageMapper.map(notificationMsg)).thenReturn(newNotification);
         when(notificationRepository.insert(newNotification))
             .thenReturn(21321312L);
 
         notificationMessageHandler.handleNotificationMessage(notificationMsg);
 
         // then
-        verify(notificationMapper).map(notificationMsg);
+        verify(notificationMessageMapper).map(notificationMsg);
         verify(notificationRepository).insert(newNotification);
     }
 
@@ -93,7 +93,7 @@ public class NotificationMessageHandlerTest {
             );
 
 
-        when(notificationMapper.map(notificationMsg)).thenReturn(newNotification);
+        when(notificationMessageMapper.map(notificationMsg)).thenReturn(newNotification);
 
         FeignException exception = mock(FeignException.class);
         doThrow(exception).when(notificationRepository).insert(newNotification);
@@ -103,7 +103,7 @@ public class NotificationMessageHandlerTest {
             .isSameAs(exception);
 
         // then
-        verify(notificationMapper).map(notificationMsg);
+        verify(notificationMessageMapper).map(notificationMsg);
         verify(notificationRepository).insert(newNotification);
     }
 
@@ -121,14 +121,14 @@ public class NotificationMessageHandlerTest {
             );
 
         InvalidMessageException exception = new InvalidMessageException("Parsed Failed");
-        doThrow(exception).when(notificationMapper).map(notificationMsg);
+        doThrow(exception).when(notificationMessageMapper).map(notificationMsg);
 
         // when
         assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
             .isSameAs(exception);
 
         // then
-        verify(notificationMapper).map(notificationMsg);
+        verify(notificationMessageMapper).map(notificationMsg);
         verifyNoMoreInteractions(notificationRepository);
     }
 }
