@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
@@ -34,10 +33,7 @@ public class NotificationService {
 
         log.info("Notifications to process: {}", notifications.size());
 
-        notifications
-            .stream()
-            .map(notification -> Pair.of(notification.id, mapToRequest(notification)))
-            .forEach(pair -> processNotifications(pair.getKey(), pair.getValue()));
+        notifications.forEach(this::processNotifications);
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
@@ -50,9 +46,17 @@ public class NotificationService {
         );
     }
 
-    private void processNotifications(long id, ErrorNotificationRequest request) {
-        ErrorNotificationResponse response = notificationClient.notify(request);
+    private void processNotifications(Notification notification) {
+        ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
-        notificationRepository.markAsSent(id, response.getNotificationId());
+        notificationRepository.markAsSent(notification.id, response.getNotificationId());
+
+        log.info(
+            "Error notification sent. Service: {}, Zip file: {}, ID: {}, Notification ID: {}",
+            notification.service,
+            notification.zipFileName,
+            notification.id,
+            response.getNotificationId()
+        );
     }
 }
