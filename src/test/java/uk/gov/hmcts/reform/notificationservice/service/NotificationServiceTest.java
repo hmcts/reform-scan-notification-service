@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
+import feign.FeignException;
+import feign.Request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
@@ -12,11 +16,15 @@ import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
-import java.util.Collections;
 
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -50,7 +58,7 @@ class NotificationServiceTest {
         // given
         var notification = getSampleNotification();
         var notificationId = "notification ID";
-        given(notificationRepository.findPending()).willReturn(Collections.singletonList(notification));
+        given(notificationRepository.findPending()).willReturn(singletonList(notification));
         given(notificationClient.notify(any())).willReturn(new ErrorNotificationResponse(notificationId));
 
         // when
@@ -58,6 +66,40 @@ class NotificationServiceTest {
 
         // then
         verify(notificationRepository, times(1)).markAsSent(notification.id, notificationId);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {FeignException.BadRequest.class, FeignException.UnprocessableEntity.class})
+    void should_mark_notification_as_failed_when_relevant_exception_from_client_is_caught(
+        Class<FeignException> exceptionClass
+    ) {
+        // given
+        var notification = getSampleNotification();
+        given(notificationRepository.findPending()).willReturn(singletonList(notification));
+        willThrow(instantiateFeignException(exceptionClass)).given(notificationClient).notify(any());
+
+        // when
+        notificationService.processPendingNotifications();
+
+        // then
+        verify(notificationRepository, times(1)).markAsFailure(notification.id);
+    }
+
+    @ParameterizedTest
+    @ValueSource(classes = {FeignException.NotFound.class, FeignException.InternalServerError.class})
+    void should_leave_notification_record_as_is_when_relevant_exception_from_client_is_caught(
+        Class<FeignException> exceptionClass
+    ) {
+        // given
+        var notification = getSampleNotification();
+        given(notificationRepository.findPending()).willReturn(singletonList(notification));
+        willThrow(instantiateFeignException(exceptionClass)).given(notificationClient).notify(any());
+
+        // when
+        notificationService.processPendingNotifications();
+
+        // then
+        verify(notificationRepository, never()).markAsFailure(notification.id);
     }
 
     private Notification getSampleNotification() {
@@ -74,5 +116,28 @@ class NotificationServiceTest {
             null,
             NotificationStatus.PENDING
         );
+    }
+
+    @SuppressWarnings("LineLength")
+    private FeignException instantiateFeignException(Class<FeignException> exceptionClass) {
+        byte[] emptyByteArray = new byte[]{};
+
+        try {
+            return exceptionClass
+                .getConstructor(String.class, Request.class, emptyByteArray.getClass())
+                .newInstance(
+                    "message",
+                    Request.create(
+                        Request.HttpMethod.POST,
+                        "/notify",
+                        emptyMap(),
+                        Request.Body.create(emptyByteArray),
+                        null
+                    ),
+                    emptyByteArray
+                );
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Could not construct FeignException", e);
+        }
     }
 }

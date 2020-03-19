@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
+import feign.FeignException;
 import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
@@ -49,16 +51,47 @@ public class NotificationService {
 
     @Transactional
     public void processNotifications(Notification notification) {
-        ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
+        try {
+            ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
-        notificationRepository.markAsSent(notification.id, response.getNotificationId());
+            notificationRepository.markAsSent(notification.id, response.getNotificationId());
 
-        log.info(
-            "Error notification sent. Service: {}, Zip file: {}, ID: {}, Notification ID: {}",
+            log.info(
+                "Error notification sent. Service: {}, Zip file: {}, ID: {}, Notification ID: {}",
+                notification.service,
+                notification.zipFileName,
+                notification.id,
+                response.getNotificationId()
+            );
+        } catch (FeignException.BadRequest | FeignException.UnprocessableEntity exception) {
+            logFeignError(
+                "Received {} from client. Marking as failure. Service: {}, Zip file: {}, ID: {}, Client response: {}",
+                notification,
+                exception
+            );
+
+            notificationRepository.markAsFailure(notification.id);
+        } catch (FeignException exception) {
+            logFeignError(
+                "Received {} from client. Postponing notification for later. "
+                    + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
+                notification,
+                exception
+            );
+        }
+    }
+
+    private void logFeignError(String messagePattern, Notification notification, FeignException exception) {
+        var status = HttpStatus.valueOf(exception.status());
+
+        log.error(
+            messagePattern,
+            status.getReasonPhrase(),
             notification.service,
             notification.zipFileName,
             notification.id,
-            response.getNotificationId()
+            exception.contentUTF8(),
+            exception
         );
     }
 }
