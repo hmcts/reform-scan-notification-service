@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -15,14 +16,17 @@ class NotificationServiceTest {
     @Mock
     private NotificationRepository notificationRepository;
 
-    @Test
-    void should_call_repository_for_pending_notifications_to_begin_the_process() {
-        getNotificationService().processPendingNotifications();
+    private NotificationService notificationService;
 
-        verify(notificationRepository, times(1)).findPending();
+    @BeforeEach
+    void setUp() {
+        notificationService = new NotificationService(notificationRepository);
     }
 
-    private NotificationService getNotificationService() {
-        return new NotificationService(notificationRepository);
+    @Test
+    void should_call_repository_for_pending_notifications_to_begin_the_process() {
+        notificationService.processPendingNotifications();
+
+        verify(notificationRepository, times(1)).findPending();
     }
 }
