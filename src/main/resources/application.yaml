@@ -34,4 +34,4 @@ flyway:
 queue:
   notifications:
     read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
-
+    max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
