@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
@@ -100,6 +101,25 @@ public class NotificationRepository {
             new MapSqlParameterSource()
                 .addValue("notificationId", notificationId)
                 .addValue("status", SENT.name())
+                .addValue("id", id)
+        );
+
+        return rowsUpdated == 1;
+    }
+
+    /**
+     * Mark notification as failed.
+     * @param id notification ID
+     * @return update was successful
+     */
+    public boolean markAsFailure(long id) {
+        int rowsUpdated = jdbcTemplate.update(
+            "UPDATE notifications "
+                + "SET processed_at = NOW(), "
+                + "  status = :status "
+                + "WHERE id = :id",
+            new MapSqlParameterSource()
+                .addValue("status", FAILED.name())
                 .addValue("id", id)
         );
 

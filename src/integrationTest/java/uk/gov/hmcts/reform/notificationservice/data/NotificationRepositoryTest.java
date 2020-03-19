@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
@@ -308,6 +309,36 @@ public class NotificationRepositoryTest {
             .satisfies(notification -> {
                 assertThat(notification.notificationId).isEqualTo(NOTIFICATION_ID);
                 assertThat(notification.status).isEqualTo(SENT);
+                assertThat(notification.processedAt).isNotNull();
+            });
+    }
+
+    @Test
+    void should_return_flag_false_when_mark_as_failure_did_not_find_any_notification_to_update() {
+        // when
+        boolean isMarked = notificationRepository.markAsFailure(1_000);
+
+        // then
+        assertThat(isMarked).isFalse();
+    }
+
+    @Test
+    void should_return_flag_true_when_mark_as_failure_was_successful() {
+        // given
+        long id = notificationRepository.insert(createNewNotification());
+
+        // when
+        boolean isMarked = notificationRepository.markAsFailure(id);
+
+        // then
+        assertThat(isMarked).isTrue();
+
+        // and
+        assertThat(notificationRepository.find(id))
+            .isNotEmpty()
+            .get()
+            .satisfies(notification -> {
+                assertThat(notification.status).isEqualTo(FAILED);
                 assertThat(notification.processedAt).isNotNull();
             });
     }
