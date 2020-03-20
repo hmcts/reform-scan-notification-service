@@ -28,7 +28,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 @ExtendWith(MockitoExtension.class)
 class NotificationMessageProcessorTest {
 
-
     private NotificationMessageProcessor notificationMessageProcessor;
 
     @Mock
@@ -37,6 +36,10 @@ class NotificationMessageProcessorTest {
     private NotificationMessageHandler notificationMessageHandler;
     @Mock
     private NotificationMessageParser notificationMessageParser;
+    @Mock
+    private IMessage message;
+    @Mock
+    private MessageBody messageBody;
 
     @BeforeEach
     public void before() throws Exception {
@@ -51,8 +54,6 @@ class NotificationMessageProcessorTest {
     @Test
     public void should_return_true_when_there_is_a_message_to_process() throws Exception {
         // given
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
 
@@ -82,12 +83,13 @@ class NotificationMessageProcessorTest {
 
         // then
         assertThat(processedMessage).isFalse();
+        verifyNoMoreInteractions(notificationMessageParser);
+        verifyNoMoreInteractions(notificationMessageHandler);
     }
 
     @Test
     public void should_not_throw_exception_when_queue_message_is_invalid() throws Exception {
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
+        // given
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
         given(notificationMessageParser.parse(messageBody)).willThrow(new InvalidMessageException("Invalid Message"));
@@ -99,16 +101,11 @@ class NotificationMessageProcessorTest {
         verify(messageReceiver).receive();
         verify(notificationMessageParser).parse(messageBody);
         verifyNoMoreInteractions(notificationMessageHandler);
-
     }
 
     @Test
     public void should_not_throw_exception_when_notification_handler_fails() throws Exception {
         // given
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
-        given(message.getMessageBody()).willReturn(messageBody);
-
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
 
@@ -126,12 +123,9 @@ class NotificationMessageProcessorTest {
         verify(notificationMessageHandler).handleNotificationMessage(notificationMsg);
     }
 
-
     @Test
     public void should_complete_the_message_when_processing_is_successful() throws Exception {
         // given
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
         given(message.getMessageBody()).willReturn(messageBody);
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
@@ -154,12 +148,9 @@ class NotificationMessageProcessorTest {
 
     }
 
-
     @Test
     public void should_dead_letter_the_message_when_unrecoverable_failure() throws Exception {
         // given
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
         given(message.getMessageBody()).willReturn(messageBody);
 
         UUID lock = UUID.randomUUID();
@@ -182,11 +173,9 @@ class NotificationMessageProcessorTest {
         verifyNoMoreInteractions(messageReceiver);
     }
 
-
     @Test
     public void should_not_dead_letter_the_message_when_recoverable_failure() throws Exception {
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
+        // given
         given(message.getMessageBody()).willReturn(messageBody);
 
         given(messageReceiver.receive()).willReturn(message);
@@ -206,17 +195,18 @@ class NotificationMessageProcessorTest {
 
         // then the message is not finalised (completed/dead-lettered)
         verify(messageReceiver).receive();
+        verify(notificationMessageParser).parse(messageBody);
+        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg);
         verifyNoMoreInteractions(messageReceiver);
 
     }
 
-
     @Test
     public void should_dead_letter_the_message_when_recoverable_failure_but_delivery_maxed() throws Exception {
         // given
-        IMessage message = mock(IMessage.class);
-        MessageBody messageBody = mock(MessageBody.class);
         given(message.getMessageBody()).willReturn(messageBody);
+        given(message.getDeliveryCount()).willReturn(4L);
+
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
         given(messageReceiver.receive()).willReturn(message);
@@ -224,12 +214,6 @@ class NotificationMessageProcessorTest {
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
 
-        notificationMessageProcessor = new NotificationMessageProcessor(
-            messageReceiver,
-            notificationMessageHandler,
-            notificationMessageParser,
-            1
-        );
         Exception processingFailureCause = new RuntimeException(
             "exception of type treated as recoverable"
         );
@@ -244,10 +228,9 @@ class NotificationMessageProcessorTest {
         verify(messageReceiver).deadLetter(
             eq(lock),
             eq("Too many deliveries"),
-            eq("Reached limit of message delivery count of 1")
+            eq("Reached limit of message delivery count of 5")
         );
     }
-
 
     @Test
     public void should_throw_exception_when_message_receiver_fails() throws Exception {
