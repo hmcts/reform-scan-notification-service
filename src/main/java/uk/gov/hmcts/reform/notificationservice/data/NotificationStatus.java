@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
-enum NotificationStatus {
+public enum NotificationStatus {
 
     PENDING,
     FAILED,
