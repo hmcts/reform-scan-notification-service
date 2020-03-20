@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 import java.util.Collections;
@@ -17,6 +18,7 @@ import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PE
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
 @SpringBootTest
+@ActiveProfiles("integrationTest") // no servicebus queue handler registration
 public class NotificationRepositoryTest {
 
     private static final String NOTIFICATION_ID = "notification ID";
