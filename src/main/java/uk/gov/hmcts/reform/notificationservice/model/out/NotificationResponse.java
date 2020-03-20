@@ -39,7 +39,8 @@ public class NotificationResponse {
     public NotificationResponse(
         String notificationId,
         String zipFileName,
-        String poBox, String service,
+        String poBox,
+        String service,
         String documentControlNumber,
         String errorCode,
         Instant createdAt,
