@@ -13,6 +13,7 @@ java:
 
     FLYWAY_SKIP_MIGRATIONS: false
     QUEUE_NOTIFICATIONS_READ: "$(SB_CONN_STRING);EntityPath=notifications"
+    S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
 
   keyVaults:
     reform-scan:
