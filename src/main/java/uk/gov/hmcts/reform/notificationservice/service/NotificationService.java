@@ -52,7 +52,7 @@ public class NotificationService {
     }
 
     @Transactional
-    private void processNotifications(Notification notification) {
+    public void processNotifications(Notification notification) {
         try {
             ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
