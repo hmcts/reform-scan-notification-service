@@ -11,6 +11,11 @@ def channel = '#bsp-build-notices'
 GradleBuilder builder = new GradleBuilder(this, product)
 
 withPipeline(type, product, component) {
+  after('akschartsinstall'){
+    // Vars needed for AKS testing
+    env.S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
+  }
+
   after('test') {
     builder.gradle('integration')
   }
