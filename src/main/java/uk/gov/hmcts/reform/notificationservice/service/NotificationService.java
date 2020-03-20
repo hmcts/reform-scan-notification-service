@@ -51,18 +51,8 @@ public class NotificationService {
             .collect(toList());
     }
 
-    private ErrorNotificationRequest mapToRequest(Notification notification) {
-        return new ErrorNotificationRequest(
-            notification.zipFileName,
-            notification.poBox,
-            notification.errorCode.name(),
-            notification.errorDescription,
-            String.valueOf(notification.id)
-        );
-    }
-
     @Transactional
-    public void processNotifications(Notification notification) {
+    private void processNotifications(Notification notification) {
         try {
             ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
@@ -91,6 +81,16 @@ public class NotificationService {
                 exception
             );
         }
+    }
+
+    private ErrorNotificationRequest mapToRequest(Notification notification) {
+        return new ErrorNotificationRequest(
+            notification.zipFileName,
+            notification.poBox,
+            notification.errorCode.name(),
+            notification.errorDescription,
+            String.valueOf(notification.id)
+        );
     }
 
     private void logFeignError(String messagePattern, Notification notification, FeignException exception) {
