@@ -32,13 +32,6 @@ public class NotificationMessageProcessor {
         this.maxDeliveryCount = maxDeliveryCount;
     }
 
-
-    private enum MessageProcessingResult {
-        SUCCESS,
-        UNRECOVERABLE_FAILURE,
-        POTENTIALLY_RECOVERABLE_FAILURE
-    }
-
     /**
      * Reads and processes next message from the queue.
      *
@@ -155,4 +148,9 @@ public class NotificationMessageProcessor {
         );
     }
 
+    private enum MessageProcessingResult {
+        SUCCESS,
+        UNRECOVERABLE_FAILURE,
+        POTENTIALLY_RECOVERABLE_FAILURE
+    }
 }
