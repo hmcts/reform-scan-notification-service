@@ -31,7 +31,7 @@
     <notes><![CDATA[
       This is only used for TESTING purposes.
     ]]></notes>
-    <packageUrl regex="true">^pkg:javascript/handlebars\.js@4\.0\.4.*$</packageUrl>
+    <packageUrl regex="true">^pkg:javascript/handlebars@4\.0\.4.*$</packageUrl>
     <vulnerabilityName>A prototype pollution vulnerability in handlebars is exploitable if an attacker can control the template</vulnerabilityName>
     <vulnerabilityName>Disallow calling helperMissing and blockHelperMissing directly</vulnerabilityName>
     <vulnerabilityName>Prototype pollution</vulnerabilityName>
