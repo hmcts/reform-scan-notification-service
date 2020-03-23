@@ -24,7 +24,7 @@ java:
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS: 3000
     NOTIFICATIONS_CONSUME_TASK_ENABLED: true
-    PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 600000 # 10min
+    PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
     PENDING_NOTIFICATIONS_TASK_ENABLED: true
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
 servicebus:
