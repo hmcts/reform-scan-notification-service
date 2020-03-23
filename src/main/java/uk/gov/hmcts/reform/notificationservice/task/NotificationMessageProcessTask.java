@@ -44,6 +44,6 @@ public class NotificationMessageProcessTask {
     }
 
     private void logTaskError(Exception exception) {
-        log.error("Error occurred in {}", TASK_NAME, exception);
+        log.error("Error occurred during {} task", TASK_NAME, exception);
     }
 }
