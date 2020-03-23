@@ -141,7 +141,7 @@ class NotificationServiceTest {
                   .willReturn(asList(notification1, notification2));
 
         // when
-        var notificationResponses = notificationService.findNotificationsByFileNameAndService(zipFileName, service);
+        var notificationResponses = notificationService.findByFileNameAndService(zipFileName, service);
 
         // then
         assertThat(notificationResponses)

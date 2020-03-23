@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.notificationservice.model.out;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.joda.ser.InstantSerializer;
+import uk.gov.hmcts.reform.notificationservice.util.CustomInstantSerializer;
 
 import java.time.Instant;
 
@@ -25,11 +25,11 @@ public class NotificationResponse {
     @JsonProperty("error_code")
     public final String errorCode;
 
-    @JsonSerialize(using = InstantSerializer.class)
+    @JsonSerialize(using = CustomInstantSerializer.class)
     @JsonProperty("created_at")
     public final Instant createdAt;
 
-    @JsonSerialize(using = InstantSerializer.class)
+    @JsonSerialize(using = CustomInstantSerializer.class)
     @JsonProperty("processed_at")
     public final Instant processedAt;
 
