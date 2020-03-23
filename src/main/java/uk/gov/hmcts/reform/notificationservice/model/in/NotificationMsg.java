@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notificationservice.model.request.incomming;
+package uk.gov.hmcts.reform.notificationservice.model.in;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;

@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.notificationservice.service;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
-import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
