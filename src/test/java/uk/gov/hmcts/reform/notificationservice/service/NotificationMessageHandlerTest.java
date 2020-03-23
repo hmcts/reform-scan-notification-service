@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
-import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
