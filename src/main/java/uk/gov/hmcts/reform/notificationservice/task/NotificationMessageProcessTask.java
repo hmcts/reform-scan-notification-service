@@ -15,7 +15,7 @@ public class NotificationMessageProcessTask {
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageProcessTask.class);
 
     private final NotificationMessageProcessor notificationMessageProcessor;
-    private static final String TASK_NAME = "notification consume task";
+    private static final String TASK_NAME = "consume-notifications";
 
     public NotificationMessageProcessTask(
         NotificationMessageProcessor notificationMessageProcessor
