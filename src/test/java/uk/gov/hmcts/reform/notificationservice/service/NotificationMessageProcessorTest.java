@@ -10,7 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
-import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import java.util.UUID;
 
