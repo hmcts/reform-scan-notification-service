@@ -212,7 +212,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.8'
   // end region
 
-  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
