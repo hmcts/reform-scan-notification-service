@@ -4,7 +4,6 @@ import org.apache.commons.lang.NotImplementedException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
@@ -12,7 +11,6 @@ import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 import java.util.List;
 
 @Configuration
-@Lazy
 public class AuthServiceConfig {
 
     @Bean
