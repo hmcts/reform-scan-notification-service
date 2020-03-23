@@ -25,7 +25,7 @@ public class NotificationMessageProcessTask {
 
     @Scheduled(fixedDelayString = "${scheduling.task.notifications-consume.delay}")
     public void consumeMessages() {
-        log.info("Start {}", TASK_NAME);
+        log.info("Started {} task", TASK_NAME);
 
         try {
             boolean queueMayHaveMessages;
