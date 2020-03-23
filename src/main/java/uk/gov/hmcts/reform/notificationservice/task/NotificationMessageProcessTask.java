@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.task;
 
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,6 +15,7 @@ public class NotificationMessageProcessTask {
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageProcessTask.class);
 
     private final NotificationMessageProcessor notificationMessageProcessor;
+    private final String TASK_NAME = "notification consume task";
 
     public NotificationMessageProcessTask(
         NotificationMessageProcessor notificationMessageProcessor
@@ -23,7 +25,7 @@ public class NotificationMessageProcessTask {
 
     @Scheduled(fixedDelayString = "${scheduling.task.notifications-consume.delay}")
     public void consumeMessages() {
-        log.info("Started the job consuming notification messages");
+        log.info("Start {}", TASK_NAME);
 
         try {
             boolean queueMayHaveMessages;
@@ -32,16 +34,16 @@ public class NotificationMessageProcessTask {
                 queueMayHaveMessages = notificationMessageProcessor.processNextMessage();
             } while (queueMayHaveMessages);
 
-            log.info("Finished the job consuming notification messages");
+            log.info("Finish {}", TASK_NAME);
         } catch (InterruptedException exception) {
             logTaskError(exception);
             Thread.currentThread().interrupt();
-        } catch (Exception exception) {
+        } catch (ServiceBusException exception) {
             logTaskError(exception);
         }
     }
 
     private void logTaskError(Exception exception) {
-        log.error("An error occurred when running the 'consume notification messages' task", exception);
+        log.error("Error occurred in {}", TASK_NAME, exception);
     }
 }
