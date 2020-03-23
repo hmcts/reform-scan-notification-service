@@ -7,8 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = {
@@ -26,9 +25,7 @@ public class SchedulerConfigurationTest {
         // wait for asynchronous run of the scheduled task in background
         Thread.sleep(2000);
 
-        verify(lockProvider, atLeastOnce()).lock(configCaptor.capture());
-        assertThat(configCaptor.getAllValues())
-            .extracting(LockConfiguration::getName)
-            .isEmpty(); // will not be empty once schedules kick in
+        // verify(lockProvider, atLeastOnce()).lock(configCaptor.capture());
+        verify(lockProvider, never()).lock(configCaptor.capture());
     }
 }
