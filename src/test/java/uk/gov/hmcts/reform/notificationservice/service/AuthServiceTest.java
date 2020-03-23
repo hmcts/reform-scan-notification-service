@@ -45,7 +45,7 @@ public class AuthServiceTest {
 
         // then
         assertThat(exception)
-            .isInstanceOf(UnAuthenticatedException.class)
+            .isInstanceOf(UnauthenticatedException.class)
             .hasMessage("Missing ServiceAuthorization header");
 
         // and

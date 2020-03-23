@@ -3,8 +3,8 @@ provider "azurerm" {
 }
 
 locals {
-  is_preview          = "${(var.env == "preview" || var.env == "spreview")}"
-  local_env = "${local.is_preview ? "aat" : var.env}"
+  is_preview  = "${(var.env == "preview" || var.env == "spreview")}"
+  local_env   = "${local.is_preview ? "aat" : var.env}"
 
   s2s_rg  = "rpe-service-auth-provider-${local.local_env}"
   s2s_url = "http://${local.s2s_rg}.service.core-compute-${local.local_env}.internal"
