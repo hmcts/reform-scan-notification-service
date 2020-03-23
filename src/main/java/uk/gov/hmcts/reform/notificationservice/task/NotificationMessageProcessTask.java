@@ -34,7 +34,7 @@ public class NotificationMessageProcessTask {
                 queueMayHaveMessages = notificationMessageProcessor.processNextMessage();
             } while (queueMayHaveMessages);
 
-            log.info("Finish {}", TASK_NAME);
+            log.info("Finished {} task", TASK_NAME);
         } catch (InterruptedException exception) {
             logTaskError(exception);
             Thread.currentThread().interrupt();
