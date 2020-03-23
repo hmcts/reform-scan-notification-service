@@ -9,7 +9,7 @@ import java.time.Instant;
 
 public final class CustomInstantSerializer extends StdSerializer<Instant> {
 
-    private CustomInstantSerializer() {
+    CustomInstantSerializer() {
         super(Instant.class);
     }
 
