@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
 import feign.Request;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +25,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -146,25 +148,45 @@ class NotificationServiceTest {
         // then
         assertThat(notificationResponses)
             .hasSize(2)
-            .usingFieldByFieldElementComparator()
-            .containsExactlyInAnyOrder(
-                toNotificationResponse(notification1),
-                toNotificationResponse(notification2)
+            .extracting(this::getTupleFromNotificationResponse)
+            .containsExactly(
+                tuple(
+                    notification1.notificationId,
+                    notification1.zipFileName,
+                    notification1.poBox,
+                    notification1.service,
+                    notification1.documentControlNumber,
+                    notification1.errorCode.name(),
+                    notification1.createdAt,
+                    notification1.processedAt,
+                    notification1.status.name()
+                ),
+                tuple(
+                    notification2.notificationId,
+                    notification2.zipFileName,
+                    notification2.poBox,
+                    notification2.service,
+                    notification2.documentControlNumber,
+                    notification2.errorCode.name(),
+                    notification2.createdAt,
+                    notification2.processedAt,
+                    notification2.status.name()
+                )
             );
         verify(notificationRepository, times(1)).find(zipFileName, service);
     }
 
-    private NotificationResponse toNotificationResponse(Notification notification) {
-        return new NotificationResponse(
-            notification.notificationId,
-            notification.zipFileName,
-            notification.poBox,
-            notification.service,
-            notification.documentControlNumber,
-            notification.errorCode.name(),
-            notification.createdAt,
-            notification.processedAt,
-            notification.status.name()
+    private Tuple getTupleFromNotificationResponse(NotificationResponse notificationResponse) {
+        return new Tuple(
+            notificationResponse.notificationId,
+            notificationResponse.zipFileName,
+            notificationResponse.poBox,
+            notificationResponse.service,
+            notificationResponse.documentControlNumber,
+            notificationResponse.errorCode,
+            notificationResponse.createdAt,
+            notificationResponse.processedAt,
+            notificationResponse.status
         );
     }
 
