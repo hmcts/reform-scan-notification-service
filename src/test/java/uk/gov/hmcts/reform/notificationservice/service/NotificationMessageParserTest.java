@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
-import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import static com.microsoft.azure.servicebus.MessageBody.fromBinaryData;
 import static com.microsoft.azure.servicebus.MessageBody.fromSequenceData;

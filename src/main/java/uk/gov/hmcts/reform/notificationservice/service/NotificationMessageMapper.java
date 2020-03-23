@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.notificationservice.service;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
-import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 @Component
 public class NotificationMessageMapper {

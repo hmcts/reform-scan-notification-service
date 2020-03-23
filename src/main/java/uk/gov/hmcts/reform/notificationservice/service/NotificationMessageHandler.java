@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
-import uk.gov.hmcts.reform.notificationservice.model.request.incomming.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 @Service
 public class NotificationMessageHandler {
