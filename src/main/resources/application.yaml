@@ -36,6 +36,12 @@ queue:
     read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
     max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
 
+scheduling:
+  task:
+    notifications-consume:
+      delay: ${NOTIFICATIONS_CONSUME_TASK_INTERVAL_IN_MS} # in ms
+      enabled: ${NOTIFICATIONS_CONSUME_TASK_ENABLED}
+
 # clients region
 
 idam:
