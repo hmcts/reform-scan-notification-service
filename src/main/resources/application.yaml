@@ -40,7 +40,7 @@ scheduling:
   lock_at_most_for: PT10M # 10 minutes in ISO-8601
   task:
     notifications-consume:
-      delay: ${NOTIFICATIONS_CONSUME_TASK_INTERVAL_IN_MS} # in ms
+      delay: ${NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS} # in ms
       enabled: ${NOTIFICATIONS_CONSUME_TASK_ENABLED}
     pending-notifications:
       delay: ${PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS}
