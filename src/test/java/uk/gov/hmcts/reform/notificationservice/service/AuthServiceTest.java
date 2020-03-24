@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -53,26 +54,33 @@ public class AuthServiceTest {
     }
 
     @Test
-    void should_track_failure_in_service_dependency_when_invalid_token_received() {
+    void should_throw_when_invalid_token_received() {
         // given
-        willThrow(InvalidTokenException.class).given(validator).getServiceName(anyString());
+        final String invalidToken = "invalid token";
+
+        willThrow(new InvalidTokenException(invalidToken)).given(validator).getServiceName(anyString());
 
         // when
-        Throwable exception = catchThrowable(() -> service.authenticate(SERVICE_HEADER));
+        InvalidTokenException exception = catchThrowableOfType(
+            () -> service.authenticate(SERVICE_HEADER),
+            InvalidTokenException.class
+        );
 
         // then
-        assertThat(exception).isInstanceOf(InvalidTokenException.class);
+        assertThat(exception.getMessage()).isEqualTo(invalidToken);
     }
 
     @Test
-    void should_track_successful_service_dependency_when_valid_token_received() {
+    void should_return_service_name_when_valid_token_received() {
         // given
-        given(validator.getServiceName(SERVICE_HEADER)).willReturn("some-service");
+        final String someServiceName = "some-service";
+
+        given(validator.getServiceName(SERVICE_HEADER)).willReturn(someServiceName);
 
         // when
         String serviceName = service.authenticate(SERVICE_HEADER);
 
         // then
-        assertThat(serviceName).isEqualTo("some-service");
+        assertThat(serviceName).isEqualTo(serviceName);
     }
 }
