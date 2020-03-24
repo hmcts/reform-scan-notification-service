@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.authorisation.validators.ServiceAuthTokenValidator;
 public class AuthServiceConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "idam.s2s-auth.url")
+    @ConditionalOnProperty(name = "s2s-auth.url")
     public AuthTokenValidator tokenValidator(ServiceAuthorisationApi s2sApi) {
         return new ServiceAuthTokenValidator(s2sApi);
     }

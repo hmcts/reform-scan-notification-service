@@ -48,8 +48,7 @@ scheduling:
 
 # clients region
 
-idam:
-  s2s-auth:
-    url: ${S2S_URL:http://localhost:4552}
+s2s-auth:
+  url: ${S2S_URL:http://localhost:4552}
 
 # end of clients region
