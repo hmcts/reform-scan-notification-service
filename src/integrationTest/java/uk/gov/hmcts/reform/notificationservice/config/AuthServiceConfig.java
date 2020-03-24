@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 public class AuthServiceConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "s2s-auth.url", havingValue = "false")
+    @ConditionalOnProperty(name = "idam.s2s-auth.url", havingValue = "false")
     public AuthTokenValidator tokenValidator() {
         return mock(AuthTokenValidator.class);
     }

@@ -48,7 +48,8 @@ scheduling:
 
 # clients region
 
-s2s-auth:
-  url: ${S2S_URL}
+idam:
+  s2s-auth:
+    url: ${S2S_URL}
 
 # end of clients region
