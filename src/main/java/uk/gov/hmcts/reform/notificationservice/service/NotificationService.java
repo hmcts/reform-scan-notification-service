@@ -10,9 +10,11 @@ import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationResponse;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -40,10 +42,13 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Notification> findByFileNameAndService(String fileName, String service) {
+    public List<NotificationResponse> findByFileNameAndService(String fileName, String service) {
         log.info("Getting notifications for file {}, service {}", fileName, service);
 
-        return notificationRepository.find(fileName, service);
+        return notificationRepository.find(fileName, service)
+            .stream()
+            .map(this::mapToNotificationResponse)
+            .collect(toList());
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
@@ -95,5 +100,19 @@ public class NotificationService {
                 exception
             );
         }
+    }
+
+    private NotificationResponse mapToNotificationResponse(Notification notification) {
+        return new NotificationResponse(
+            notification.notificationId,
+            notification.zipFileName,
+            notification.poBox,
+            notification.service,
+            notification.documentControlNumber,
+            notification.errorCode.name(),
+            notification.createdAt,
+            notification.processedAt,
+            notification.status.name()
+        );
     }
 }
