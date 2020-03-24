@@ -6,12 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import uk.gov.hmcts.reform.notificationservice.task.PendingNotificationsTask;
 
-import static org.mockito.Mockito.never;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = {
-    "scheduling.task.notifications-consume.enable=true" // task is not there yet, but config is
+    // consume task is not under shedlock. including config for future in case it will be
+    "scheduling.task.notifications-consume.enable=true",
+    "scheduling.task.pending-notifications.delay=500", // in ms
+    "scheduling.task.pending-notifications.enabled=true"
 })
 public class SchedulerConfigurationTest {
 
@@ -25,7 +30,11 @@ public class SchedulerConfigurationTest {
         // wait for asynchronous run of the scheduled task in background
         Thread.sleep(2000);
 
-        // verify(lockProvider, atLeastOnce()).lock(configCaptor.capture());
-        verify(lockProvider, never()).lock(configCaptor.capture());
+        verify(lockProvider, atLeastOnce()).lock(configCaptor.capture());
+        assertThat(configCaptor.getAllValues())
+            .extracting(LockConfiguration::getName)
+            .containsOnly(
+                PendingNotificationsTask.TASK_NAME
+            );
     }
 }
