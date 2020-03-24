@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
-import uk.gov.hmcts.reform.notificationservice.model.out.NotificationResponse;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
@@ -148,18 +147,18 @@ class NotificationServiceTest {
         // then
         assertThat(notificationResponses)
             .hasSize(2)
-            .extracting(this::getTupleFromNotificationResponse)
-            .containsExactly(
+            .extracting(this::getTupleFromNotification)
+            .containsExactlyInAnyOrder(
                 tuple(
                     notification1.notificationId,
                     notification1.zipFileName,
                     notification1.poBox,
                     notification1.service,
                     notification1.documentControlNumber,
-                    notification1.errorCode.name(),
+                    notification1.errorCode,
                     notification1.createdAt,
                     notification1.processedAt,
-                    notification1.status.name()
+                    notification1.status
                 ),
                 tuple(
                     notification2.notificationId,
@@ -167,26 +166,26 @@ class NotificationServiceTest {
                     notification2.poBox,
                     notification2.service,
                     notification2.documentControlNumber,
-                    notification2.errorCode.name(),
+                    notification2.errorCode,
                     notification2.createdAt,
                     notification2.processedAt,
-                    notification2.status.name()
+                    notification2.status
                 )
             );
         verify(notificationRepository, times(1)).find(zipFileName, service);
     }
 
-    private Tuple getTupleFromNotificationResponse(NotificationResponse notificationResponse) {
+    private Tuple getTupleFromNotification(Notification notification) {
         return new Tuple(
-            notificationResponse.notificationId,
-            notificationResponse.zipFileName,
-            notificationResponse.poBox,
-            notificationResponse.service,
-            notificationResponse.documentControlNumber,
-            notificationResponse.errorCode,
-            notificationResponse.createdAt,
-            notificationResponse.processedAt,
-            notificationResponse.status
+            notification.notificationId,
+            notification.zipFileName,
+            notification.poBox,
+            notification.service,
+            notification.documentControlNumber,
+            notification.errorCode,
+            notification.createdAt,
+            notification.processedAt,
+            notification.status
         );
     }
 

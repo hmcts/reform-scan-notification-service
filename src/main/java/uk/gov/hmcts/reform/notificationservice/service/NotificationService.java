@@ -10,11 +10,9 @@ import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
-import uk.gov.hmcts.reform.notificationservice.model.out.NotificationResponse;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -42,17 +40,23 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public List<NotificationResponse> findByFileNameAndService(String fileName, String service) {
+    public List<Notification> findByFileNameAndService(String fileName, String service) {
         log.info("Getting notifications for file {}, service {}", fileName, service);
 
-        return notificationRepository.find(fileName, service)
-            .stream()
-            .map(this::mapToNotificationResponse)
-            .collect(toList());
+        return notificationRepository.find(fileName, service);
     }
 
-    @Transactional
-    public void processNotifications(Notification notification) {
+    private ErrorNotificationRequest mapToRequest(Notification notification) {
+        return new ErrorNotificationRequest(
+            notification.zipFileName,
+            notification.poBox,
+            notification.errorCode.name(),
+            notification.errorDescription,
+            String.valueOf(notification.id)
+        );
+    }
+
+    private void processNotifications(Notification notification) {
         try {
             ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
@@ -66,58 +70,30 @@ public class NotificationService {
                 response.getNotificationId()
             );
         } catch (FeignException.BadRequest | FeignException.UnprocessableEntity exception) {
-            logFeignError(
+            var status = HttpStatus.valueOf(exception.status());
+
+            log.error(
                 "Received {} from client. Marking as failure. Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                notification,
+                status.getReasonPhrase(),
+                notification.service,
+                notification.zipFileName,
+                notification.id,
+                exception.contentUTF8(),
                 exception
             );
 
             notificationRepository.markAsFailure(notification.id);
         } catch (FeignException exception) {
-            logFeignError(
+            log.error(
                 "Received {} from client. Postponing notification for later. "
                     + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                notification,
+                HttpStatus.valueOf(exception.status()).getReasonPhrase(),
+                notification.service,
+                notification.zipFileName,
+                notification.id,
+                exception.contentUTF8(),
                 exception
             );
         }
-    }
-
-    private ErrorNotificationRequest mapToRequest(Notification notification) {
-        return new ErrorNotificationRequest(
-            notification.zipFileName,
-            notification.poBox,
-            notification.errorCode.name(),
-            notification.errorDescription,
-            String.valueOf(notification.id)
-        );
-    }
-
-    private void logFeignError(String messagePattern, Notification notification, FeignException exception) {
-        var status = HttpStatus.valueOf(exception.status());
-
-        log.error(
-            messagePattern,
-            status.getReasonPhrase(),
-            notification.service,
-            notification.zipFileName,
-            notification.id,
-            exception.contentUTF8(),
-            exception
-        );
-    }
-
-    private NotificationResponse mapToNotificationResponse(Notification notification) {
-        return new NotificationResponse(
-            notification.notificationId,
-            notification.zipFileName,
-            notification.poBox,
-            notification.service,
-            notification.documentControlNumber,
-            notification.errorCode.name(),
-            notification.createdAt,
-            notification.processedAt,
-            notification.status.name()
-        );
     }
 }
