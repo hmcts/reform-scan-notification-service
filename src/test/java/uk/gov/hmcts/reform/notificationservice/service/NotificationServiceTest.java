@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
 import feign.Request;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +20,11 @@ import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -100,6 +104,89 @@ class NotificationServiceTest {
 
         // then
         verify(notificationRepository, never()).markAsFailure(notification.id);
+    }
+
+    @Test
+    void should_return_notifications_for_file_name_and_service() {
+        // given
+        final String zipFileName = "zip_file_name";
+        final String service = "service";
+
+        var notification1 = new Notification(
+            1L,
+            "notificationId1",
+            zipFileName,
+            "po_box1",
+            service,
+            "DCN1",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        var notification2 = new Notification(
+            2L,
+            "notificationId2",
+            zipFileName,
+            "po_box2",
+            service,
+            "DCN2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "invalid metafile2",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        given(notificationRepository.find(zipFileName, service))
+                  .willReturn(asList(notification1, notification2));
+
+        // when
+        var notificationResponses = notificationService.findByFileNameAndService(zipFileName, service);
+
+        // then
+        assertThat(notificationResponses)
+            .hasSize(2)
+            .extracting(this::getTupleFromNotification)
+            .containsExactlyInAnyOrder(
+                tuple(
+                    notification1.notificationId,
+                    notification1.zipFileName,
+                    notification1.poBox,
+                    notification1.service,
+                    notification1.documentControlNumber,
+                    notification1.errorCode,
+                    notification1.createdAt,
+                    notification1.processedAt,
+                    notification1.status
+                ),
+                tuple(
+                    notification2.notificationId,
+                    notification2.zipFileName,
+                    notification2.poBox,
+                    notification2.service,
+                    notification2.documentControlNumber,
+                    notification2.errorCode,
+                    notification2.createdAt,
+                    notification2.processedAt,
+                    notification2.status
+                )
+            );
+        verify(notificationRepository, times(1)).find(zipFileName, service);
+    }
+
+    private Tuple getTupleFromNotification(Notification notification) {
+        return new Tuple(
+            notification.notificationId,
+            notification.zipFileName,
+            notification.poBox,
+            notification.service,
+            notification.documentControlNumber,
+            notification.errorCode,
+            notification.createdAt,
+            notification.processedAt,
+            notification.status
+        );
     }
 
     private Notification getSampleNotification() {

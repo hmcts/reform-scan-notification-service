@@ -4,6 +4,7 @@ import feign.FeignException;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
@@ -36,6 +37,13 @@ public class NotificationService {
         log.info("Notifications to process: {}", notifications.size());
 
         notifications.forEach(this::processNotifications);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Notification> findByFileNameAndService(String fileName, String service) {
+        log.info("Getting notifications for file {}, service {}", fileName, service);
+
+        return notificationRepository.find(fileName, service);
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
@@ -88,5 +96,4 @@ public class NotificationService {
             );
         }
     }
-
 }
