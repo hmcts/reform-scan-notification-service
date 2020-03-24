@@ -45,3 +45,11 @@ scheduling:
     pending-notifications:
       delay: ${PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS}
       enabled: ${PENDING_NOTIFICATIONS_TASK_ENABLED}
+
+# clients region
+
+idam:
+  s2s-auth:
+    url: ${S2S_URL}
+
+# end of clients region
