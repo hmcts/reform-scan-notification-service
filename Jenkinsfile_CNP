@@ -14,6 +14,22 @@ def channel = '#bsp-build-notices'
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
+def nonPrSecrets = [
+  'bulk-scan-${env}': [
+    secret('notifications-queue-listen-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_READ'),
+    secret('notifications-queue-send-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_WRITE')
+  ]
+]
+
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    version: '',
+    envVariable: envVar
+  ]
+}
+
 withPipeline(type, product, component) {
   after('test') {
     builder.gradle('integration')
@@ -44,4 +60,8 @@ withPipeline(type, product, component) {
   installCharts()
   enableSlackNotifications(channel)
   disableLegacyDeployment()
+
+  onNonPR() {
+    loadVaultSecrets(nonPrSecrets)
+  }
 }
