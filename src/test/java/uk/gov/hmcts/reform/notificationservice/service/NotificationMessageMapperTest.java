@@ -18,6 +18,7 @@ public class NotificationMessageMapperTest {
                 "zipfile.zip",
                 "divorce",
                 "pobox",
+                "bulkscan",
                 "1342411414214",
                 ErrorCode.ERR_SIG_VERIFY_FAILED,
                 "error description signature not valid",
@@ -31,6 +32,5 @@ public class NotificationMessageMapperTest {
         assertThat(request.errorCode).isEqualTo(ErrorCode.ERR_SIG_VERIFY_FAILED);
         assertThat(request.errorDescription).isEqualTo("error description signature not valid");
         assertThat(request.service).isEqualTo("orchestrator");
-
     }
 }
