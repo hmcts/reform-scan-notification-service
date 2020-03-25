@@ -51,6 +51,7 @@ public class NotificationController {
             notification.notificationId,
             notification.zipFileName,
             notification.poBox,
+            notification.container,
             notification.service,
             notification.documentControlNumber,
             notification.errorCode.name(),

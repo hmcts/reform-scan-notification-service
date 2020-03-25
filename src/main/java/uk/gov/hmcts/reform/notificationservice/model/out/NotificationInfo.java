@@ -16,6 +16,9 @@ public class NotificationInfo {
     @JsonProperty("po_box")
     public final String poBox;
 
+    @JsonProperty("container")
+    public final String container;
+
     @JsonProperty("service")
     public final String service;
 
@@ -40,6 +43,7 @@ public class NotificationInfo {
         String notificationId,
         String zipFileName,
         String poBox,
+        String container,
         String service,
         String documentControlNumber,
         String errorCode,
@@ -50,6 +54,7 @@ public class NotificationInfo {
         this.notificationId = notificationId;
         this.zipFileName = zipFileName;
         this.poBox = poBox;
+        this.container = container;
         this.service = service;
         this.documentControlNumber = documentControlNumber;
         this.errorCode = errorCode;

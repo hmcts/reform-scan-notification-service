@@ -62,6 +62,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             "notificationId1",
             fileName,
             "po_box1",
+            "container",
             service,
             "DCN1",
             ErrorCode.ERR_METAFILE_INVALID,
@@ -75,6 +76,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             "notificationId2",
             fileName,
             "po_box2",
+            "container",
             service,
             "DCN2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
@@ -102,6 +104,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             .andExpect(jsonPath("$.notifications[0].notification_id").value(notification1.notificationId))
             .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
             .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
+            .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
             .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
             .andExpect(jsonPath("$.notifications[0].document_control_number").value(notification1.documentControlNumber))
             .andExpect(jsonPath("$.notifications[0].error_code").value(notification1.errorCode.name()))
@@ -111,6 +114,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             .andExpect(jsonPath("$.notifications[1].notification_id").value(notification2.notificationId))
             .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
             .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
+            .andExpect(jsonPath("$.notifications[1].container").value(notification2.container))
             .andExpect(jsonPath("$.notifications[1].service").value(notification2.service))
             .andExpect(jsonPath("$.notifications[1].document_control_number").value(notification2.documentControlNumber))
             .andExpect(jsonPath("$.notifications[1].error_code").value(notification2.errorCode.name()))
