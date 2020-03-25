@@ -28,6 +28,7 @@ public class NotificationMessageParserTest {
             "fileName.zip",
             "divorce",
             "pobox",
+            "divorce",
             "1234567890123456",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "size too big",
@@ -42,6 +43,7 @@ public class NotificationMessageParserTest {
                             "fileName.zip",
                             "divorce",
                             "pobox",
+                            "divorce",
                             "1234567890123456",
                             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
                             "size too big",
@@ -73,6 +75,7 @@ public class NotificationMessageParserTest {
         String zipFileName,
         String jurisdiction,
         String poBox,
+        String container,
         String documentControlNumber,
         ErrorCode errorCode,
         String errorDescription,
@@ -82,6 +85,7 @@ public class NotificationMessageParserTest {
             .put("zip_file_name", zipFileName)
             .put("jurisdiction", jurisdiction)
             .put("po_box", poBox)
+            .put("container", container)
             .put("document_control_number", documentControlNumber)
             .put("error_code", errorCode)
             .put("error_description", errorDescription)
