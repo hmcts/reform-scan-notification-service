@@ -19,6 +19,7 @@ public class NotificationMapper implements RowMapper<Notification> {
             rs.getString("notification_id"),
             rs.getString("zip_file_name"),
             rs.getString("po_box"),
+            rs.getString("container"),
             rs.getString("service"),
             rs.getString("document_control_number"),
             ErrorCode.valueOf(rs.getString("error_code")),
