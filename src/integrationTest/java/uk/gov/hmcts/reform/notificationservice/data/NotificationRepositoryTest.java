@@ -45,6 +45,7 @@ public class NotificationRepositoryTest {
             .satisfies(n -> {
                 assertThat(n.zipFileName).isEqualTo(newNotification.zipFileName);
                 assertThat(n.poBox).isEqualTo(newNotification.poBox);
+                assertThat(n.container).isEqualTo(newNotification.container);
                 assertThat(n.service).isEqualTo(newNotification.service);
                 assertThat(n.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
                 assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
@@ -69,6 +70,7 @@ public class NotificationRepositoryTest {
         final var newNotification = new NewNotification(
             zipFileName,
             "po_box",
+            "bulkscan",
             service,
             "dcn",
             ErrorCode.ERR_AV_FAILED,
@@ -90,7 +92,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.zipFileName).isEqualTo(newNotification.zipFileName);
                 assertThat(n.poBox).isEqualTo(newNotification.poBox);
                 assertThat(n.service).isEqualTo(newNotification.service);
-                assertThat(n.service).isEqualTo(newNotification.service);
+                assertThat(n.container).isEqualTo(newNotification.container);
                 assertThat(n.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
                 assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
                 assertThat(n.errorDescription).isEqualTo(newNotification.errorDescription);
@@ -109,6 +111,7 @@ public class NotificationRepositoryTest {
         final var newNotification1 = new NewNotification(
             zipFileName,
             "po_box1",
+            "reformscan",
             service,
             "dcn1",
             ErrorCode.ERR_AV_FAILED,
@@ -117,6 +120,7 @@ public class NotificationRepositoryTest {
         final var newNotificationFromOtherService = new NewNotification(
             zipFileName,
             "po_box2",
+            "bulkscan",
             "other_service",
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
@@ -125,6 +129,7 @@ public class NotificationRepositoryTest {
         final var newNotification3 = new NewNotification(
             zipFileName,
             "po_box3",
+            "scan",
             service,
             "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
@@ -150,6 +155,7 @@ public class NotificationRepositoryTest {
                     "someNotificationId",
                     newNotification1.zipFileName,
                     newNotification1.poBox,
+                    newNotification1.container,
                     newNotification1.service,
                     newNotification1.documentControlNumber,
                     newNotification1.errorCode,
@@ -163,6 +169,7 @@ public class NotificationRepositoryTest {
                     "someOtherNotificationId",
                     newNotification3.zipFileName,
                     newNotification3.poBox,
+                    newNotification3.container,
                     newNotification3.service,
                     newNotification3.documentControlNumber,
                     newNotification3.errorCode,
@@ -184,6 +191,7 @@ public class NotificationRepositoryTest {
         final var newNotification1 = new NewNotification(
             zipFileName,
             "po_box1",
+            "bulkscan",
             service,
             "dcn1",
             ErrorCode.ERR_AV_FAILED,
@@ -192,6 +200,7 @@ public class NotificationRepositoryTest {
         final var newNotificationForOtherZipFile = new NewNotification(
             "other_zip_file_name",
             "po_box2",
+            "reformscan",
             service,
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
@@ -200,6 +209,7 @@ public class NotificationRepositoryTest {
         final var newNotification3 = new NewNotification(
             zipFileName,
             "po_box3",
+            "scan",
             service,
             "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
@@ -225,6 +235,7 @@ public class NotificationRepositoryTest {
                     "someNotificationId",
                     newNotification1.zipFileName,
                     newNotification1.poBox,
+                    newNotification1.container,
                     newNotification1.service,
                     newNotification1.documentControlNumber,
                     newNotification1.errorCode,
@@ -238,6 +249,7 @@ public class NotificationRepositoryTest {
                     "someOtherNotificationId",
                     newNotification3.zipFileName,
                     newNotification3.poBox,
+                    newNotification3.container,
                     newNotification3.service,
                     newNotification3.documentControlNumber,
                     newNotification3.errorCode,
@@ -347,6 +359,7 @@ public class NotificationRepositoryTest {
         return new NewNotification(
             "zip_file_name",
             "po_box",
+            "bulkscan",
             "service",
             "dcn",
             ErrorCode.ERR_AV_FAILED,

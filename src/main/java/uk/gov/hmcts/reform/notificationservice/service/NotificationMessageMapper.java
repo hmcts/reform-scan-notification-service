@@ -11,6 +11,7 @@ public class NotificationMessageMapper {
         return new NewNotification(
             notificationMsg.zipFileName,
             notificationMsg.poBox,
+            notificationMsg.container,
             notificationMsg.service,
             notificationMsg.documentControlNumber,
             notificationMsg.errorCode,

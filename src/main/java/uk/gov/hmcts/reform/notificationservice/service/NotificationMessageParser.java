@@ -29,11 +29,12 @@ public class NotificationMessageParser {
                 objectMapper.readValue(getBinaryData(messageBody), NotificationMsg.class);
             logger.info(
                 "Parsed notification message, Zip File Name: {}, Error Code: {}, "
-                    + "Jurisdiction: {}, PO Box: {}, Service: {}, Document Control Number: {}",
+                    + "Jurisdiction: {}, PO Box: {}, Container {}, Service: {}, Document Control Number: {}",
                 notificationMsg.zipFileName,
                 notificationMsg.errorCode,
                 notificationMsg.jurisdiction,
                 notificationMsg.poBox,
+                notificationMsg.container,
                 notificationMsg.service,
                 notificationMsg.documentControlNumber
             );

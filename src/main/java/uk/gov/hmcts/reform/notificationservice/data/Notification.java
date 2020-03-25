@@ -10,6 +10,7 @@ public class Notification {
     public final String notificationId;
     public final String zipFileName;
     public final String poBox;
+    public final String container;
     public final String service;
     public final String documentControlNumber;
     public final ErrorCode errorCode;
@@ -23,6 +24,7 @@ public class Notification {
         String notificationId,
         String zipFileName,
         String poBox,
+        String container,
         String service,
         String documentControlNumber,
         ErrorCode errorCode,
@@ -35,6 +37,7 @@ public class Notification {
         this.notificationId = notificationId;
         this.zipFileName = zipFileName;
         this.poBox = poBox;
+        this.container = container;
         this.service = service;
         this.documentControlNumber = documentControlNumber;
         this.errorCode = errorCode;
