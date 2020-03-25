@@ -17,6 +17,7 @@ import java.util.Calendar;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,7 +46,7 @@ public class NotificationControllerTest extends ControllerTestBase {
         final String auth = "auth";
         final String service = "service";
 
-        Calendar cal   = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2020);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DATE, 23);
@@ -96,25 +97,26 @@ public class NotificationControllerTest extends ControllerTestBase {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].notification_id").value(notification1.notificationId))
-            .andExpect(jsonPath("$[0].zip_file_name").value(notification1.zipFileName))
-            .andExpect(jsonPath("$[0].po_box").value(notification1.poBox))
-            .andExpect(jsonPath("$[0].service").value(notification1.service))
-            .andExpect(jsonPath("$[0].document_control_number").value(notification1.documentControlNumber))
-            .andExpect(jsonPath("$[0].error_code").value(notification1.errorCode.name()))
-            .andExpect(jsonPath("$[0].created_at").value(instantString))
-            .andExpect(jsonPath("$[0].processed_at").value(instantString))
-            .andExpect(jsonPath("$[0].status").value(notification1.status.name()))
-            .andExpect(jsonPath("$[1].notification_id").value(notification2.notificationId))
-            .andExpect(jsonPath("$[1].zip_file_name").value(notification2.zipFileName))
-            .andExpect(jsonPath("$[1].po_box").value(notification2.poBox))
-            .andExpect(jsonPath("$[1].service").value(notification2.service))
-            .andExpect(jsonPath("$[1].document_control_number").value(notification2.documentControlNumber))
-            .andExpect(jsonPath("$[1].error_code").value(notification2.errorCode.name()))
-            .andExpect(jsonPath("$[1].created_at").value(instantString))
-            .andExpect(jsonPath("$[1].processed_at").value(instantString))
-            .andExpect(jsonPath("$[1].status").value(notification2.status.name()))
+            .andExpect(jsonPath("$.count", is(2)))
+            .andExpect(jsonPath("$.notifications", hasSize(2)))
+            .andExpect(jsonPath("$.notifications[0].notification_id").value(notification1.notificationId))
+            .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
+            .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
+            .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
+            .andExpect(jsonPath("$.notifications[0].document_control_number").value(notification1.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[0].error_code").value(notification1.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
+            .andExpect(jsonPath("$.notifications[1].notification_id").value(notification2.notificationId))
+            .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
+            .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
+            .andExpect(jsonPath("$.notifications[1].service").value(notification2.service))
+            .andExpect(jsonPath("$.notifications[1].document_control_number").value(notification2.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[1].error_code").value(notification2.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[1].created_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[1].processed_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
         ;
     }
 
@@ -134,6 +136,9 @@ public class NotificationControllerTest extends ControllerTestBase {
                     .queryParam("file_name", fileName)
             )
             .andDo(print())
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count", is(0)))
+            .andExpect(jsonPath("$.notifications", hasSize(0)))
+        ;
     }
 }

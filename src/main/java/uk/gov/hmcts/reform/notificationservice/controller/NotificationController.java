@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
-import uk.gov.hmcts.reform.notificationservice.model.out.NotificationResponse;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationsResponse;
 import uk.gov.hmcts.reform.notificationservice.service.AuthService;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
@@ -29,21 +30,24 @@ public class NotificationController {
         this.authService = authService;
     }
 
-    @GetMapping()
-    public List<NotificationResponse> getNotifications(
+    @GetMapping
+    public NotificationsResponse getNotifications(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @RequestParam("file_name") String fileName
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
 
-        return notificationService.findByFileNameAndService(fileName, serviceName)
-            .stream()
-            .map(notification -> toNotificationResponse(notification))
-            .collect(toList());
+        List<NotificationInfo> notifications =
+            notificationService.findByFileNameAndService(fileName, serviceName)
+                .stream()
+                .map(notification -> toNotificationResponse(notification))
+                .collect(toList());
+
+        return new NotificationsResponse(notifications.size(), notifications);
     }
 
-    private NotificationResponse toNotificationResponse(Notification notification) {
-        return new NotificationResponse(
+    private NotificationInfo toNotificationResponse(Notification notification) {
+        return new NotificationInfo(
             notification.notificationId,
             notification.zipFileName,
             notification.poBox,

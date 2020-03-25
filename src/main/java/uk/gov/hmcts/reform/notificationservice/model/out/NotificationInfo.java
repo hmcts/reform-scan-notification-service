@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.notificationservice.util.CustomInstantSerializer;
 
 import java.time.Instant;
 
-public class NotificationResponse {
+public class NotificationInfo {
     @JsonProperty("notification_id")
     public final String notificationId;
 
@@ -36,7 +36,7 @@ public class NotificationResponse {
     @JsonProperty("status")
     public final String status;
 
-    public NotificationResponse(
+    public NotificationInfo(
         String notificationId,
         String zipFileName,
         String poBox,
