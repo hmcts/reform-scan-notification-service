@@ -65,14 +65,15 @@ public class NotificationRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(
-            "INSERT INTO notifications (zip_file_name, po_box, service, document_control_number, "
+            "INSERT INTO notifications (zip_file_name, po_box, container, service, document_control_number, "
                 + "error_code, error_description, created_at, status) "
-                + "VALUES ("
-                + "  :zipFileName, :poBox, :service, :DCN, :errorCode, :errorDescription, CURRENT_TIMESTAMP, :status"
+                + "VALUES ( :zipFileName, :poBox, :container, :service, :DCN, :errorCode, "
+                + ":errorDescription, CURRENT_TIMESTAMP, :status"
                 + ")",
             new MapSqlParameterSource()
                 .addValue("zipFileName", notification.zipFileName)
                 .addValue("poBox", notification.poBox)
+                .addValue("container", notification.container)
                 .addValue("service", notification.service)
                 .addValue("DCN", notification.documentControlNumber)
                 .addValue("errorCode", notification.errorCode.name())

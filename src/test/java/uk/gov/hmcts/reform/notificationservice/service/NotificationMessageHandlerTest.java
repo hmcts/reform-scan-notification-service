@@ -53,6 +53,7 @@ public class NotificationMessageHandlerTest {
             new NewNotification(
                 "Zipfile.zip",
                 "A123",
+                "bulkscan",
                 "processor",
                 "A1342411414214",
                 ErrorCode.ERR_AV_FAILED,
@@ -88,6 +89,7 @@ public class NotificationMessageHandlerTest {
             new NewNotification(
                 "file.txt",
                 "123213",
+                "reformscan",
                 "processor",
                 "32313223",
                 ErrorCode.ERR_SERVICE_DISABLED,
