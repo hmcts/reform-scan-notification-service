@@ -100,7 +100,7 @@ class NotificationServiceTest {
     ) {
         // given
         var notification = getSampleNotification();
-        var exception = exceptionClass.getCanonicalName().equals(FeignException.class.getCanonicalName())
+        var exception = exceptionClass.equals(FeignException.class)
             ? getDefaultFeignException()
             : instantiateFeignException(exceptionClass);
         given(notificationRepository.findPending()).willReturn(singletonList(notification));
