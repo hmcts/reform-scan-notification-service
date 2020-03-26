@@ -84,10 +84,12 @@ public class NotificationService {
 
             notificationRepository.markAsFailure(notification.id);
         } catch (FeignException exception) {
+            var status = HttpStatus.resolve(exception.status());
+
             log.error(
                 "Received {} from client. Postponing notification for later. "
                     + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                HttpStatus.valueOf(exception.status()).getReasonPhrase(),
+                (status == null ? HttpStatus.INTERNAL_SERVER_ERROR : status).getReasonPhrase(),
                 notification.service,
                 notification.zipFileName,
                 notification.id,
