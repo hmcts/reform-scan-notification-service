@@ -90,14 +90,21 @@ class NotificationServiceTest {
     }
 
     @ParameterizedTest
-    @ValueSource(classes = {FeignException.NotFound.class, FeignException.InternalServerError.class})
+    @ValueSource(classes = {
+        FeignException.class,
+        FeignException.NotFound.class,
+        FeignException.InternalServerError.class
+    })
     void should_leave_notification_record_as_is_when_relevant_exception_from_client_is_caught(
         Class<FeignException> exceptionClass
     ) {
         // given
         var notification = getSampleNotification();
+        var exception = exceptionClass.equals(FeignException.class)
+            ? getDefaultFeignException()
+            : instantiateFeignException(exceptionClass);
         given(notificationRepository.findPending()).willReturn(singletonList(notification));
-        willThrow(instantiateFeignException(exceptionClass)).given(notificationClient).notify(any());
+        willThrow(exception).given(notificationClient).notify(any());
 
         // when
         notificationService.processPendingNotifications();
@@ -282,24 +289,32 @@ class NotificationServiceTest {
 
     @SuppressWarnings("LineLength")
     private FeignException instantiateFeignException(Class<FeignException> exceptionClass) {
-        byte[] emptyByteArray = new byte[]{};
+        var request = getFeignRequest();
 
         try {
             return exceptionClass
-                .getConstructor(String.class, Request.class, emptyByteArray.getClass())
-                .newInstance(
-                    "message",
-                    Request.create(
-                        Request.HttpMethod.POST,
-                        "/notify",
-                        emptyMap(),
-                        Request.Body.create(emptyByteArray),
-                        null
-                    ),
-                    emptyByteArray
-                );
+                .getConstructor(String.class, Request.class, request.body().getClass())
+                .newInstance("message", request, request.body());
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Could not construct FeignException", e);
         }
+    }
+
+    private FeignException getDefaultFeignException() {
+        var request = getFeignRequest();
+
+        return new FeignException.FeignClientException(-1, "some error", request, request.body());
+    }
+
+    private Request getFeignRequest() {
+        var emptyByteArray = new byte[]{};
+
+        return Request.create(
+            Request.HttpMethod.POST,
+            "/notify",
+            emptyMap(),
+            Request.Body.create(emptyByteArray),
+            null
+        );
     }
 }
