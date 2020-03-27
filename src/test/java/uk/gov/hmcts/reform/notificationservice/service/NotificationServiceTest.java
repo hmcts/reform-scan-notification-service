@@ -184,6 +184,78 @@ class NotificationServiceTest {
         verify(notificationRepository, times(1)).find(zipFileName, service);
     }
 
+    @Test
+    void should_return_notifications_for_cleaned_up_file_name_and_service() {
+        // given
+        final String zipFileName = "zip_\nfile_\tname\r.zip";
+        final String zipFileNameCleanedUp = "zip_file_name.zip";
+        final String service = "service";
+
+        var notification1 = new Notification(
+            1L,
+            "notificationId1",
+            zipFileNameCleanedUp,
+            "po_box1",
+            "bulkscan",
+            service,
+            "DCN1",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        var notification2 = new Notification(
+            2L,
+            "notificationId2",
+            zipFileNameCleanedUp,
+            "po_box2",
+            "reformscan",
+            service,
+            "DCN2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "invalid metafile2",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        given(notificationRepository.find(zipFileNameCleanedUp, service))
+                  .willReturn(asList(notification1, notification2));
+
+        // when
+        var notificationResponses = notificationService.findByFileNameAndService(zipFileName, service);
+
+        // then
+        assertThat(notificationResponses)
+            .hasSize(2)
+            .extracting(this::getTupleFromNotification)
+            .containsExactlyInAnyOrder(
+                tuple(
+                    notification1.notificationId,
+                    notification1.zipFileName,
+                    notification1.poBox,
+                    notification1.service,
+                    notification1.documentControlNumber,
+                    notification1.errorCode,
+                    notification1.createdAt,
+                    notification1.processedAt,
+                    notification1.status
+                ),
+                tuple(
+                    notification2.notificationId,
+                    notification2.zipFileName,
+                    notification2.poBox,
+                    notification2.service,
+                    notification2.documentControlNumber,
+                    notification2.errorCode,
+                    notification2.createdAt,
+                    notification2.processedAt,
+                    notification2.status
+                )
+            );
+        verify(notificationRepository, times(1)).find(zipFileNameCleanedUp, service);
+    }
+
     private Tuple getTupleFromNotification(Notification notification) {
         return new Tuple(
             notification.notificationId,

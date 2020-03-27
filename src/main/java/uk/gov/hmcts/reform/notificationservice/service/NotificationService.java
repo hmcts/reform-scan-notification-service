@@ -40,9 +40,10 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
-        log.info("Getting notifications for file {}, service {}", fileName, service);
+        final String fileNameCleanedUp = fileName.replaceAll("[\n|\r|\t]", "");
+        log.info("Getting notifications for file {}, service {}", fileNameCleanedUp, service);
 
-        return notificationRepository.find(fileName, service);
+        return notificationRepository.find(fileNameCleanedUp, service);
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
