@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
 import org.slf4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
@@ -41,9 +40,10 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
-        log.info("Getting notifications for file {}, service {}", fileName, service);
+        final String fileNameCleanedUp = fileName.replaceAll("[\n|\r|\t]", "");
+        log.info("Getting notifications for file {}, service {}", fileNameCleanedUp, service);
 
-        return notificationRepository.find(fileName, service);
+        return notificationRepository.find(fileNameCleanedUp, service);
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
@@ -70,11 +70,10 @@ public class NotificationService {
                 response.getNotificationId()
             );
         } catch (FeignException.BadRequest | FeignException.UnprocessableEntity exception) {
-            var status = HttpStatus.valueOf(exception.status());
-
             log.error(
-                "Received {} from client. Marking as failure. Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                status.getReasonPhrase(),
+                "Received http status {} from client. Marking as failure. "
+                    + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
+                exception.status(),
                 notification.service,
                 notification.zipFileName,
                 notification.id,
@@ -85,9 +84,9 @@ public class NotificationService {
             notificationRepository.markAsFailure(notification.id);
         } catch (FeignException exception) {
             log.error(
-                "Received {} from client. Postponing notification for later. "
+                "Received http status {} from client. Postponing notification for later. "
                     + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                HttpStatus.valueOf(exception.status()).getReasonPhrase(),
+                exception.status(),
                 notification.service,
                 notification.zipFileName,
                 notification.id,
