@@ -41,7 +41,8 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
-        log.info("Getting notifications for file {}, service {}", fileName, service);
+        final String fileNameForLogPattern = fileName.replaceAll("[\n|\r|\t]", "_");
+        log.info("Getting notifications for file {}, service {}", fileNameForLogPattern, service);
 
         return notificationRepository.find(fileName, service);
     }
