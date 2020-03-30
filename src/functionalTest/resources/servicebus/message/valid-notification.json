@@ -1,0 +1,6 @@
+{
+  "zip_file_name": "valid-fun-test-{suffix}.zip",
+  "error_code": "ERR_SIG_VERIFY_FAILED",
+  "error_description": "invalid signature - gif reactions not allowed",
+  "service": "bulk_scan_processor_tests"
+}

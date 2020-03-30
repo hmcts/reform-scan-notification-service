@@ -14,10 +14,24 @@ def channel = '#bsp-build-notices'
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
+/*
+In following sections we use bulk-scan-processor-tests key for testing only.
+Bulk Scan Processor will be main client for this service and use it's own key
+so for testing purposes it makes sense to use as an example.
+ */
 def nonPrSecrets = [
   'bulk-scan-${env}': [
     secret('notifications-queue-listen-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_READ'),
     secret('notifications-queue-send-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_WRITE')
+  ],
+  's2s-${env}': [
+    secret('microservicekey-bulk-scan-processor-tests', 'TEST_S2S_SECRET')
+  ]
+]
+
+def prSecrets = [
+  's2s-${env}': [
+    secret('microservicekey-bulk-scan-processor-tests', 'TEST_S2S_SECRET')
   ]
 ]
 
@@ -33,6 +47,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 withPipeline(type, product, component) {
   after('test') {
     builder.gradle('integration')
+  }
+
+  after('akschartsinstall') {
+    // Vars needed for AKS testing
+    env.TEST_S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
   }
 
   before('smoketest:preview') {
@@ -63,5 +82,9 @@ withPipeline(type, product, component) {
 
   onNonPR() {
     loadVaultSecrets(nonPrSecrets)
+  }
+
+  onPR() {
+    loadVaultSecrets(prSecrets)
   }
 }

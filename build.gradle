@@ -98,7 +98,7 @@ pmd {
   toolVersion = "6.21.0"
   ignoreFailures = true
   incrementalAnalysis = true
-  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest]
+  sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.smokeTest, sourceSets.functionalTest]
   reportsDir = file("$project.buildDir/reports/pmd")
   // https://github.com/pmd/pmd/issues/876
   ruleSets = []
@@ -248,6 +248,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.smokeTest.runtimeClasspath
+  functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.2'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.notificationservice.Application'
