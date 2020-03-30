@@ -20,9 +20,9 @@ Bulk Scan Processor will be main client for this service and use it's own key
 so for testing purposes it makes sense to use as an example.
  */
 def nonPrSecrets = [
-  'bulk-scan-${env}': [
-    secret('notifications-queue-listen-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_READ'),
-    secret('notifications-queue-send-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_WRITE')
+  'reform-scan-${env}': [
+    secret('notifications-staging-queue-listen-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_READ'),
+    secret('notifications-staging-queue-send-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_WRITE')
   ],
   's2s-${env}': [
     secret('microservicekey-bulk-scan-processor-tests', 'TEST_S2S_SECRET')
