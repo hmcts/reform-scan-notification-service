@@ -45,7 +45,9 @@ final class RestAssuredHelper {
             .post("/lease")
             .andReturn();
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode())
+            .as("Signed into S2S successfully")
+            .isEqualTo(200);
 
         return response
             .getBody()
@@ -65,7 +67,9 @@ final class RestAssuredHelper {
             .get("/notifications")
             .andReturn();
 
-        assertThat(response.getStatusCode()).isEqualTo(200);
+        assertThat(response.getStatusCode())
+            .as("Notifications received from service")
+            .isEqualTo(200);
 
         try {
             return MAPPER.readTree(response.getBody().asByteArray());
