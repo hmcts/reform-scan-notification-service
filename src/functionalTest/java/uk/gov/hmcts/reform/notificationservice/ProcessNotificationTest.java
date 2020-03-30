@@ -52,7 +52,7 @@ class ProcessNotificationTest {
                 assertThat(node.get("zip_file_name").asText()).isEqualTo(messageDetails.zipFileName);
                 assertThat(node.get("service").asText()).isEqualTo(messageDetails.service);
                 // following fields will have to be amended in case notification test API starts to accept our requests
-                assertThat(node.get("processed_at").asText()).isNull();
+                assertThat(node.get("processed_at").textValue()).isNull();
                 assertThat(node.get("status").asText()).isEqualTo(PENDING.name());
             });
 
