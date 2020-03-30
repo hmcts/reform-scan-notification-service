@@ -4,8 +4,8 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-  id 'org.springframework.boot' version '2.2.5.RELEASE'
-  id 'org.owasp.dependencycheck' version '5.3.1'
+  id 'org.springframework.boot' version '2.2.6.RELEASE'
+  id 'org.owasp.dependencycheck' version '5.3.2.1'
   id 'com.github.ben-manes.versions' version '0.28.0'
   id 'org.sonarqube' version '2.8'
   id 'org.flywaydb.flyway' version '6.3.2'
@@ -211,12 +211,12 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
 
-  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.1.5'
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.2.0'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '10.9'
-  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.8'
+  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.9'
   // end region
 
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
