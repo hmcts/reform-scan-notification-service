@@ -8,6 +8,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.notificationservice.Configuration.TEST_URL;
 
 final class RestAssuredHelper {
 
+    private static final String SERVICE_AUTH_HEADER = "ServiceAuthorization";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private RestAssuredHelper() {
@@ -53,7 +55,9 @@ final class RestAssuredHelper {
             .given()
             .relaxedHTTPSValidation()
             .baseUri(TEST_URL)
+            .header(SERVICE_AUTH_HEADER, "Bearer " + s2sToken)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, "Reform Scan Notification Service functional test")
             .queryParam("file_name", zipFilename)
             .when()
             .get("/notifications")
