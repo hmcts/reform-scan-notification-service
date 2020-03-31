@@ -32,7 +32,7 @@ class ProcessNotificationTest {
         String serviceAuthToken = RestAssuredHelper.s2sSignIn(messageDetails.service);
 
         // then
-        await("Error notification has been processed")
+        await("Error notification has been processed for file " + messageDetails.zipFileName)
             .atMost(1L, TimeUnit.MINUTES)
             .pollDelay(1L, TimeUnit.SECONDS)
             .pollInterval(5L, TimeUnit.SECONDS)
@@ -45,6 +45,7 @@ class ProcessNotificationTest {
     private boolean testNotification(JsonNode jsonNode, QueueMessageDetails messageDetails) {
         assertThat(jsonNode.get("notifications").getNodeType()).isEqualTo(JsonNodeType.ARRAY);
         assertThat(jsonNode.get("notifications"))
+            .as("Notification details for file %s", messageDetails.zipFileName)
             .hasSize(1)
             .first()
             .satisfies(node -> {
