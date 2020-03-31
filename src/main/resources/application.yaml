@@ -34,6 +34,8 @@ flyway:
 queue:
   notifications:
     read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
+    staging-read-connection-string: ${STAGING_QUEUE_NOTIFICATIONS_READ}
+    staging-enabled:  ${STAGING_QUEUE_NOTIFICATIONS_ENABLED}
     max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
 
 scheduling:

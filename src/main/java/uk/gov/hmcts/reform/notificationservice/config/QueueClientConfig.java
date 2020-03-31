@@ -24,4 +24,14 @@ public class QueueClientConfig {
         );
     }
 
+    @Bean
+    @ConditionalOnProperty(name = "queue.notifications.staging-enabled")
+    public IMessageReceiver notificationsTestMessageReceiver(
+        @Value("${queue.notifications.staging-read-connection-string}") String connectionString)
+        throws InterruptedException, ServiceBusException {
+        return ClientFactory.createMessageReceiverFromConnectionString(
+            connectionString,
+            ReceiveMode.PEEKLOCK
+        );
+    }
 }
