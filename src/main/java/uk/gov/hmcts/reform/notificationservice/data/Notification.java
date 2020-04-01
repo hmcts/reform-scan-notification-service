@@ -48,10 +48,6 @@ public class Notification {
     }
 
     public String basicInfo() {
-        return "Notification{" +
-            "id=" + id +
-            ", zipFileName='" + zipFileName + '\'' +
-            ", service='" + service + '\'' +
-            '}';
+        return "Notification{id=" + id + ", zipFileName='" + zipFileName + "', service='" + service + "'}";
     }
 }
