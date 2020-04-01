@@ -55,7 +55,7 @@ public class NotificationRepository {
 
     public List<Notification> findPending() {
         return jdbcTemplate.query(
-            "SELECT * FROM notifications WHERE status = :status and notification_id IS NULL",
+            "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL",
             new MapSqlParameterSource("status", PENDING.name()),
             this.mapper
         );

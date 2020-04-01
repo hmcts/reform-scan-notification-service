@@ -146,11 +146,11 @@ public class NotificationRepositoryTest {
         assertThat(notifications)
             .isNotEmpty()
             .hasSize(2)
-            .usingElementComparatorIgnoringFields("notificationId", "createdAt", "processedAt")
+            .usingElementComparatorIgnoringFields("createdAt", "processedAt")
             .containsExactlyInAnyOrder(
                 new Notification(
                     id1,
-                    "someNotificationId",
+                    null,
                     newNotification1.zipFileName,
                     newNotification1.poBox,
                     newNotification1.container,
@@ -164,7 +164,7 @@ public class NotificationRepositoryTest {
                 ),
                 new Notification(
                     id3,
-                    "someOtherNotificationId",
+                    null,
                     newNotification3.zipFileName,
                     newNotification3.poBox,
                     newNotification3.container,
@@ -226,11 +226,11 @@ public class NotificationRepositoryTest {
         assertThat(notifications)
             .isNotEmpty()
             .hasSize(2)
-            .usingElementComparatorIgnoringFields("notificationId", "createdAt", "processedAt")
+            .usingElementComparatorIgnoringFields("createdAt", "processedAt")
             .containsExactlyInAnyOrder(
                 new Notification(
                     id1,
-                    "someNotificationId",
+                    null,
                     newNotification1.zipFileName,
                     newNotification1.poBox,
                     newNotification1.container,
@@ -244,7 +244,7 @@ public class NotificationRepositoryTest {
                 ),
                 new Notification(
                     id3,
-                    "someOtherNotificationId",
+                    null,
                     newNotification3.zipFileName,
                     newNotification3.poBox,
                     newNotification3.container,
@@ -267,7 +267,7 @@ public class NotificationRepositoryTest {
         long idPending = notificationRepository.insert(newNotification);
         long idSentStillPending = notificationRepository.insert(createNewNotification());
         jdbcTemplate.update(
-            "UPDATE notifications SET notification_id = 'SOME_ID' WHERE id = :id",
+            "UPDATE notifications SET confirmation_id = 'SOME_ID' WHERE id = :id",
             new MapSqlParameterSource("id", idSentStillPending)
         );
         long idSent = notificationRepository.insert(createNewNotification());
