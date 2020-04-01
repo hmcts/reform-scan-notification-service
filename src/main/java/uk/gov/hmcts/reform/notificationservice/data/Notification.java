@@ -46,4 +46,12 @@ public class Notification {
         this.processedAt = processedAt;
         this.status = status;
     }
+
+    public String basicInfo() {
+        return "Notification{" +
+            "id=" + id +
+            ", zipFileName='" + zipFileName + '\'' +
+            ", service='" + service + '\'' +
+            '}';
+    }
 }
