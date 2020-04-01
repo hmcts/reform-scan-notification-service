@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
+import feign.FeignException.BadRequest;
+import feign.FeignException.UnprocessableEntity;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +37,41 @@ public class NotificationService {
 
         log.info("Notifications to process: {}", notifications.size());
 
-        notifications.forEach(this::processNotifications);
+        int okCount = 0;
+        int failedCount = 0;
+        int postponedCount = 0;
+
+        for (var notification : notifications) {
+            log.info("Sending error notification. {}", notification.basicInfo());
+
+            try {
+                ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
+
+                notificationRepository.markAsSent(notification.id, response.getNotificationId());
+
+                log.info(
+                    "Error notification sent. {}. Notification ID: {}",
+                    notification.basicInfo(),
+                    response.getNotificationId()
+                );
+                okCount++;
+
+            } catch (BadRequest | UnprocessableEntity exception) {
+                fail(notification, exception);
+                failedCount++;
+
+            } catch (FeignException exception) {
+                postpone(notification, exception);
+                postponedCount++;
+            }
+        }
+
+        log.info(
+            "Finished sending notifications. OK: {}, Failed: {}, Postponed: {}",
+            okCount,
+            failedCount,
+            postponedCount
+        );
     }
 
     @Transactional(readOnly = true)
@@ -56,43 +92,25 @@ public class NotificationService {
         );
     }
 
-    private void processNotifications(Notification notification) {
-        try {
-            ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
+    private void fail(Notification notification, FeignException.FeignClientException exception) {
+        log.error(
+            "Received http status {} from client. Marking as failure. {}. Client response: {}",
+            exception.status(),
+            notification.basicInfo(),
+            exception.contentUTF8(),
+            exception
+        );
 
-            notificationRepository.markAsSent(notification.id, response.getNotificationId());
+        notificationRepository.markAsFailure(notification.id);
+    }
 
-            log.info(
-                "Error notification sent. Service: {}, Zip file: {}, ID: {}, Notification ID: {}",
-                notification.service,
-                notification.zipFileName,
-                notification.id,
-                response.getNotificationId()
-            );
-        } catch (FeignException.BadRequest | FeignException.UnprocessableEntity exception) {
-            log.error(
-                "Received http status {} from client. Marking as failure. "
-                    + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                exception.status(),
-                notification.service,
-                notification.zipFileName,
-                notification.id,
-                exception.contentUTF8(),
-                exception
-            );
-
-            notificationRepository.markAsFailure(notification.id);
-        } catch (FeignException exception) {
-            log.error(
-                "Received http status {} from client. Postponing notification for later. "
-                    + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
-                exception.status(),
-                notification.service,
-                notification.zipFileName,
-                notification.id,
-                exception.contentUTF8(),
-                exception
-            );
-        }
+    private void postpone(Notification notification, FeignException exception) {
+        log.error(
+            "Received http status {} from client. Postponing notification for later. {}. Client response: {}",
+            exception.status(),
+            notification.basicInfo(),
+            exception.contentUTF8(),
+            exception
+        );
     }
 }
