@@ -59,6 +59,13 @@ public class NotificationService {
     }
 
     private void processNotifications(Notification notification) {
+        log.info(
+            "Sending error notification. Service: {}, Zip file: {}, ID: {}",
+            notification.service,
+            notification.zipFileName,
+            notification.id
+        );
+
         try {
             ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
 
