@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
+import feign.FeignException.BadRequest;
+import feign.FeignException.UnprocessableEntity;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,33 +72,26 @@ public class NotificationService {
             notificationRepository.markAsSent(notification.id, response.getNotificationId());
 
             log.info(
-                "Error notification sent. Service: {}, Zip file: {}, ID: {}, Notification ID: {}",
-                notification.service,
-                notification.zipFileName,
-                notification.id,
+                "Error notification sent. {}. Notification ID: {}",
+                notification.basicInfo(),
                 response.getNotificationId()
             );
-        } catch (FeignException.BadRequest | FeignException.UnprocessableEntity exception) {
+        } catch (BadRequest | UnprocessableEntity exception) {
             log.error(
-                "Received http status {} from client. Marking as failure. "
-                    + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
+                "Received http status {} from client. Marking as failure. {}. Client response: {}",
                 exception.status(),
-                notification.service,
-                notification.zipFileName,
-                notification.id,
+                notification.basicInfo(),
                 exception.contentUTF8(),
                 exception
             );
 
             notificationRepository.markAsFailure(notification.id);
+
         } catch (FeignException exception) {
             log.error(
-                "Received http status {} from client. Postponing notification for later. "
-                    + "Service: {}, Zip file: {}, ID: {}, Client response: {}",
+                "Received http status {} from client. Postponing notification for later. {}. Client response: {}",
                 exception.status(),
-                notification.service,
-                notification.zipFileName,
-                notification.id,
+                notification.basicInfo(),
                 exception.contentUTF8(),
                 exception
             );
