@@ -89,18 +89,18 @@ public class NotificationRepository {
     /**
      * Mark notification as sent.
      * @param id notification ID
-     * @param notificationId ID of notification provided by API
+     * @param confirmationId ID provided by API after successfully sending notification
      * @return update was successful
      */
-    public boolean markAsSent(long id, String notificationId) {
+    public boolean markAsSent(long id, String confirmationId) {
         int rowsUpdated = jdbcTemplate.update(
             "UPDATE notifications "
-                + "SET notification_id = :notificationId, "
+                + "SET confirmation_id = :confirmationId, "
                 + "  processed_at = NOW(), "
                 + "  status = :status "
                 + "WHERE id = :id",
             new MapSqlParameterSource()
-                .addValue("notificationId", notificationId)
+                .addValue("confirmationId", confirmationId)
                 .addValue("status", SENT.name())
                 .addValue("id", id)
         );

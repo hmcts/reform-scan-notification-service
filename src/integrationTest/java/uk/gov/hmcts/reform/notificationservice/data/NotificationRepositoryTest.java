@@ -290,7 +290,7 @@ public class NotificationRepositoryTest {
             .satisfies(notification -> {
                 assertThat(notification.id).isEqualTo(idPending);
                 assertThat(notification.status).isEqualTo(PENDING);
-                assertThat(notification.notificationId).isNull();
+                assertThat(notification.confirmationId).isNull();
             });
     }
 
@@ -319,7 +319,7 @@ public class NotificationRepositoryTest {
             .isNotEmpty()
             .get()
             .satisfies(notification -> {
-                assertThat(notification.notificationId).isEqualTo(NOTIFICATION_ID);
+                assertThat(notification.confirmationId).isEqualTo(NOTIFICATION_ID);
                 assertThat(notification.status).isEqualTo(SENT);
                 assertThat(notification.processedAt).isNotNull();
             });
