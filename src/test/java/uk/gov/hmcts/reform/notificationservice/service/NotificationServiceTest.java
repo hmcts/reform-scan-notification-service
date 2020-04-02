@@ -159,7 +159,7 @@ class NotificationServiceTest {
             .extracting(this::getTupleFromNotification)
             .containsExactlyInAnyOrder(
                 tuple(
-                    notification1.notificationId,
+                    notification1.confirmationId,
                     notification1.zipFileName,
                     notification1.poBox,
                     notification1.service,
@@ -170,7 +170,7 @@ class NotificationServiceTest {
                     notification1.status
                 ),
                 tuple(
-                    notification2.notificationId,
+                    notification2.confirmationId,
                     notification2.zipFileName,
                     notification2.poBox,
                     notification2.service,
@@ -231,7 +231,7 @@ class NotificationServiceTest {
             .extracting(this::getTupleFromNotification)
             .containsExactlyInAnyOrder(
                 tuple(
-                    notification1.notificationId,
+                    notification1.confirmationId,
                     notification1.zipFileName,
                     notification1.poBox,
                     notification1.service,
@@ -242,7 +242,7 @@ class NotificationServiceTest {
                     notification1.status
                 ),
                 tuple(
-                    notification2.notificationId,
+                    notification2.confirmationId,
                     notification2.zipFileName,
                     notification2.poBox,
                     notification2.service,
@@ -258,7 +258,7 @@ class NotificationServiceTest {
 
     private Tuple getTupleFromNotification(Notification notification) {
         return new Tuple(
-            notification.notificationId,
+            notification.confirmationId,
             notification.zipFileName,
             notification.poBox,
             notification.service,

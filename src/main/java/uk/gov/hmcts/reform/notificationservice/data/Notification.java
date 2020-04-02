@@ -7,7 +7,7 @@ import java.time.Instant;
 public class Notification {
 
     public final long id;
-    public final String notificationId;
+    public final String confirmationId;
     public final String zipFileName;
     public final String poBox;
     public final String container;
@@ -21,7 +21,7 @@ public class Notification {
 
     public Notification(
         long id,
-        String notificationId,
+        String confirmationId,
         String zipFileName,
         String poBox,
         String container,
@@ -34,7 +34,7 @@ public class Notification {
         NotificationStatus status
     ) {
         this.id = id;
-        this.notificationId = notificationId;
+        this.confirmationId = confirmationId;
         this.zipFileName = zipFileName;
         this.poBox = poBox;
         this.container = container;

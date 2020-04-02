@@ -19,8 +19,6 @@ import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SE
 @SpringBootTest
 public class NotificationRepositoryTest {
 
-    private static final String NOTIFICATION_ID = "notification ID";
-
     @Autowired NamedParameterJdbcTemplate jdbcTemplate;
     @Autowired NotificationRepository notificationRepository;
 
@@ -148,11 +146,11 @@ public class NotificationRepositoryTest {
         assertThat(notifications)
             .isNotEmpty()
             .hasSize(2)
-            .usingElementComparatorIgnoringFields("notificationId", "createdAt", "processedAt")
+            .usingElementComparatorIgnoringFields("createdAt", "processedAt")
             .containsExactlyInAnyOrder(
                 new Notification(
                     id1,
-                    "someNotificationId",
+                    null,
                     newNotification1.zipFileName,
                     newNotification1.poBox,
                     newNotification1.container,
@@ -166,7 +164,7 @@ public class NotificationRepositoryTest {
                 ),
                 new Notification(
                     id3,
-                    "someOtherNotificationId",
+                    null,
                     newNotification3.zipFileName,
                     newNotification3.poBox,
                     newNotification3.container,
@@ -228,11 +226,11 @@ public class NotificationRepositoryTest {
         assertThat(notifications)
             .isNotEmpty()
             .hasSize(2)
-            .usingElementComparatorIgnoringFields("notificationId", "createdAt", "processedAt")
+            .usingElementComparatorIgnoringFields("createdAt", "processedAt")
             .containsExactlyInAnyOrder(
                 new Notification(
                     id1,
-                    "someNotificationId",
+                    null,
                     newNotification1.zipFileName,
                     newNotification1.poBox,
                     newNotification1.container,
@@ -246,7 +244,7 @@ public class NotificationRepositoryTest {
                 ),
                 new Notification(
                     id3,
-                    "someOtherNotificationId",
+                    null,
                     newNotification3.zipFileName,
                     newNotification3.poBox,
                     newNotification3.container,
@@ -269,7 +267,7 @@ public class NotificationRepositoryTest {
         long idPending = notificationRepository.insert(newNotification);
         long idSentStillPending = notificationRepository.insert(createNewNotification());
         jdbcTemplate.update(
-            "UPDATE notifications SET notification_id = 'SOME_ID' WHERE id = :id",
+            "UPDATE notifications SET confirmation_id = 'SOME_ID' WHERE id = :id",
             new MapSqlParameterSource("id", idSentStillPending)
         );
         long idSent = notificationRepository.insert(createNewNotification());
@@ -290,14 +288,14 @@ public class NotificationRepositoryTest {
             .satisfies(notification -> {
                 assertThat(notification.id).isEqualTo(idPending);
                 assertThat(notification.status).isEqualTo(PENDING);
-                assertThat(notification.notificationId).isNull();
+                assertThat(notification.confirmationId).isNull();
             });
     }
 
     @Test
     void should_return_flag_false_when_mark_as_sent_did_not_find_any_notification_to_update() {
         // when
-        boolean isMarked = notificationRepository.markAsSent(1_000, NOTIFICATION_ID);
+        boolean isMarked = notificationRepository.markAsSent(1_000, "foo");
 
         // then
         assertThat(isMarked).isFalse();
@@ -307,9 +305,10 @@ public class NotificationRepositoryTest {
     void should_return_flag_true_when_mark_as_sent_was_successful() {
         // given
         long id = notificationRepository.insert(createNewNotification());
+        String confirmationId = "aisjdaoisd";
 
         // when
-        boolean isMarked = notificationRepository.markAsSent(id, NOTIFICATION_ID);
+        boolean isMarked = notificationRepository.markAsSent(id, confirmationId);
 
         // then
         assertThat(isMarked).isTrue();
@@ -319,7 +318,7 @@ public class NotificationRepositoryTest {
             .isNotEmpty()
             .get()
             .satisfies(notification -> {
-                assertThat(notification.notificationId).isEqualTo(NOTIFICATION_ID);
+                assertThat(notification.confirmationId).isEqualTo(confirmationId);
                 assertThat(notification.status).isEqualTo(SENT);
                 assertThat(notification.processedAt).isNotNull();
             });

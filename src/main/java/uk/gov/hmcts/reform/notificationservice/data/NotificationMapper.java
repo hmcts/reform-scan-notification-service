@@ -16,7 +16,7 @@ public class NotificationMapper implements RowMapper<Notification> {
     public Notification mapRow(ResultSet rs, int rowNum) throws SQLException {
         return new Notification(
             rs.getLong("id"),
-            rs.getString("notification_id"),
+            rs.getString("confirmation_id"),
             rs.getString("zip_file_name"),
             rs.getString("po_box"),
             rs.getString("container"),
