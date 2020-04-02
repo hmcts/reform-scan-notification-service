@@ -59,7 +59,7 @@ public class NotificationControllerTest extends ControllerTestBase {
 
         var notification1 = new Notification(
             1L,
-            "notificationId1",
+            "confirmation-id-1",
             fileName,
             "po_box1",
             "container",
@@ -73,7 +73,7 @@ public class NotificationControllerTest extends ControllerTestBase {
         );
         var notification2 = new Notification(
             2L,
-            "notificationId2",
+            "confirmation-id-2",
             fileName,
             "po_box2",
             "container",
@@ -101,7 +101,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
-            .andExpect(jsonPath("$.notifications[0].notification_id").value(notification1.confirmationId))
+            .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
             .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
             .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
             .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
@@ -112,7 +112,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
-            .andExpect(jsonPath("$.notifications[1].notification_id").value(notification2.confirmationId))
+            .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
             .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
             .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
             .andExpect(jsonPath("$.notifications[1].container").value(notification2.container))
