@@ -61,9 +61,9 @@ public class AuthServiceTest {
         willThrow(new InvalidTokenException(invalidToken)).given(validator).getServiceName(anyString());
 
         // when
-        InvalidTokenException exception = catchThrowableOfType(
+        UnauthenticatedException exception = catchThrowableOfType(
             () -> service.authenticate(SERVICE_HEADER),
-            InvalidTokenException.class
+            UnauthenticatedException.class
         );
 
         // then
