@@ -147,4 +147,34 @@ public class NotificationControllerTest extends ControllerTestBase {
             .andExpect(jsonPath("$.notifications", hasSize(0)))
         ;
     }
+
+    @Test
+    void should_respond_with_unauthenticated_if_service_authorization_header_missing() throws Exception {
+        final String fileName = "hello.zip";
+
+        mockMvc
+            .perform(
+                get("/notifications")
+                    .queryParam("file_name", fileName)
+            )
+            .andExpect(status().isUnauthorized())
+        ;
+    }
+
+    @Test
+    void should_respond_with_unauthenticated_if_service_authorization_header_corrupted() throws Exception {
+        final String fileName = "hello.zip";
+        final String auth = "auth";
+
+        given(tokenValidator.getServiceName(auth)).willThrow(new RuntimeException("msg"));
+
+        mockMvc
+            .perform(
+                get("/notifications")
+                    .queryParam("file_name", fileName)
+                    .header("ServiceAuthorization", auth)
+            )
+            .andExpect(status().isUnauthorized())
+        ;
+    }
 }

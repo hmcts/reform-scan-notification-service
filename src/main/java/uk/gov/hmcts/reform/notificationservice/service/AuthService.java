@@ -16,7 +16,11 @@ public class AuthService {
         if (authHeader == null) {
             throw new UnauthenticatedException("Missing ServiceAuthorization header");
         } else {
-            return authTokenValidator.getServiceName(authHeader);
+            try {
+                return authTokenValidator.getServiceName(authHeader);
+            } catch (Exception ex) {
+                throw new UnauthenticatedException(ex.getMessage());
+            }
         }
     }
 }
