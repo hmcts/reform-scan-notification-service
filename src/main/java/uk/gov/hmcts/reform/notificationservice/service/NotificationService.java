@@ -65,6 +65,7 @@ public class NotificationService {
                 postponedCount++;
             } catch (Exception e) {
                 postpone(notification, e);
+                postponedCount++;
             }
         }
 
