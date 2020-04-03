@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
+import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,18 +57,36 @@ public class AuthServiceTest {
     @Test
     void should_throw_when_invalid_token_received() {
         // given
-        final String invalidToken = "invalid token";
+        final String errorMessage = "invalid token";
 
-        willThrow(new InvalidTokenException(invalidToken)).given(validator).getServiceName(anyString());
+        willThrow(new InvalidTokenException(errorMessage)).given(validator).getServiceName(anyString());
 
         // when
-        UnauthenticatedException exception = catchThrowableOfType(
+        InvalidTokenException exception = catchThrowableOfType(
             () -> service.authenticate(SERVICE_HEADER),
-            UnauthenticatedException.class
+            InvalidTokenException.class
         );
 
         // then
-        assertThat(exception.getMessage()).isEqualTo(invalidToken);
+        assertThat(exception.getMessage()).isEqualTo(errorMessage);
+    }
+
+    @Test
+    void should_throw_when_token_validation_error_occured() {
+        // given
+        final String errorMessage = "service error";
+
+        willThrow(new ServiceException(errorMessage, new RuntimeException()))
+            .given(validator).getServiceName(anyString());
+
+        // when
+        ServiceException exception = catchThrowableOfType(
+            () -> service.authenticate(SERVICE_HEADER),
+            ServiceException.class
+        );
+
+        // then
+        assertThat(exception.getMessage()).isEqualTo(errorMessage);
     }
 
     @Test

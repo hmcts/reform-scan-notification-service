@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
+import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
@@ -162,11 +164,11 @@ public class NotificationControllerTest extends ControllerTestBase {
     }
 
     @Test
-    void should_respond_with_unauthenticated_if_service_authorization_header_corrupted() throws Exception {
+    void should_respond_with_unauthenticated_if_invalid_token_exception() throws Exception {
         final String fileName = "hello.zip";
         final String auth = "auth";
 
-        given(tokenValidator.getServiceName(auth)).willThrow(new RuntimeException("msg"));
+        given(tokenValidator.getServiceName(auth)).willThrow(new InvalidTokenException("msg"));
 
         mockMvc
             .perform(
@@ -175,6 +177,23 @@ public class NotificationControllerTest extends ControllerTestBase {
                     .header("ServiceAuthorization", auth)
             )
             .andExpect(status().isUnauthorized())
+        ;
+    }
+
+    @Test
+    void should_respond_with_unauthenticated_if_service_exception() throws Exception {
+        final String fileName = "hello.zip";
+        final String auth = "auth";
+
+        given(tokenValidator.getServiceName(auth)).willThrow(new ServiceException("msg", new RuntimeException()));
+
+        mockMvc
+            .perform(
+                get("/notifications")
+                    .queryParam("file_name", fileName)
+                    .header("ServiceAuthorization", auth)
+            )
+            .andExpect(status().isInternalServerError())
         ;
     }
 }
