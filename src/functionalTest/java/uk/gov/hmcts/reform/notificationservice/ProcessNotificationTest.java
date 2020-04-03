@@ -49,7 +49,7 @@ class ProcessNotificationTest {
             .hasSize(1)
             .first()
             .satisfies(node -> {
-                assertThat(node.get("notification_id").asText()).isNotEmpty();
+                assertThat(node.get("confirmation_id").asText()).isNotEmpty();
                 assertThat(node.get("zip_file_name").asText()).isEqualTo(messageDetails.zipFileName);
                 assertThat(node.get("service").asText()).isEqualTo(messageDetails.service);
                 // following fields will have to be amended in case notification test API starts to accept our requests

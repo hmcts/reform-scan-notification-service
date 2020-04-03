@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.notificationservice.util.CustomInstantSerializer;
 import java.time.Instant;
 
 public class NotificationInfo {
-    @JsonProperty("notification_id")
-    public final String notificationId;
+    @JsonProperty("confirmation_id")
+    public final String confirmationId;
 
     @JsonProperty("zip_file_name")
     public final String zipFileName;
@@ -40,7 +40,7 @@ public class NotificationInfo {
     public final String status;
 
     public NotificationInfo(
-        String notificationId,
+        String confirmationId,
         String zipFileName,
         String poBox,
         String container,
@@ -51,7 +51,7 @@ public class NotificationInfo {
         Instant processedAt,
         String status
     ) {
-        this.notificationId = notificationId;
+        this.confirmationId = confirmationId;
         this.zipFileName = zipFileName;
         this.poBox = poBox;
         this.container = container;

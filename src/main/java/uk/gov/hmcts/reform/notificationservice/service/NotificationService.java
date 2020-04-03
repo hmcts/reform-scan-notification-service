@@ -63,6 +63,9 @@ public class NotificationService {
             } catch (FeignException exception) {
                 postpone(notification, exception);
                 postponedCount++;
+            } catch (Exception e) {
+                postpone(notification, e);
+                postponedCount++;
             }
         }
 
@@ -112,5 +115,9 @@ public class NotificationService {
             exception.contentUTF8(),
             exception
         );
+    }
+
+    private void postpone(Notification notification, Exception exc) {
+        log.error("Error processing pending notifications. {}", notification.basicInfo(), exc);
     }
 }

@@ -26,6 +26,7 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
@@ -111,6 +112,19 @@ class NotificationServiceTest {
 
         // then
         verify(notificationRepository, never()).markAsFailure(notification.id);
+    }
+
+    @Test
+    void should_leave_notification_as_is_when_unexpected_exception_is_thrown_and_continue() {
+        // given
+        given(notificationRepository.findPending()).willReturn(singletonList(getSampleNotification()));
+        willThrow(new RuntimeException()).given(notificationClient).notify(any());
+
+        // when
+        notificationService.processPendingNotifications();
+
+        // then
+        verify(notificationRepository, never()).markAsFailure(anyLong());
     }
 
     @Test
