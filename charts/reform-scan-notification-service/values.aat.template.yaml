@@ -6,6 +6,7 @@ java:
     NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS: 1000
     STAGING_QUEUE_NOTIFICATIONS_ENABLED: true
     QUEUE_NOTIFICATIONS_READ: false
+    PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
   keyVaults:
     reform-scan:
       resourceGroup: reform-scan
