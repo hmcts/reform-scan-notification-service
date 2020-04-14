@@ -4,6 +4,10 @@
 [![](https://github.com/hmcts/reform-scan-notification-service/workflows/Publish%20Swagger%20Specs/badge.svg)](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/reform-scan-notification-service.json)
 [![codecov](https://codecov.io/gh/hmcts/reform-scan-notification-service/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/reform-scan-notification-service)
 
+## Purpose
+
+Retrieve service bus queue messages from notifications queue and process them by notifying scan provider and save results to DB in notifications table.
+ 
 ## Building and deploying the application
 
 ### Building the application
