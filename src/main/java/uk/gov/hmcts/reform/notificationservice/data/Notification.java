@@ -48,6 +48,12 @@ public class Notification {
     }
 
     public String basicInfo() {
-        return "Notification{id=" + id + ", zipFileName='" + zipFileName + "', service='" + service + "'}";
+        return String.format(
+            "Notification{id=%d, zipFileName='%s', container='%s', service='%s'}",
+            id,
+            zipFileName,
+            container,
+            service
+        );
     }
 }
