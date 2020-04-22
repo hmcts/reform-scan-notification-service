@@ -216,7 +216,7 @@ dependencies {
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
-  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '10.9'
+  implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '11.0'
   // end region
 
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
