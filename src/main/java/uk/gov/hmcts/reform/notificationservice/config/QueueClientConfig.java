@@ -18,6 +18,8 @@ public class QueueClientConfig {
 
     private static final Logger log = LoggerFactory.getLogger(QueueClientConfig.class);
 
+    private static String ENTITY_PATH = "EntityPath";
+
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.read-connection-string")
     public IMessageReceiver notificationsMessageReceiver(
@@ -33,10 +35,10 @@ public class QueueClientConfig {
     private void logQueueName(String connectionString) {
         String[] split = connectionString.split(";");
         Arrays.stream(split)
-            .filter(e -> e.startsWith("EntityPath"))
+            .filter(e -> e.startsWith(ENTITY_PATH))
             .findFirst()
             .ifPresent(c ->
-                log.warn("Notification service connected to queue: {} ", c)
+                log.warn("Notification service connected to queue: {} ", c.replace(ENTITY_PATH, ""))
             );
     }
 
