@@ -18,7 +18,7 @@ public class QueueClientConfig {
 
     private static final Logger log = LoggerFactory.getLogger(QueueClientConfig.class);
 
-    private static String ENTITY_PATH = "EntityPath";
+    private static String ENTITY_PATH = "EntityPath=";
 
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.read-connection-string")
