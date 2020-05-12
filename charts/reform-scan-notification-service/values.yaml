@@ -16,7 +16,6 @@ java:
         - notification-service-POSTGRES-PORT
         - notification-service-POSTGRES-DATABASE
         - notifications-queue-listen-connection-string
-        - notifications-staging-queue-listen-connection-string
 
   environment:
     DB_CONN_OPTIONS: ?sslmode=require
@@ -27,7 +26,6 @@ java:
     NOTIFICATIONS_CONSUME_TASK_ENABLED: true
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 4000
     PENDING_NOTIFICATIONS_TASK_ENABLED: true
-    STAGING_QUEUE_NOTIFICATIONS_ENABLED: false
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
 servicebus:
   enabled: false
