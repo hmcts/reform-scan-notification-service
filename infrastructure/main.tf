@@ -18,10 +18,10 @@ module "reform-notifications-db" {
 
 module "reform-notifications-staging-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.product}-staging-${var.component}"
+  product            = "${var.component}-staging"
   location           = var.location_db
   env                = var.env
-  database_name      = "notifications-staging"
+  database_name      = "notifications"
   postgresql_user    = "notifier"
   postgresql_version = "11"
   sku_name           = "GP_Gen5_2"
