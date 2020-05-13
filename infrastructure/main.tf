@@ -16,6 +16,20 @@ module "reform-notifications-db" {
   subscription       = var.subscription
 }
 
+module "reform-notifications-staging-db" {
+  source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
+  product            = "${var.component}-staging"
+  location           = var.location_db
+  env                = var.env
+  database_name      = "notifications"
+  postgresql_user    = "notifier"
+  postgresql_version = "11"
+  sku_name           = "GP_Gen5_2"
+  sku_tier           = "GeneralPurpose"
+  common_tags        = var.common_tags
+  subscription       = var.subscription
+}
+
 data "azurerm_key_vault" "reform_scan_key_vault" {
   name                = "reform-scan-${var.env}"
   resource_group_name = "reform-scan-${var.env}"
@@ -52,6 +66,40 @@ resource "azurerm_key_vault_secret" "db_database" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-POSTGRES-DATABASE"
   value        = module.reform-notifications-db.postgresql_database
+}
+
+# endregion
+
+# region staging DB secrets
+
+resource "azurerm_key_vault_secret" "staging_db_user" {
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "${var.component}-staging-postgres-user"
+  value        = module.reform-notifications-staging-db.user_name
+}
+
+resource "azurerm_key_vault_secret" "staging_db_password" {
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "${var.component}-staging-postgres-pass"
+  value        = module.reform-notifications-staging-db.postgresql_password
+}
+
+resource "azurerm_key_vault_secret" "staging_db_host" {
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "${var.component}-staging-postgres-host"
+  value        = module.reform-notifications-staging-db.host_name
+}
+
+resource "azurerm_key_vault_secret" "staging_db_port" {
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "${var.component}-staging-postgres-port"
+  value        = module.reform-notifications-staging-db.postgresql_listen_port
+}
+
+resource "azurerm_key_vault_secret" "staging_db_database" {
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "${var.component}-staging-postgres-database"
+  value        = module.reform-notifications-staging-db.postgresql_database
 }
 
 # endregion
