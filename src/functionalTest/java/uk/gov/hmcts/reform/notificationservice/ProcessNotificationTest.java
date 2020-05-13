@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 
 class ProcessNotificationTest {
 
@@ -53,7 +53,7 @@ class ProcessNotificationTest {
                 assertThat(node.get("zip_file_name").asText()).isEqualTo(messageDetails.zipFileName);
                 assertThat(node.get("service").asText()).isEqualTo(messageDetails.service);
                 assertThat(node.get("processed_at").textValue()).isNotEmpty();
-                assertThat(node.get("status").asText()).isEqualTo(SENT.name());
+                assertThat(node.get("status").asText()).isEqualTo(PENDING.name());
             });
 
         return true; // all satisfied
