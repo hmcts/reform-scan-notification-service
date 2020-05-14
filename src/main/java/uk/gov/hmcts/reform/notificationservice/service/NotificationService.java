@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -83,6 +84,12 @@ public class NotificationService {
         log.info("Getting notifications for file {}, service {}", fileNameCleanedUp, service);
 
         return notificationRepository.find(fileNameCleanedUp, service);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Notification> findByDate(LocalDate date) {
+        log.info("Getting notifications for date {}", date);
+        return notificationRepository.findByDate(date);
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
