@@ -6,6 +6,7 @@ java:
     NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS: 1000
     QUEUE_NOTIFICATIONS_READ: false
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
+    FLYWAY_SKIP_MIGRATIONS: false
   keyVaults:
     reform-scan:
       resourceGroup: reform-scan
@@ -14,9 +15,9 @@ java:
         - error-notifications-password
         - error-notifications-url
         - error-notifications-username
-        - notification-service-POSTGRES-PASS
-        - notification-service-POSTGRES-USER
-        - notification-service-POSTGRES-HOST
-        - notification-service-POSTGRES-PORT
-        - notification-service-POSTGRES-DATABASE
+        - notification-service-staging-postgres-pass
+        - notification-service-staging-postgres-user
+        - notification-service-staging-postgres-host
+        - notification-service-staging-postgres-port
+        - notification-service-staging-postgres-database
         - notifications-staging-queue-listen-connection-string

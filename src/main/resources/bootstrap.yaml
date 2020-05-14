@@ -15,5 +15,10 @@ spring:
         notification-service-POSTGRES-DATABASE: DB_NAME
         notification-service-POSTGRES-HOST: DB_HOST
         notification-service-POSTGRES-PORT: DB_PORT
+        notification-service-staging-postgres-pass: DB_PASSWORD
+        notification-service-staging-postgres-user: DB_USER
+        notification-service-staging-postgres-host: DB_NAME
+        notification-service-staging-postgres-port: DB_HOST
+        notification-service-staging-postgres-database: DB_PORT
         notifications-queue-listen-connection-string: QUEUE_NOTIFICATIONS_READ
         notifications-staging-queue-listen-connection-string: QUEUE_NOTIFICATIONS_READ
