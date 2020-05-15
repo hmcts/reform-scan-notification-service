@@ -37,6 +37,14 @@
     <vulnerabilityName>Prototype pollution</vulnerabilityName>
   </suppress>
 
+  <suppress until="2021-01-05">
+    <notes><![CDATA[
+      This is only used for TESTING purposes.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:javascript/jquery@3\.4\.1.*$</packageUrl>
+    <vulnerabilityName>Regex in its jQuery.htmlPrefilter  sometimes may introduce XSS</vulnerabilityName>
+  </suppress>
+
   <suppress until="2020-05-31">
     <notes><![CDATA[Only used in smoke tests]]></notes>
     <packageUrl regex="true">^pkg:maven/org\.codehaus\.groovy/groovy\-xml@.*$</packageUrl>
