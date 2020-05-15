@@ -212,7 +212,6 @@ public class NotificationControllerTest extends ControllerTestBase {
             .withZone(ZoneOffset.UTC)
             .format(instantNow);
 
-
         var notification1 = new Notification(
             1L,
             "confirmation-id-1",
@@ -244,7 +243,6 @@ public class NotificationControllerTest extends ControllerTestBase {
 
         given(notificationService.findByDate(date))
             .willReturn(asList(notification1, notification2));
-
 
         mockMvc
             .perform(
@@ -282,7 +280,7 @@ public class NotificationControllerTest extends ControllerTestBase {
     }
 
     @Test
-    void should_return_400_when_param_is_not_valid() throws Exception {
+    void should_return_400_when_date_param_is_not_valid() throws Exception {
         mockMvc
             .perform(
                 get("/notifications")
