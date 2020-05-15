@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,14 @@ public class NotificationRepository {
             new MapSqlParameterSource()
                 .addValue("zipFileName", zipFileName)
                 .addValue("service", service),
+            this.mapper
+        );
+    }
+
+    public List<Notification> findByDate(LocalDate date) {
+        return jdbcTemplate.query(
+            "SELECT * FROM notifications WHERE DATE(created_at) = :date",
+            new MapSqlParameterSource("date", date),
             this.mapper
         );
     }

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
+import java.time.LocalDate;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -269,6 +270,56 @@ class NotificationServiceTest {
             );
         verify(notificationRepository, times(1)).find(zipFileNameCleanedUp, service);
     }
+
+    @Test
+    void should_return_notifications_for_date() {
+        // given
+        final String service = "service";
+        LocalDate searchDate = LocalDate.now();
+
+        var notification1 = new Notification(
+            1L,
+            "notification_id_1",
+            "zip_file_name_12",
+            "po_box_1",
+            "bulk_scan",
+            "service_1",
+            "DCN_1",
+            ErrorCode.ERR_AV_FAILED,
+            "invalid metafile_1",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        var notification2 = new Notification(
+            2L,
+            "notification_id_2",
+            "zip_file_23234.zip",
+            "po_box_2",
+            "reform_scan",
+            "service_99",
+            "DCN_2",
+            ErrorCode.ERR_SIG_VERIFY_FAILED,
+            "invalid metafile_2",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        given(notificationRepository.findByDate(searchDate))
+            .willReturn(asList(notification1, notification2));
+
+        // when
+        var notificationResponses = notificationService.findByDate(searchDate);
+
+        // then
+        assertThat(notificationResponses)
+            .hasSize(2)
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactlyInAnyOrder(notification1, notification2);
+
+        verify(notificationRepository, times(1)).findByDate(searchDate);
+    }
+
 
     private Tuple getTupleFromNotification(Notification notification) {
         return new Tuple(

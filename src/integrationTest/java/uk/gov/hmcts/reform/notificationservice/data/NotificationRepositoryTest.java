@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -351,6 +352,48 @@ public class NotificationRepositoryTest {
             .satisfies(notification -> {
                 assertThat(notification.status).isEqualTo(FAILED);
                 assertThat(notification.processedAt).isNotNull();
+            });
+    }
+
+    @Test
+    void should_find_notification_by_date() {
+        // given
+        final var newNotification = new NewNotification(
+            "zip_file_123213.zip",
+            "po_box2",
+            "bulkscan",
+            "other_service",
+            "dcn2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "error_description2"
+        );
+        notificationRepository.insert(newNotification);
+
+        long idDifferentDate = notificationRepository.insert(createNewNotification());
+        jdbcTemplate.update(
+            "UPDATE notifications SET created_at ='" + LocalDate.now().minusDays(2) + "' WHERE id = :id",
+            new MapSqlParameterSource("id", idDifferentDate)
+        );
+
+        // when
+        List<Notification> notifications = notificationRepository.findByDate(LocalDate.now());
+
+        // then
+        assertThat(notifications)
+            .isNotEmpty()
+            .hasSize(1);
+        assertThat(notifications.get(0))
+            .satisfies(n -> {
+                assertThat(n.zipFileName).isEqualTo(newNotification.zipFileName);
+                assertThat(n.poBox).isEqualTo(newNotification.poBox);
+                assertThat(n.service).isEqualTo(newNotification.service);
+                assertThat(n.container).isEqualTo(newNotification.container);
+                assertThat(n.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
+                assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
+                assertThat(n.errorDescription).isEqualTo(newNotification.errorDescription);
+                assertThat(n.createdAt).isNotNull();
+                assertThat(n.processedAt).isNull();
+                assertThat(n.status).isEqualTo(PENDING);
             });
     }
 
