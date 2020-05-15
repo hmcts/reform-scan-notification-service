@@ -48,6 +48,7 @@ public class NotificationController {
 
     private NotificationInfo toNotificationResponse(Notification notification) {
         return new NotificationInfo(
+            notification.id,
             notification.confirmationId,
             notification.zipFileName,
             notification.poBox,

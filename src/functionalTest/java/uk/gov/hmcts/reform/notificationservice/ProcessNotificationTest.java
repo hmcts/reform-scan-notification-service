@@ -49,6 +49,7 @@ class ProcessNotificationTest {
             .hasSize(1)
             .first()
             .satisfies(node -> {
+                assertThat(Long.valueOf(node.get("id").asText())).isGreaterThan(0);
                 assertThat(node.get("confirmation_id").asText()).isNotEmpty();
                 assertThat(node.get("zip_file_name").asText()).isEqualTo(messageDetails.zipFileName);
                 assertThat(node.get("service").asText()).isEqualTo(messageDetails.service);
