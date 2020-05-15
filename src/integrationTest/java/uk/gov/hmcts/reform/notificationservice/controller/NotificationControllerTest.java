@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 import static java.util.Arrays.asList;
@@ -197,5 +200,95 @@ public class NotificationControllerTest extends ControllerTestBase {
             )
             .andExpect(status().isInternalServerError())
         ;
+    }
+
+    @Test
+    void should_get_notifications_by_date() throws Exception {
+
+        LocalDate date = LocalDate.now();
+        Instant instantNow = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+
+        String instantNowStr = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .withZone(ZoneOffset.UTC)
+            .format(instantNow);
+
+
+        var notification1 = new Notification(
+            1L,
+            "confirmation-id-1",
+            "zip_file_name_123.zip",
+            "po_box1",
+            "container",
+            "bulk_scan",
+            "DCN1",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            instantNow,
+            instantNow,
+            NotificationStatus.SENT
+        );
+        var notification2 = new Notification(
+            2L,
+            "confirmation-id-2",
+            "file_name_1.zip",
+            "po_box_2",
+            "container_x",
+            "service_1",
+            "DCN2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "invalid metafile_2",
+            instantNow,
+            instantNow,
+            NotificationStatus.SENT
+        );
+
+        given(notificationService.findByDate(date))
+            .willReturn(asList(notification1, notification2));
+
+
+        mockMvc
+            .perform(
+                get("/notifications")
+                    .queryParam("date", date.toString())
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count", is(2)))
+            .andExpect(jsonPath("$.notifications", hasSize(2)))
+            .andExpect(jsonPath("$.notifications[0].id").isNotEmpty())
+            .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
+            .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
+            .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
+            .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
+            .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
+            .andExpect(jsonPath("$.notifications[0].document_control_number")
+                .value(notification1.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[0].error_code").value(notification1.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[0].created_at").value(instantNowStr))
+            .andExpect(jsonPath("$.notifications[0].processed_at").value(instantNowStr))
+            .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
+            .andExpect(jsonPath("$.notifications[1].id").isNotEmpty())
+            .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
+            .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
+            .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
+            .andExpect(jsonPath("$.notifications[1].container").value(notification2.container))
+            .andExpect(jsonPath("$.notifications[1].service").value(notification2.service))
+            .andExpect(jsonPath("$.notifications[1].document_control_number")
+                .value(notification2.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[1].error_code").value(notification2.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[1].created_at").value(instantNowStr))
+            .andExpect(jsonPath("$.notifications[1].processed_at").value(instantNowStr))
+            .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()));
+    }
+
+    @Test
+    void should_return_400_when_param_is_not_valid() throws Exception {
+        mockMvc
+            .perform(
+                get("/notifications")
+                    .queryParam("date", "3232")
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest());
     }
 }

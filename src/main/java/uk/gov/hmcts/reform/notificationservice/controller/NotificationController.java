@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -12,9 +13,11 @@ import uk.gov.hmcts.reform.notificationservice.model.out.NotificationsResponse;
 import uk.gov.hmcts.reform.notificationservice.service.AuthService;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
 @RestController
 @RequestMapping(path = "/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,13 +39,20 @@ public class NotificationController {
         @RequestParam("file_name") String fileName
     ) {
         String serviceName = authService.authenticate(serviceAuthHeader);
+        return mapToNotificationsResponse(notificationService.findByFileNameAndService(fileName, serviceName));
+    }
 
-        List<NotificationInfo> notifications =
-            notificationService.findByFileNameAndService(fileName, serviceName)
-                .stream()
-                .map(notification -> toNotificationResponse(notification))
-                .collect(toList());
+    @GetMapping(params = "date")
+    public NotificationsResponse getNotificationsByDate(
+        @RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date
+    ) {
+        return mapToNotificationsResponse(notificationService.findByDate(date));
+    }
 
+    private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {
+        List<NotificationInfo> notifications = list.stream()
+            .map(notification -> toNotificationResponse(notification))
+            .collect(toList());
         return new NotificationsResponse(notifications.size(), notifications);
     }
 
