@@ -1,17 +1,19 @@
 package uk.gov.hmcts.reform.notificationservice.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.WebApplicationContext;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
+import uk.gov.hmcts.reform.notificationservice.service.AuthService;
+import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,22 +30,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-@AutoConfigureMockMvc
-@SpringBootTest
-public class NotificationControllerTest extends ControllerTestBase {
+@RunWith(SpringRunner.class)
+@WebMvcTest(controllers = NotificationController.class)
+public class NotificationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private WebApplicationContext wac;
+    @MockBean
+    protected NotificationService notificationService;
 
-    @BeforeEach
-    void setUp() {
-        mockMvc = webAppContextSetup(wac).build();
-    }
+    @MockBean
+    protected AuthService authService;
 
     @Test
     void should_get_notifications_by_file_name_and_service() throws Exception {
@@ -91,7 +90,7 @@ public class NotificationControllerTest extends ControllerTestBase {
             NotificationStatus.SENT
         );
 
-        given(tokenValidator.getServiceName(auth)).willReturn(service);
+        given(authService.authenticate(auth)).willReturn(service);
         given(notificationService.findByFileNameAndService(fileName, service))
             .willReturn(asList(notification1, notification2));
 
@@ -139,7 +138,7 @@ public class NotificationControllerTest extends ControllerTestBase {
         final String auth = "auth";
         final String service = "service";
 
-        given(tokenValidator.getServiceName(auth)).willReturn(service);
+        given(authService.authenticate(auth)).willReturn(service);
         given(notificationService.findByFileNameAndService(fileName, service)).willReturn(emptyList());
 
         mockMvc
@@ -158,6 +157,7 @@ public class NotificationControllerTest extends ControllerTestBase {
     @Test
     void should_respond_with_unauthenticated_if_service_authorization_header_missing() throws Exception {
         final String fileName = "hello.zip";
+        given(authService.authenticate(null)).willCallRealMethod();
 
         mockMvc
             .perform(
@@ -173,7 +173,7 @@ public class NotificationControllerTest extends ControllerTestBase {
         final String fileName = "hello.zip";
         final String auth = "auth";
 
-        given(tokenValidator.getServiceName(auth)).willThrow(new InvalidTokenException("msg"));
+        given(authService.authenticate(auth)).willThrow(new InvalidTokenException("msg"));
 
         mockMvc
             .perform(
@@ -190,7 +190,7 @@ public class NotificationControllerTest extends ControllerTestBase {
         final String fileName = "hello.zip";
         final String auth = "auth";
 
-        given(tokenValidator.getServiceName(auth)).willThrow(new ServiceException("msg", new RuntimeException()));
+        given(authService.authenticate(auth)).willThrow(new ServiceException("msg", new RuntimeException()));
 
         mockMvc
             .perform(
