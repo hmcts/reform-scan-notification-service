@@ -253,7 +253,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.smokeTest.runtimeClasspath
-  functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.2'
+  functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.notificationservice.Application'
