@@ -22,16 +22,14 @@ so for testing purposes it makes sense to use as an example.
 def nonPrSecrets = [
   'reform-scan-${env}': [
     secret('notifications-staging-queue-listen-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_READ'),
-    secret('notifications-staging-queue-send-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_WRITE')
-  ],
-  's2s-${env}': [
-    secret('microservicekey-bulk-scan-processor-tests', 'TEST_S2S_SECRET')
+    secret('notifications-staging-queue-send-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_WRITE'),
+    secret('test-s2s-secret', 'TEST_S2S_SECRET')
   ]
 ]
 
 def prSecrets = [
-  's2s-${env}': [
-    secret('microservicekey-bulk-scan-processor-tests', 'TEST_S2S_SECRET')
+  'reform-scan-${env}': [
+    secret('test-s2s-secret', 'TEST_S2S_SECRET')
   ]
 ]
 
