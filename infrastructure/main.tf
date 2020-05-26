@@ -37,7 +37,7 @@ data "azurerm_key_vault" "reform_scan_key_vault" {
 
 data "azurerm_key_vault" "s2s_key_vault" {
   name                = "s2s-${var.env}"
-  resource_group_name = "s2s-${var.env}"
+  resource_group_name = "rpe-service-auth-provider-${var.env}"
 }
 
 # region DB secrets
