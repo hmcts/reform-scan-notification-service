@@ -14,11 +14,6 @@ def channel = '#bsp-build-notices'
 
 GradleBuilder builder = new GradleBuilder(this, product)
 
-/*
-In following sections we use bulk-scan-processor-tests key for testing only.
-Bulk Scan Processor will be main client for this service and use it's own key
-so for testing purposes it makes sense to use as an example.
- */
 def nonPrSecrets = [
   'reform-scan-${env}': [
     secret('notifications-staging-queue-listen-connection-string', 'NOTIFICATION_QUEUE_CONN_STRING_READ'),
