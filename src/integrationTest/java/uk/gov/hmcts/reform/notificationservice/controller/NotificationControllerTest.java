@@ -27,7 +27,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,7 +100,6 @@ public class NotificationControllerTest {
                     .header("ServiceAuthorization", auth)
                     .queryParam("file_name", fileName)
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
@@ -147,7 +145,6 @@ public class NotificationControllerTest {
                     .header("ServiceAuthorization", auth)
                     .queryParam("file_name", fileName)
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(0)))
             .andExpect(jsonPath("$.notifications", hasSize(0)))
@@ -249,7 +246,6 @@ public class NotificationControllerTest {
                 get("/notifications")
                     .queryParam("date", date.toString())
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
@@ -286,7 +282,6 @@ public class NotificationControllerTest {
                 get("/notifications")
                     .queryParam("date", "3232")
             )
-            .andDo(print())
             .andExpect(status().isBadRequest());
     }
 }
