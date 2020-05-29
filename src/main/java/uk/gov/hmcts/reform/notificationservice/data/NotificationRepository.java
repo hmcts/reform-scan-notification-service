@@ -62,6 +62,14 @@ public class NotificationRepository {
         );
     }
 
+    public List<Notification> findAll() {
+        return jdbcTemplate.query(
+            "SELECT * FROM notifications",
+            new MapSqlParameterSource(),
+            this.mapper
+        );
+    }
+
     public List<Notification> findPending() {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL",

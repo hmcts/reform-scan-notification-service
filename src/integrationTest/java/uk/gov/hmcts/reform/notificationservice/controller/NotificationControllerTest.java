@@ -289,4 +289,47 @@ public class NotificationControllerTest {
             .andDo(print())
             .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void should_get_all_notifications() throws Exception {
+
+        var notification1 = new Notification(
+            1L,
+            "confirmation-id-1",
+            "zip_file_name_123.zip",
+            "po_box1",
+            "container",
+            "bulk_scan",
+            "DCN1",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+        var notification2 = new Notification(
+            2L,
+            "confirmation-id-2",
+            "file_name_1.zip",
+            "po_box_2",
+            "container_x",
+            "service_1",
+            "DCN2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "invalid metafile_2",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT
+        );
+
+        given(notificationService.findAll())
+            .willReturn(asList(notification1, notification2));
+
+        mockMvc
+            .perform(get("/notifications"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count", is(2)))
+            .andExpect(jsonPath("$.notifications", hasSize(2)));
+    }
 }

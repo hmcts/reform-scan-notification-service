@@ -397,6 +397,20 @@ public class NotificationRepositoryTest {
             });
     }
 
+    @Test
+    void should_find_all_notifications() {
+        // given
+        notificationRepository.insert(createNewNotification());
+        notificationRepository.insert(createNewNotification());
+        notificationRepository.insert(createNewNotification());
+
+        // when
+        var result = notificationRepository.findAll();
+
+        // then
+        assertThat(result).hasSize(3);
+    }
+
     private NewNotification createNewNotification() {
         return new NewNotification(
             "zip_file_name",

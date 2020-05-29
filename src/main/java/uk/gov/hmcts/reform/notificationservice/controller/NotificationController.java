@@ -43,10 +43,12 @@ public class NotificationController {
     }
 
     @GetMapping(params = "date")
-    public NotificationsResponse getNotificationsByDate(
-        @RequestParam(name = "date") @DateTimeFormat(iso = DATE) LocalDate date
+    public NotificationsResponse getNotifications(
+        @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DATE) LocalDate date
     ) {
-        return mapToNotificationsResponse(notificationService.findByDate(date));
+        return date == null
+            ? mapToNotificationsResponse(notificationService.findAll())
+            : mapToNotificationsResponse(notificationService.findByDate(date));
     }
 
     private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {

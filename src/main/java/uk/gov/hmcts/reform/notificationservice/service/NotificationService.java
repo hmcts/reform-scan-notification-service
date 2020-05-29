@@ -92,6 +92,11 @@ public class NotificationService {
         return notificationRepository.findByDate(date);
     }
 
+    @Transactional(readOnly = true)
+    public List<Notification> findAll() {
+        return notificationRepository.findAll();
+    }
+
     private ErrorNotificationRequest mapToRequest(Notification notification) {
         return new ErrorNotificationRequest(
             notification.zipFileName,
