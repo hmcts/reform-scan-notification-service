@@ -4,11 +4,11 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-  id 'org.springframework.boot' version '2.2.7.RELEASE'
+  id 'org.springframework.boot' version '2.3.0.RELEASE'
   id 'org.owasp.dependencycheck' version '5.3.2.1'
   id 'com.github.ben-manes.versions' version '0.28.0'
-  id 'org.sonarqube' version '2.8'
-  id 'org.flywaydb.flyway' version '6.4.2'
+  id 'org.sonarqube' version '3.0'
+  id 'org.flywaydb.flyway' version '6.4.3'
 }
 
 group = 'uk.gov.hmcts.reform'
@@ -157,10 +157,14 @@ dependencyManagement {
     dependencySet(group: 'com.google.guava', version: '29.0-jre') {
       entry 'guava'
     }
-    // CVE-2020-9488. remove once dependency is resolved by spring boot logging
-    dependencySet(group: 'org.apache.logging.log4j', version: '2.13.3') {
-      entry 'log4j-to-slf4j'
-      entry 'log4j-api'
+    // this should not be used, ideally.
+    // there are lot's of nested dependencies which include it.
+    // for some reason the required version of json-path (which is 2.4.0) is 2.3
+    // but certain dependencies favour 1.3 over required 2.3 which is incompatible.
+    // this custom management should be reviewed later on.
+    // started to happen since migration to spring boot 2.3.0
+    dependencySet(group: 'net.minidev', version: '2.3') {
+      entry 'json-smart'
     }
   }
 }
@@ -177,8 +181,7 @@ repositories {
 def versions = [
   junit           : '5.6.2',
   junitPlatform   : '1.6.2',
-  reformLogging   : '5.1.1',
-  springBoot      : springBoot.class.package.implementationVersion
+  reformLogging   : '5.1.1'
 ]
 
 ext.libraries = [
@@ -197,34 +200,33 @@ ext["rest-assured.version"] = '4.2.0'
 
 dependencies {
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.12'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.4.2'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '6.4.3'
 
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '4.10.1'
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.10.1'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '4.12.0'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '4.12.0'
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.0.4'
 
   implementation group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.2.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.3.RELEASE'
 
-  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.2.0'
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.3.0'
 
   // region: feign clients
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.2.RELEASE'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.2.3.RELEASE'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.0'
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '11.0'
   // end region
 
-  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.1'
+  implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.1.2'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
@@ -235,14 +237,14 @@ dependencies {
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
-  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.2.RELEASE', {
+  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.3.RELEASE', {
     exclude group: 'com.github.tomakehurst', module: 'wiremock-jre8-standalone'
   }
   integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.26.3'
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.14.2', {
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.14.3', {
     exclude group: 'junit', module: 'junit'
   }
-  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.14.2'
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.14.3'
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation libraries.junit5
@@ -253,7 +255,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.smokeTest.runtimeClasspath
-  functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.2'
+  functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.0.3'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.notificationservice.Application'

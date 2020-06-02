@@ -35,6 +35,11 @@ data "azurerm_key_vault" "reform_scan_key_vault" {
   resource_group_name = "reform-scan-${var.env}"
 }
 
+data "azurerm_key_vault" "s2s_key_vault" {
+  name                = "s2s-${var.env}"
+  resource_group_name = "rpe-service-auth-provider-${var.env}"
+}
+
 # region DB secrets
 # names have to be in such format as library hardcodes them for migration url build
 
@@ -100,6 +105,21 @@ resource "azurerm_key_vault_secret" "staging_db_database" {
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-staging-postgres-database"
   value        = module.reform-notifications-staging-db.postgresql_database
+}
+
+# endregion
+
+# region Copy secrets from BulkScan
+
+data "azurerm_key_vault_secret" "s2s_secret" {
+  key_vault_id = data.azurerm_key_vault.s2s_key_vault.id
+  name         = "microservicekey-reform-scan-notification-tests"
+}
+
+resource "azurerm_key_vault_secret" "test_s2s_secret" {
+  key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
+  name         = "test-s2s-secret"
+  value        = data.azurerm_key_vault_secret.s2s_secret.value
 }
 
 # endregion
