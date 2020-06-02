@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.notificationservice.controller;
 
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
@@ -27,11 +25,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = NotificationController.class)
 public class NotificationControllerTest {
 
@@ -101,7 +97,6 @@ public class NotificationControllerTest {
                     .header("ServiceAuthorization", auth)
                     .queryParam("file_name", fileName)
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
@@ -147,7 +142,6 @@ public class NotificationControllerTest {
                     .header("ServiceAuthorization", auth)
                     .queryParam("file_name", fileName)
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(0)))
             .andExpect(jsonPath("$.notifications", hasSize(0)))
@@ -249,7 +243,6 @@ public class NotificationControllerTest {
                 get("/notifications")
                     .queryParam("date", date.toString())
             )
-            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
@@ -286,7 +279,6 @@ public class NotificationControllerTest {
                 get("/notifications")
                     .queryParam("date", "3232")
             )
-            .andDo(print())
             .andExpect(status().isBadRequest());
     }
 }
