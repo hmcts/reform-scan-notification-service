@@ -33,14 +33,14 @@ public class NotificationMessageProcessTask {
             do {
                 queueMayHaveMessages = notificationMessageProcessor.processNextMessage();
             } while (queueMayHaveMessages);
-
-            log.info("Finished {} task", TASK_NAME);
         } catch (InterruptedException exception) {
             logTaskError(exception);
             Thread.currentThread().interrupt();
         } catch (ServiceBusException exception) {
             logTaskError(exception);
         }
+
+        log.info("Finished {} task", TASK_NAME);
     }
 
     private void logTaskError(Exception exception) {
