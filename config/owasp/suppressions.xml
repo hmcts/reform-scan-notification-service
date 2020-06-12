@@ -34,4 +34,11 @@
     <cpe>cpe:/a:apache:sling</cpe>
   </suppress>
 
+  <suppress until="2020-10-31">
+    <notes><![CDATA[
+      This is only used for TESTING purposes.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:javascript/jquery@3\.4\.1.*$</packageUrl>
+    <vulnerabilityName>Regex in its jQuery.htmlPrefilter  sometimes may introduce XSS</vulnerabilityName>
+  </suppress>
 </suppressions>
