@@ -83,7 +83,7 @@ public class NotificationControllerTest {
             "invalid metafile2",
             instant,
             instant,
-            NotificationStatus.SENT
+            NotificationStatus.MANUALLY_HANDLED
         );
 
         given(authService.authenticate(auth)).willReturn(service);
