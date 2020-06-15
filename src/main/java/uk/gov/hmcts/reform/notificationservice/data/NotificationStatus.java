@@ -5,5 +5,5 @@ public enum NotificationStatus {
     PENDING,
     FAILED,
     SENT,
-    MANUALLY_HANDLED
+    MANUALLY_HANDLED,
 }
