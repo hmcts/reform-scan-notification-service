@@ -4,5 +4,7 @@ public enum NotificationStatus {
 
     PENDING,
     FAILED,
-    SENT
+    SENT,
+    // To be used when there are issues and records needs to be closed manually
+    MANUALLY_HANDLED,
 }
