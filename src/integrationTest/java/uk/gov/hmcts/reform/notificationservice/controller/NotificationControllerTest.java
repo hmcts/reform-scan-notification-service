@@ -15,9 +15,11 @@ import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -47,6 +49,7 @@ public class NotificationControllerTest {
         final String service = "service";
 
         Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("Europe/London"));
         cal.set(Calendar.YEAR, 2020);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DATE, 23);
@@ -55,7 +58,7 @@ public class NotificationControllerTest {
         cal.set(Calendar.SECOND, 20);
         cal.set(Calendar.MILLISECOND, 234);
         Instant instant = cal.toInstant();
-        final String instantString = "2020-03-23T13:17:20.234Z";
+        final String instantString = "2020-03-23T13:17:20";
 
         var notification1 = new Notification(
             1L,
@@ -202,8 +205,8 @@ public class NotificationControllerTest {
         LocalDate date = LocalDate.now();
         Instant instantNow = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 
-        String instantNowStr = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-            .withZone(ZoneOffset.UTC)
+        String instantNowStr = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            .withZone(ZoneId.of("Europe/London"))
             .format(instantNow);
 
         var notification1 = new Notification(

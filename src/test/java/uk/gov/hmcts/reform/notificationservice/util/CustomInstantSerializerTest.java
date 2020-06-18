@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Instant;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ class CustomInstantSerializerTest {
     void serialize_should_call_json_generator() throws Exception {
         // given
         Calendar cal   = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("Europe/London"));
         cal.set(Calendar.YEAR, 2020);
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DATE, 23);
@@ -49,6 +51,6 @@ class CustomInstantSerializerTest {
         // then
         var dateStringCaptor = ArgumentCaptor.forClass(String.class);
         verify(jsonGenerator).writeString(dateStringCaptor.capture());
-        assertThat(dateStringCaptor.getValue()).isEqualTo("2020-03-23T13:17:20.234Z");
+        assertThat(dateStringCaptor.getValue()).isEqualTo("2020-03-23T13:17:20");
     }
 }
