@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.notificationservice.exceptionhandler;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,16 @@ import uk.gov.hmcts.reform.notificationservice.service.UnauthenticatedException;
 
 import static org.springframework.http.ResponseEntity.status;
 
+// exception handler also plays part in specs generation so including basic info here
+// to not overcrowd controller
+@OpenAPIDefinition(
+    info = @Info(
+        title = "Error Notification Service",
+        version = "1",
+        description = "API consuming Azure ServiceBus messages and publishing error messages to the scan supplier",
+        license = @License(name = "MIT", url = "https://opensource.org/licenses/MIT")
+    )
+)
 @ControllerAdvice
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
