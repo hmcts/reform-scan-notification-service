@@ -25,7 +25,7 @@ public class NotificationMessageMapperTest {
                 "orchestrator"
             );
 
-        NewNotification request = notificationMessageMapper.map(notificationMsg);
+        NewNotification request = notificationMessageMapper.map(notificationMsg, "1234");
         assertThat(request.zipFileName).isEqualTo("zipfile.zip");
         assertThat(request.poBox).isEqualTo("pobox");
         assertThat(request.documentControlNumber).isEqualTo("1342411414214");

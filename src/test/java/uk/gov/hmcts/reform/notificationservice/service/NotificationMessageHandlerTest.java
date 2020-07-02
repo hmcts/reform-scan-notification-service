@@ -49,6 +49,7 @@ public class NotificationMessageHandlerTest {
                 "processor"
             );
 
+        String messageId = "message12345";
         NewNotification newNotification =
             new NewNotification(
                 "Zipfile.zip",
@@ -57,17 +58,18 @@ public class NotificationMessageHandlerTest {
                 "processor",
                 "A1342411414214",
                 ErrorCode.ERR_AV_FAILED,
-                "error description Av not valid"
+                "error description Av not valid",
+                messageId
             );
 
-        when(notificationMessageMapper.map(notificationMsg)).thenReturn(newNotification);
+        when(notificationMessageMapper.map(notificationMsg, messageId)).thenReturn(newNotification);
         when(notificationRepository.insert(newNotification))
             .thenReturn(21321312L);
 
-        notificationMessageHandler.handleNotificationMessage(notificationMsg);
+        notificationMessageHandler.handleNotificationMessage(notificationMsg, messageId);
 
         // then
-        verify(notificationMessageMapper).map(notificationMsg);
+        verify(notificationMessageMapper).map(notificationMsg, messageId);
         verify(notificationRepository).insert(newNotification);
     }
 
@@ -85,6 +87,7 @@ public class NotificationMessageHandlerTest {
                 "processor"
             );
 
+        String messageId = "123567";
         NewNotification newNotification =
             new NewNotification(
                 "file.txt",
@@ -93,21 +96,22 @@ public class NotificationMessageHandlerTest {
                 "processor",
                 "32313223",
                 ErrorCode.ERR_SERVICE_DISABLED,
-                "error description service disabled"
+                "error description service disabled",
+                messageId
             );
 
 
-        when(notificationMessageMapper.map(notificationMsg)).thenReturn(newNotification);
+        when(notificationMessageMapper.map(notificationMsg, messageId)).thenReturn(newNotification);
 
         FeignException exception = mock(FeignException.class);
         doThrow(exception).when(notificationRepository).insert(newNotification);
 
         // when
-        assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
+        assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg, messageId))
             .isSameAs(exception);
 
         // then
-        verify(notificationMessageMapper).map(notificationMsg);
+        verify(notificationMessageMapper).map(notificationMsg, messageId);
         verify(notificationRepository).insert(newNotification);
     }
 
@@ -125,15 +129,16 @@ public class NotificationMessageHandlerTest {
                 "processor"
             );
 
+        String messageId = "12345677";
         InvalidMessageException exception = new InvalidMessageException("Parsed Failed");
-        doThrow(exception).when(notificationMessageMapper).map(notificationMsg);
+        doThrow(exception).when(notificationMessageMapper).map(notificationMsg, messageId);
 
         // when
-        assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg))
+        assertThatThrownBy(() -> notificationMessageHandler.handleNotificationMessage(notificationMsg, messageId))
             .isSameAs(exception);
 
         // then
-        verify(notificationMessageMapper).map(notificationMsg);
+        verify(notificationMessageMapper).map(notificationMsg, messageId);
         verifyNoMoreInteractions(notificationRepository);
     }
 }

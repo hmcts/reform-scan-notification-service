@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 @Component
 public class NotificationMessageMapper {
 
-    public NewNotification map(NotificationMsg notificationMsg) {
+    public NewNotification map(NotificationMsg notificationMsg, String messageId) {
         return new NewNotification(
             notificationMsg.zipFileName,
             notificationMsg.poBox,
@@ -15,7 +15,8 @@ public class NotificationMessageMapper {
             notificationMsg.service,
             notificationMsg.documentControlNumber,
             notificationMsg.errorCode,
-            notificationMsg.errorDescription
+            notificationMsg.errorDescription,
+            messageId
         );
     }
 }

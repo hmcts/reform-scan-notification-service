@@ -22,10 +22,10 @@ public class NotificationMessageHandler {
     }
 
 
-    public void handleNotificationMessage(NotificationMsg notificationMsg) {
+    public void handleNotificationMessage(NotificationMsg notificationMsg, String messageId) {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 
-        var newNotification = notificationMessageMapper.map(notificationMsg);
+        var newNotification = notificationMessageMapper.map(notificationMsg, messageId);
 
         long id = notificationRepository.insert(newNotification);
         log.info(

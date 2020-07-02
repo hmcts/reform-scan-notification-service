@@ -73,7 +73,8 @@ public class NotificationRepositoryTest {
             service,
             "dcn",
             ErrorCode.ERR_AV_FAILED,
-            "error_description"
+            "error_description",
+            "123456"
         );
 
         // when
@@ -114,7 +115,8 @@ public class NotificationRepositoryTest {
             service,
             "dcn1",
             ErrorCode.ERR_AV_FAILED,
-            "error_description1"
+            "error_description1",
+            "12345"
         );
         final var newNotificationFromOtherService = new NewNotification(
             zipFileName,
@@ -123,7 +125,8 @@ public class NotificationRepositoryTest {
             "other_service",
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
-            "error_description2"
+            "error_description2",
+            "1234445"
         );
         final var newNotification3 = new NewNotification(
             zipFileName,
@@ -132,7 +135,8 @@ public class NotificationRepositoryTest {
             service,
             "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
-            "error_description3"
+            "error_description3",
+            "124355676"
         );
 
         // when
@@ -194,7 +198,8 @@ public class NotificationRepositoryTest {
             service,
             "dcn1",
             ErrorCode.ERR_AV_FAILED,
-            "error_description1"
+            "error_description1",
+            "1234555"
         );
         final var newNotificationForOtherZipFile = new NewNotification(
             "other_zip_file_name",
@@ -203,7 +208,8 @@ public class NotificationRepositoryTest {
             service,
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
-            "error_description2"
+            "error_description2",
+            "12121331"
         );
         final var newNotification3 = new NewNotification(
             zipFileName,
@@ -212,7 +218,8 @@ public class NotificationRepositoryTest {
             service,
             "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
-            "error_description3"
+            "error_description3",
+            "54321"
         );
 
         // when
@@ -365,7 +372,8 @@ public class NotificationRepositoryTest {
             "other_service",
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
-            "error_description2"
+            "error_description2",
+            "123455"
         );
         notificationRepository.insert(newNotification);
 
@@ -405,7 +413,8 @@ public class NotificationRepositoryTest {
             "service",
             "dcn",
             ErrorCode.ERR_AV_FAILED,
-            "error_description"
+            "error_description",
+            "124356"
         );
     }
 }
