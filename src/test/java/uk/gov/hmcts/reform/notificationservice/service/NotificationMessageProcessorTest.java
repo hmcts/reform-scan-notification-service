@@ -54,12 +54,14 @@ class NotificationMessageProcessorTest {
     @Test
     public void should_return_true_when_there_is_a_message_to_process() throws Exception {
         // given
+        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
+        given(message.getMessageId()).willReturn(messageId);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
-        doNothing().when(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        doNothing().when(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
 
         // when
         boolean processedMessage = notificationMessageProcessor.processNextMessage();
@@ -69,7 +71,7 @@ class NotificationMessageProcessorTest {
         assertThat(processedMessage).isTrue();
         verify(messageReceiver).receive();
         verify(notificationMessageParser).parse(messageBody);
-        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
 
     }
 
@@ -106,13 +108,15 @@ class NotificationMessageProcessorTest {
     @Test
     public void should_not_throw_exception_when_notification_handler_fails() throws Exception {
         // given
+        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
+        given(message.getMessageId()).willReturn(messageId);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
         willThrow(new RuntimeException("Handle exception"))
-            .given(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+            .given(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
 
         //when
         assertThatCode(() -> notificationMessageProcessor.processNextMessage()).doesNotThrowAnyException();
@@ -120,21 +124,23 @@ class NotificationMessageProcessorTest {
         // then
         verify(messageReceiver).receive();
         verify(notificationMessageParser).parse(messageBody);
-        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
     }
 
     @Test
     public void should_complete_the_message_when_processing_is_successful() throws Exception {
         // given
+        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
+        given(message.getMessageId()).willReturn(messageId);
 
         given(messageReceiver.receive()).willReturn(message);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
-        doNothing().when(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        doNothing().when(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
 
         // when
         notificationMessageProcessor.processNextMessage();
@@ -143,7 +149,7 @@ class NotificationMessageProcessorTest {
         // then
         verify(messageReceiver).receive();
         verify(notificationMessageParser).parse(messageBody);
-        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
         verify(messageReceiver).complete(lock);
 
     }
@@ -176,7 +182,9 @@ class NotificationMessageProcessorTest {
     @Test
     public void should_not_dead_letter_the_message_when_recoverable_failure() throws Exception {
         // given
+        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
+        given(message.getMessageId()).willReturn(messageId);
 
         given(messageReceiver.receive()).willReturn(message);
 
@@ -189,14 +197,14 @@ class NotificationMessageProcessorTest {
 
         // given an error occurs during message processing
         willThrow(processingFailureCause)
-            .given(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+            .given(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
         // when
         notificationMessageProcessor.processNextMessage();
 
         // then the message is not finalised (completed/dead-lettered)
         verify(messageReceiver).receive();
         verify(notificationMessageParser).parse(messageBody);
-        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        verify(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
         verifyNoMoreInteractions(messageReceiver);
 
     }
@@ -204,11 +212,13 @@ class NotificationMessageProcessorTest {
     @Test
     public void should_dead_letter_the_message_when_recoverable_failure_but_delivery_maxed() throws Exception {
         // given
+        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(message.getDeliveryCount()).willReturn(4L);
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
+        given(message.getMessageId()).willReturn(messageId);
         given(messageReceiver.receive()).willReturn(message);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
@@ -219,7 +229,8 @@ class NotificationMessageProcessorTest {
         );
 
         // and an error occurs during message processing
-        willThrow(processingFailureCause).given(notificationMessageHandler).handleNotificationMessage(notificationMsg);
+        willThrow(processingFailureCause).given(notificationMessageHandler)
+            .handleNotificationMessage(notificationMsg, messageId);
 
         // when
         notificationMessageProcessor.processNextMessage();

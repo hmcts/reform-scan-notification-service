@@ -43,7 +43,7 @@ public class NotificationMessageProcessor {
             try {
                 log.info("Started processing notification message with ID {}", message.getMessageId());
                 var notificationMsg = notificationMessageParser.parse(message.getMessageBody());
-                notificationMessageHandler.handleNotificationMessage(notificationMsg);
+                notificationMessageHandler.handleNotificationMessage(notificationMsg, message.getMessageId());
                 finaliseProcessedMessage(message, MessageProcessingResult.SUCCESS);
             } catch (InvalidMessageException ex) {
                 log.error("Invalid notification message with ID: {} ", message.getMessageId(), ex);
