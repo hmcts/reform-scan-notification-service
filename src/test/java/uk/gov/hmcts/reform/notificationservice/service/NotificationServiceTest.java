@@ -146,7 +146,8 @@ class NotificationServiceTest {
             "invalid metafile1",
             Instant.now(),
             Instant.now(),
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId1"
         );
         var notification2 = new Notification(
             2L,
@@ -160,7 +161,8 @@ class NotificationServiceTest {
             "invalid metafile2",
             Instant.now(),
             Instant.now(),
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId2"
         );
         given(notificationRepository.find(zipFileName, service))
                   .willReturn(asList(notification1, notification2));
@@ -182,7 +184,8 @@ class NotificationServiceTest {
                     notification1.errorCode,
                     notification1.createdAt,
                     notification1.processedAt,
-                    notification1.status
+                    notification1.status,
+                    notification1.messageId
                 ),
                 tuple(
                     notification2.confirmationId,
@@ -193,7 +196,8 @@ class NotificationServiceTest {
                     notification2.errorCode,
                     notification2.createdAt,
                     notification2.processedAt,
-                    notification2.status
+                    notification2.status,
+                    notification2.messageId
                 )
             );
         verify(notificationRepository, times(1)).find(zipFileName, service);
@@ -218,7 +222,8 @@ class NotificationServiceTest {
             "invalid metafile1",
             Instant.now(),
             Instant.now(),
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId1"
         );
         var notification2 = new Notification(
             2L,
@@ -232,7 +237,8 @@ class NotificationServiceTest {
             "invalid metafile2",
             Instant.now(),
             Instant.now(),
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId2"
         );
         given(notificationRepository.find(zipFileNameCleanedUp, service))
                   .willReturn(asList(notification1, notification2));
@@ -254,7 +260,8 @@ class NotificationServiceTest {
                     notification1.errorCode,
                     notification1.createdAt,
                     notification1.processedAt,
-                    notification1.status
+                    notification1.status,
+                    notification1.messageId
                 ),
                 tuple(
                     notification2.confirmationId,
@@ -265,7 +272,8 @@ class NotificationServiceTest {
                     notification2.errorCode,
                     notification2.createdAt,
                     notification2.processedAt,
-                    notification2.status
+                    notification2.status,
+                    notification2.messageId
                 )
             );
         verify(notificationRepository, times(1)).find(zipFileNameCleanedUp, service);
@@ -289,7 +297,8 @@ class NotificationServiceTest {
             "invalid metafile_1",
             Instant.now(),
             Instant.now(),
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId1"
         );
         var notification2 = new Notification(
             2L,
@@ -303,7 +312,8 @@ class NotificationServiceTest {
             "invalid metafile_2",
             Instant.now(),
             Instant.now(),
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId1"
         );
         given(notificationRepository.findByDate(searchDate))
             .willReturn(asList(notification1, notification2));
@@ -331,7 +341,8 @@ class NotificationServiceTest {
             notification.errorCode,
             notification.createdAt,
             notification.processedAt,
-            notification.status
+            notification.status,
+            notification.messageId
         );
     }
 
@@ -348,7 +359,8 @@ class NotificationServiceTest {
             "invalid metafile",
             Instant.now(),
             null,
-            NotificationStatus.PENDING
+            NotificationStatus.PENDING,
+            "messageId1"
         );
     }
 

@@ -72,7 +72,8 @@ public class NotificationControllerTest {
             "invalid metafile1",
             instant,
             instant,
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId1"
         );
         var notification2 = new Notification(
             2L,
@@ -86,7 +87,8 @@ public class NotificationControllerTest {
             "invalid metafile2",
             instant,
             instant,
-            NotificationStatus.MANUALLY_HANDLED
+            NotificationStatus.MANUALLY_HANDLED,
+            "messageId2"
         );
 
         given(authService.authenticate(auth)).willReturn(service);
@@ -221,7 +223,8 @@ public class NotificationControllerTest {
             "invalid metafile1",
             instantNow,
             instantNow,
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId1"
         );
         var notification2 = new Notification(
             2L,
@@ -235,7 +238,8 @@ public class NotificationControllerTest {
             "invalid metafile_2",
             instantNow,
             instantNow,
-            NotificationStatus.SENT
+            NotificationStatus.SENT,
+            "messageId2"
         );
 
         given(notificationService.findByDate(date))

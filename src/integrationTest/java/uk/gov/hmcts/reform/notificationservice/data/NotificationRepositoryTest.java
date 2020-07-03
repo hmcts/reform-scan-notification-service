@@ -52,6 +52,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.createdAt).isNotNull();
                 assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(PENDING);
+                assertThat(n.messageId).isEqualTo(newNotification.messageId);
             });
     }
 
@@ -99,6 +100,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.createdAt).isNotNull();
                 assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(PENDING);
+                assertThat(n.messageId).isEqualTo(newNotification.messageId);
             });
     }
 
@@ -165,7 +167,8 @@ public class NotificationRepositoryTest {
                     newNotification1.errorDescription,
                     null,
                     null,
-                    PENDING
+                    PENDING,
+                    newNotification1.messageId
                 ),
                 new Notification(
                     id3,
@@ -179,7 +182,8 @@ public class NotificationRepositoryTest {
                     newNotification3.errorDescription,
                     null,
                     null,
-                    PENDING
+                    PENDING,
+                    newNotification3.messageId
                 )
             )
         ;
@@ -248,7 +252,8 @@ public class NotificationRepositoryTest {
                     newNotification1.errorDescription,
                     null,
                     null,
-                    PENDING
+                    PENDING,
+                    newNotification1.messageId
                 ),
                 new Notification(
                     id3,
@@ -262,7 +267,8 @@ public class NotificationRepositoryTest {
                     newNotification3.errorDescription,
                     null,
                     null,
-                    PENDING
+                    PENDING,
+                    newNotification3.messageId
                 )
             )
         ;
@@ -296,6 +302,7 @@ public class NotificationRepositoryTest {
             .satisfies(notification -> {
                 assertThat(notification.id).isEqualTo(idPending);
                 assertThat(notification.status).isEqualTo(PENDING);
+                assertThat(notification.messageId).isEqualTo(newNotification.messageId);
                 assertThat(notification.confirmationId).isNull();
             });
     }
@@ -402,6 +409,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.createdAt).isNotNull();
                 assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(PENDING);
+                assertThat(n.messageId).isEqualTo(newNotification.messageId);
             });
     }
 
