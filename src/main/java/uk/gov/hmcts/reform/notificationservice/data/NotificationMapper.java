@@ -26,7 +26,8 @@ public class NotificationMapper implements RowMapper<Notification> {
             rs.getString("error_description"),
             rs.getTimestamp("created_at").toInstant(),
             getOptionalInstant(rs.getTimestamp("processed_at")),
-            NotificationStatus.valueOf(rs.getString("status"))
+            NotificationStatus.valueOf(rs.getString("status")),
+            rs.getString("message_id")
         );
     }
 

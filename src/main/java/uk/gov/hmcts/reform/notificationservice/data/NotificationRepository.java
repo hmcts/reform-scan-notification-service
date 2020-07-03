@@ -75,9 +75,9 @@ public class NotificationRepository {
 
         jdbcTemplate.update(
             "INSERT INTO notifications (zip_file_name, po_box, container, service, document_control_number, "
-                + "error_code, error_description, created_at, status) "
+                + "error_code, error_description, created_at, status, message_id) "
                 + "VALUES ( :zipFileName, :poBox, :container, :service, :DCN, :errorCode, "
-                + ":errorDescription, CURRENT_TIMESTAMP, :status"
+                + ":errorDescription, CURRENT_TIMESTAMP, :status, :messageId"
                 + ")",
             new MapSqlParameterSource()
                 .addValue("zipFileName", notification.zipFileName)
@@ -87,7 +87,8 @@ public class NotificationRepository {
                 .addValue("DCN", notification.documentControlNumber)
                 .addValue("errorCode", notification.errorCode.name())
                 .addValue("errorDescription", notification.errorDescription)
-                .addValue("status", PENDING.name()),
+                .addValue("status", PENDING.name())
+                .addValue("messageId", notification.messageId),
             keyHolder,
             new String[]{ "id" }
         );

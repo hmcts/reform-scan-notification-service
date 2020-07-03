@@ -18,6 +18,7 @@ public class Notification {
     public final Instant createdAt;
     public final Instant processedAt;
     public final NotificationStatus status;
+    public final String messageId;
 
     public Notification(
         long id,
@@ -31,7 +32,8 @@ public class Notification {
         String errorDescription,
         Instant createdAt,
         Instant processedAt,
-        NotificationStatus status
+        NotificationStatus status,
+        String messageId
     ) {
         this.id = id;
         this.confirmationId = confirmationId;
@@ -45,6 +47,7 @@ public class Notification {
         this.createdAt = createdAt;
         this.processedAt = processedAt;
         this.status = status;
+        this.messageId = messageId;
     }
 
     public String basicInfo() {
