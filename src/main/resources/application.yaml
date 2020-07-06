@@ -53,3 +53,5 @@ idam:
     url: ${S2S_URL}
 
 # end of clients region
+notifications:
+  wait-duration-to-process-pending-in-minute: ${WAIT_DURATION_TO_PROCESS_PENDING_NOTIFICATION_IN_MINUTE}

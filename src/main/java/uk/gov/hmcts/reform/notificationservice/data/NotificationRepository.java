@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,13 +21,17 @@ public class NotificationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final NotificationMapper mapper;
+    private final int waitDurationToProcessPending;
+
 
     public NotificationRepository(
         NamedParameterJdbcTemplate jdbcTemplate,
-        NotificationMapper mapper
+        NotificationMapper mapper,
+        @Value("${notifications.wait-duration-to-process-pending-in-minute}") int waitDurationToProcessPending
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
+        this.waitDurationToProcessPending = waitDurationToProcessPending;
     }
 
     public Optional<Notification> find(long id) {
@@ -65,7 +70,7 @@ public class NotificationRepository {
     public List<Notification> findPending() {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
-                + "created_at < (now()::timestamp - interval '2 hours')",
+                + "created_at < (now()::timestamp - interval '" + waitDurationToProcessPending + " minutes')",
             new MapSqlParameterSource("status", PENDING.name()),
             this.mapper
         );

@@ -281,7 +281,7 @@ public class NotificationRepositoryTest {
         // valid pending
         long idPending = notificationRepository.insert(newNotification);
         jdbcTemplate.update(
-            "UPDATE notifications SET created_at = (now()::timestamp - interval '3 hours')",
+            "UPDATE notifications SET created_at = (now()::timestamp - interval '65 minutes')",
             new MapSqlParameterSource("id", idPending)
         );
 
