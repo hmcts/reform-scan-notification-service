@@ -7,6 +7,7 @@ java:
     QUEUE_NOTIFICATIONS_READ: false
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
     FLYWAY_SKIP_MIGRATIONS: false
+    PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
   keyVaults:
     reform-scan:
       resourceGroup: reform-scan
