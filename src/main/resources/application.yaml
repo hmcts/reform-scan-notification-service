@@ -45,6 +45,7 @@ scheduling:
     pending-notifications:
       delay: ${PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS}
       enabled: ${PENDING_NOTIFICATIONS_TASK_ENABLED}
+      send-delay-in-minute: ${PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE}
 
 # clients region
 
@@ -53,5 +54,3 @@ idam:
     url: ${S2S_URL}
 
 # end of clients region
-notifications:
-  wait-duration-to-process-pending-in-minute: ${WAIT_DURATION_TO_PROCESS_PENDING_NOTIFICATION_IN_MINUTE}
