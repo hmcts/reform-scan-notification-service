@@ -22,13 +22,17 @@ public class NotificationRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final NotificationMapper mapper;
+    private final int delayDurationToProcessPending;
+
 
     public NotificationRepository(
         NamedParameterJdbcTemplate jdbcTemplate,
-        NotificationMapper mapper
+        NotificationMapper mapper,
+        @Value("${scheduling.task.pending-notifications.send-delay-in-minute}") int delayDurationToProcessPending
     ) {
         this.jdbcTemplate = jdbcTemplate;
         this.mapper = mapper;
+        this.delayDurationToProcessPending = delayDurationToProcessPending;
     }
 
     public Optional<Notification> find(long id) {
@@ -66,7 +70,8 @@ public class NotificationRepository {
 
     public List<Notification> findPending() {
         return jdbcTemplate.query(
-            "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL",
+            "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
+                + "created_at < (now()::timestamp - interval '" + delayDurationToProcessPending + " minutes')",
             new MapSqlParameterSource("status", PENDING.name()),
             this.mapper
         );
