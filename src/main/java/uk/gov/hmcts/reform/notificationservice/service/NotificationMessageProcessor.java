@@ -50,7 +50,7 @@ public class NotificationMessageProcessor {
                 log.error("Invalid notification message with ID: {} ", message.getMessageId(), ex);
                 finaliseProcessedMessage(message, MessageProcessingResult.UNRECOVERABLE_FAILURE);
             } catch (DuplicateMessageIdException ex) {
-                handleDuplicateMessageId(message);
+                handleDuplicateMessageId(message, ex.getMessage());
             } catch (Exception ex) {
                 log.error("Failed to process notification message with ID: {} ", message.getMessageId(), ex);
                 finaliseProcessedMessage(message, MessageProcessingResult.POTENTIALLY_RECOVERABLE_FAILURE);
@@ -62,15 +62,20 @@ public class NotificationMessageProcessor {
         return message != null;
     }
 
-    private void handleDuplicateMessageId(IMessage message) throws InterruptedException, ServiceBusException {
+    private void handleDuplicateMessageId(IMessage message, String errorMessage)
+        throws InterruptedException, ServiceBusException {
         if (message.getDeliveryCount() == 1) {
             deadLetterTheMessage(
                 message,
                 "Duplicate notification message id",
-                "Notification message already processed"
+                errorMessage
             );
         } else {
-            log.warn("Notification message already processed for message id: {}", message.getMessageId());
+            log.warn(
+                "Notification message already processed for message id: {} Reason: {}",
+                message.getMessageId(),
+                errorMessage
+            );
             messageReceiver.complete(message.getLockToken());
         }
     }

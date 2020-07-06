@@ -272,7 +272,7 @@ class NotificationMessageProcessorTest {
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
 
         Exception messageIdException = new DuplicateMessageIdException(
-            "Duplicate message Id received"
+            "Duplicate message Id received. messageId: " + messageId
         );
 
         // throws exception for duplicate message id
@@ -286,7 +286,7 @@ class NotificationMessageProcessorTest {
         verify(messageReceiver).deadLetter(
             eq(lock),
             eq("Duplicate notification message id"),
-            eq("Notification message already processed")
+            eq("Duplicate message Id received. messageId: " + messageId)
         );
     }
 

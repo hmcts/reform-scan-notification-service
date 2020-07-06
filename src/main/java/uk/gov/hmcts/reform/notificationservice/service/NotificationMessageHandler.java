@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
-import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 @Service
@@ -22,9 +21,7 @@ public class NotificationMessageHandler {
         this.notificationRepository = notificationRepository;
     }
 
-
-    public void handleNotificationMessage(NotificationMsg notificationMsg, String messageId)
-        throws DuplicateMessageIdException {
+    public void handleNotificationMessage(NotificationMsg notificationMsg, String messageId) {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 
         var newNotification = notificationMessageMapper.map(notificationMsg, messageId);
