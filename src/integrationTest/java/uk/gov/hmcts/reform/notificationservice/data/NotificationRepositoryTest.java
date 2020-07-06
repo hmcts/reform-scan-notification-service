@@ -287,7 +287,7 @@ public class NotificationRepositoryTest {
         );
 
         // record should wait 2 hour before it is picked up
-        notificationRepository.insert(newNotification);
+        notificationRepository.insert(createNewNotification());
 
         // confirmation_id should be null to be picked up
         long idSentStillPending = notificationRepository.insert(createNewNotification());
