@@ -278,7 +278,17 @@ public class NotificationRepositoryTest {
     void should_return_all_pending_notifications_to_be_sent_out() {
         // given
         var newNotification = createNewNotification();
+        // valid pending
         long idPending = notificationRepository.insert(newNotification);
+        jdbcTemplate.update(
+            "UPDATE notifications SET created_at = (now()::timestamp - interval '3 hours')",
+            new MapSqlParameterSource("id", idPending)
+        );
+
+        // record should wait 2 hour before it is picked up
+        notificationRepository.insert(newNotification);
+
+        // confirmation_id should be null to be picked up
         long idSentStillPending = notificationRepository.insert(createNewNotification());
         jdbcTemplate.update(
             "UPDATE notifications SET confirmation_id = 'SOME_ID' WHERE id = :id",

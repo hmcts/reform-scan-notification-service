@@ -64,7 +64,8 @@ public class NotificationRepository {
 
     public List<Notification> findPending() {
         return jdbcTemplate.query(
-            "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL",
+            "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
+                + "created_at < (now()::timestamp - interval '2 hours')",
             new MapSqlParameterSource("status", PENDING.name()),
             this.mapper
         );
