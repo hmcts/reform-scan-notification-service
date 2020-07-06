@@ -38,7 +38,13 @@ public class NotificationMessageProcessor {
      * @return false if there was no message to process. Otherwise true.
      */
     public boolean processNextMessage() throws ServiceBusException, InterruptedException {
+        log.info("Polling the queue");
         IMessage message = messageReceiver.receive();
+        log.info("Polled the queue, message is null: {}, id: {}",
+            message == null,
+            ((message == null) ? "" : message.getMessageId())
+        );
+
         if (message != null) {
             try {
                 log.info("Started processing notification message with ID {}", message.getMessageId());
