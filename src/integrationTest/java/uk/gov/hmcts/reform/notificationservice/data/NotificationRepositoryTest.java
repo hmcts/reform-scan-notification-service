@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
@@ -432,7 +433,7 @@ public class NotificationRepositoryTest {
             "dcn",
             ErrorCode.ERR_AV_FAILED,
             "error_description",
-            "124356"
+            UUID.randomUUID().toString()
         );
     }
 }
