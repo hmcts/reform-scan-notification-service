@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -71,29 +73,37 @@ public class NotificationRepository {
     }
 
     public long insert(NewNotification notification) {
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(
-            "INSERT INTO notifications (zip_file_name, po_box, container, service, document_control_number, "
-                + "error_code, error_description, created_at, status, message_id) "
-                + "VALUES ( :zipFileName, :poBox, :container, :service, :DCN, :errorCode, "
-                + ":errorDescription, CURRENT_TIMESTAMP, :status, :messageId"
-                + ")",
-            new MapSqlParameterSource()
-                .addValue("zipFileName", notification.zipFileName)
-                .addValue("poBox", notification.poBox)
-                .addValue("container", notification.container)
-                .addValue("service", notification.service)
-                .addValue("DCN", notification.documentControlNumber)
-                .addValue("errorCode", notification.errorCode.name())
-                .addValue("errorDescription", notification.errorDescription)
-                .addValue("status", PENDING.name())
-                .addValue("messageId", notification.messageId),
-            keyHolder,
-            new String[]{ "id" }
-        );
+            jdbcTemplate.update(
+                "INSERT INTO notifications (zip_file_name, po_box, container, service, document_control_number, "
+                    + "error_code, error_description, created_at, status, message_id) "
+                    + "VALUES ( :zipFileName, :poBox, :container, :service, :DCN, :errorCode, "
+                    + ":errorDescription, CURRENT_TIMESTAMP, :status, :messageId"
+                    + ")",
+                new MapSqlParameterSource()
+                    .addValue("zipFileName", notification.zipFileName)
+                    .addValue("poBox", notification.poBox)
+                    .addValue("container", notification.container)
+                    .addValue("service", notification.service)
+                    .addValue("DCN", notification.documentControlNumber)
+                    .addValue("errorCode", notification.errorCode.name())
+                    .addValue("errorDescription", notification.errorDescription)
+                    .addValue("status", PENDING.name())
+                    .addValue("messageId", notification.messageId),
+                keyHolder,
+                new String[]{"id"}
+            );
 
-        return (long) keyHolder.getKey();
+            return (long) keyHolder.getKey();
+        } catch (DuplicateKeyException ex) {
+            throw new DuplicateMessageIdException(
+                String.format(
+                    "Failed to save notification message for duplicate message id - %s", notification.messageId
+                )
+            );
+        }
     }
 
     /**
@@ -120,6 +130,7 @@ public class NotificationRepository {
 
     /**
      * Mark notification as failed.
+     *
      * @param id notification ID
      * @return update was successful
      */

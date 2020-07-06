@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 
@@ -48,6 +49,8 @@ public class NotificationMessageProcessor {
             } catch (InvalidMessageException ex) {
                 log.error("Invalid notification message with ID: {} ", message.getMessageId(), ex);
                 finaliseProcessedMessage(message, MessageProcessingResult.UNRECOVERABLE_FAILURE);
+            } catch (DuplicateMessageIdException ex) {
+                handleDuplicateMessageId(message);
             } catch (Exception ex) {
                 log.error("Failed to process notification message with ID: {} ", message.getMessageId(), ex);
                 finaliseProcessedMessage(message, MessageProcessingResult.POTENTIALLY_RECOVERABLE_FAILURE);
@@ -59,6 +62,18 @@ public class NotificationMessageProcessor {
         return message != null;
     }
 
+    private void handleDuplicateMessageId(IMessage message) throws InterruptedException, ServiceBusException {
+        if (message.getDeliveryCount() == 1) {
+            deadLetterTheMessage(
+                message,
+                "Duplicate notification message id",
+                "Notification message already processed"
+            );
+        } else {
+            log.warn("Notification message already processed for message id: {}", message.getMessageId());
+            messageReceiver.complete(message.getLockToken());
+        }
+    }
 
     private void finaliseProcessedMessage(IMessage message, MessageProcessingResult processingResult) {
         try {
