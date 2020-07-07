@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
@@ -422,6 +424,41 @@ public class NotificationRepositoryTest {
                 assertThat(n.status).isEqualTo(PENDING);
                 assertThat(n.messageId).isEqualTo(newNotification.messageId);
             });
+    }
+
+    @Test
+    void should_throw_exception_for_duplicate_message_id() {
+        // given
+        String messageId = UUID.randomUUID().toString();
+        final var newNotification1 = new NewNotification(
+            "zip_file_1.zip",
+            "po_box1",
+            "bulkscan",
+            "other_service",
+            "dcn1",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "error_description1",
+            messageId
+        );
+        final var newNotification2 = new NewNotification(
+            "zip_file_2.zip",
+            "po_box2",
+            "bulkscan",
+            "other_service",
+            "dcn2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "error_description2",
+            messageId
+        );
+
+        // when
+        notificationRepository.insert(newNotification1);
+        Throwable exception = catchThrowable(() -> notificationRepository.insert(newNotification2));
+
+        // then
+        assertThat(exception)
+            .isInstanceOf(DuplicateMessageIdException.class)
+            .hasMessage("Failed to save notification message for duplicate message id - " + messageId);
     }
 
     private NewNotification createNewNotification() {
