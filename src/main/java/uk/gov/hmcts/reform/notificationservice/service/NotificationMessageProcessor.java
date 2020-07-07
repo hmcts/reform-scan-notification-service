@@ -42,6 +42,7 @@ public class NotificationMessageProcessor {
         IMessage message = messageReceiver.receive();
         if (message != null) {
             try {
+                // DO NOT CHANGE, used in alert
                 log.info("Started processing notification message with ID {}", message.getMessageId());
                 var notificationMsg = notificationMessageParser.parse(message.getMessageBody());
                 notificationMessageHandler.handleNotificationMessage(notificationMsg, message.getMessageId());
