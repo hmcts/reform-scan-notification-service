@@ -43,6 +43,7 @@ public class NotificationService {
         int postponedCount = 0;
 
         for (var notification : notifications) {
+            // DO NOT CHANGE, used in alert
             log.info("Sending error notification. {}", notification.basicInfo());
 
             try {
