@@ -21,7 +21,6 @@ public class NotificationMessageHandler {
         this.notificationRepository = notificationRepository;
     }
 
-
     public void handleNotificationMessage(NotificationMsg notificationMsg, String messageId) {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 

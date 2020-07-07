@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
@@ -252,6 +253,71 @@ class NotificationMessageProcessorTest {
             .isSameAs(receiverException);
         verifyNoMoreInteractions(notificationMessageParser);
         verifyNoMoreInteractions(notificationMessageHandler);
+    }
 
+    @Test
+    public void should_dead_letter_the_message_when_duplicate_messageId_received_for_already_processed_message()
+        throws Exception {
+        // given
+        String messageId = UUID.randomUUID().toString();
+        given(message.getMessageBody()).willReturn(messageBody);
+        given(message.getDeliveryCount()).willReturn(0L); // first delivery of the message
+
+        UUID lock = UUID.randomUUID();
+        given(message.getLockToken()).willReturn(lock);
+        given(message.getMessageId()).willReturn(messageId);
+        given(messageReceiver.receive()).willReturn(message);
+
+        NotificationMsg notificationMsg = mock(NotificationMsg.class);
+        given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
+
+        Exception messageIdException = new DuplicateMessageIdException(
+            "Duplicate message Id received. messageId: " + messageId
+        );
+
+        // throws exception for duplicate message id
+        willThrow(messageIdException).given(notificationMessageHandler)
+            .handleNotificationMessage(notificationMsg, messageId);
+
+        // when
+        notificationMessageProcessor.processNextMessage();
+
+        // then the message should be dead-lettered because it is the first delivery of the message
+        verify(messageReceiver).deadLetter(
+            eq(lock),
+            eq("Duplicate notification message id"),
+            eq("Duplicate message Id received. messageId: " + messageId)
+        );
+    }
+
+    @Test
+    public void should_complete_the_message_when_duplicate_messageId_received_for_already_delivered_message()
+        throws Exception {
+        // given
+        String messageId = UUID.randomUUID().toString();
+        given(message.getMessageBody()).willReturn(messageBody);
+        given(message.getDeliveryCount()).willReturn(1L); // not the first delivery of the message
+
+        UUID lock = UUID.randomUUID();
+        given(message.getLockToken()).willReturn(lock);
+        given(message.getMessageId()).willReturn(messageId);
+        given(messageReceiver.receive()).willReturn(message);
+
+        NotificationMsg notificationMsg = mock(NotificationMsg.class);
+        given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
+
+        Exception messageIdException = new DuplicateMessageIdException(
+            "Duplicate message Id received"
+        );
+
+        // throws exception for duplicate message id when processing the message
+        willThrow(messageIdException).given(notificationMessageHandler)
+            .handleNotificationMessage(notificationMsg, messageId);
+
+        // when
+        notificationMessageProcessor.processNextMessage();
+
+        // then the message should be completed because the message was delivered already
+        verify(messageReceiver).complete(eq(lock));
     }
 }
