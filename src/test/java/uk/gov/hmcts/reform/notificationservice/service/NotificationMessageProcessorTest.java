@@ -261,7 +261,7 @@ class NotificationMessageProcessorTest {
         // given
         String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
-        given(message.getDeliveryCount()).willReturn(1L); // first delivery of the message
+        given(message.getDeliveryCount()).willReturn(0L); // first delivery of the message
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
@@ -296,7 +296,7 @@ class NotificationMessageProcessorTest {
         // given
         String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
-        given(message.getDeliveryCount()).willReturn(2L); // not the first delivery of the message
+        given(message.getDeliveryCount()).willReturn(1L); // not the first delivery of the message
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);

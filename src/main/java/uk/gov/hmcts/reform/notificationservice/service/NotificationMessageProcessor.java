@@ -64,7 +64,7 @@ public class NotificationMessageProcessor {
 
     private void handleDuplicateMessageId(IMessage message, String errorMessage)
         throws InterruptedException, ServiceBusException {
-        if (message.getDeliveryCount() == 1) {
+        if (message.getDeliveryCount() == 0) {
             deadLetterTheMessage(
                 message,
                 "Duplicate notification message id",
