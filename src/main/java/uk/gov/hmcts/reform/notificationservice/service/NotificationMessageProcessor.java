@@ -42,6 +42,7 @@ public class NotificationMessageProcessor {
         IMessage message = messageReceiver.receive();
         if (message != null) {
             try {
+                log.info("getPrefetchCount {}:", messageReceiver.getPrefetchCount());
                 // DO NOT CHANGE, used in alert
                 log.info("Started processing notification message with ID {}", message.getMessageId());
                 var notificationMsg = notificationMessageParser.parse(message.getMessageBody());
