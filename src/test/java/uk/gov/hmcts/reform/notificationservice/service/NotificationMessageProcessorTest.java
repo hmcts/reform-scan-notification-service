@@ -138,7 +138,6 @@ class NotificationMessageProcessorTest {
         given(message.getMessageId()).willReturn(messageId);
 
         given(messageReceiver.receive()).willReturn(message);
-        given(messageReceiver.getPrefetchCount()).willReturn(0);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
@@ -165,7 +164,7 @@ class NotificationMessageProcessorTest {
         given(message.getLockToken()).willReturn(lock);
 
         given(messageReceiver.receive()).willReturn(message);
-        given(messageReceiver.getPrefetchCount()).willReturn(0);
+
         given(notificationMessageParser.parse(messageBody)).willThrow(new InvalidMessageException("JsonException"));
 
         // when
@@ -189,7 +188,6 @@ class NotificationMessageProcessorTest {
         given(message.getMessageId()).willReturn(messageId);
 
         given(messageReceiver.receive()).willReturn(message);
-        given(messageReceiver.getPrefetchCount()).willReturn(0);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
