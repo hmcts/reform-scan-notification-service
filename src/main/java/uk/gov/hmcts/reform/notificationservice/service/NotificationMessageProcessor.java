@@ -40,6 +40,7 @@ public class NotificationMessageProcessor {
      */
     public boolean processNextMessage() throws ServiceBusException, InterruptedException {
         IMessage message = messageReceiver.receive();
+        log.info("MessageReceiver PrefetchCount {}:", messageReceiver.getPrefetchCount());
         if (message != null) {
             try {
                 // DO NOT CHANGE, used in alert
