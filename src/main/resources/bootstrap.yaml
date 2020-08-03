@@ -21,4 +21,6 @@ spring:
         notification-service-staging-postgres-host: DB_HOST
         notification-service-staging-postgres-port: DB_PORT
         notifications-queue-listen-connection-string: QUEUE_NOTIFICATIONS_READ
+        notification-queue-listen-shared-access-key: QUEUE_READ_ACCESS_KEY
         notifications-staging-queue-listen-connection-string: QUEUE_NOTIFICATIONS_READ
+        notification-staging-queue-listen-shared-access-key: QUEUE_READ_ACCESS_KEY
