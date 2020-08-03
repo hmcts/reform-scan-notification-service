@@ -48,7 +48,7 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:preview') {
-    withAksClient('nonprod') {
+    withAksClient('nonprod', product) {
       // Notifications queue connection string is needed by the functional tests.
       // The following code (as ugly as it looks!) gets it from the k8s cluster
       def dockerImage = new DockerImage(product, component, null, env.BRANCH_NAME, env.GIT_COMMIT)
