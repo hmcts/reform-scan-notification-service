@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.microsoft.azure.servicebus.IQueueClient;
 import com.microsoft.azure.servicebus.Message;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
+@Disabled
 class ProcessNotificationTest {
 
     @Test
