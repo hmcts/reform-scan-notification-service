@@ -11,7 +11,7 @@ import static org.mockito.Mockito.mock;
 public class QueueClientConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "queue.notifications.read-connection-string", havingValue = "false")
+    @ConditionalOnProperty(name = "queue.notifications.access-key", havingValue = "false")
     public IMessageReceiver notificationMessageReceiver() {
         return mock(IMessageReceiver.class);
     }
