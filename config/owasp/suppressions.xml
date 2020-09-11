@@ -5,7 +5,6 @@
      Suppressing as it's a false positive (see: https://pivotal.io/security/cve-2018-1258)
    ]]></notes>
     <gav regex="true">^org\.springframework\.security:spring-security-crypto:5.3.4.RELEASE</gav>
-    <cpe>cpe:/a:pivotal_software:spring_security</cpe>
     <cve>CVE-2018-1258</cve>
   </suppress>
 
@@ -39,7 +38,6 @@
       This is only used for TESTING purposes.
     ]]></notes>
     <packageUrl regex="true">^pkg:javascript/jquery@3\.4\.1.*$</packageUrl>
-    <vulnerabilityName>Regex in its jQuery.htmlPrefilter  sometimes may introduce XSS</vulnerabilityName>
     <cve>CVE-2020-11022</cve>
     <cve>CVE-2020-11023</cve>
   </suppress>
