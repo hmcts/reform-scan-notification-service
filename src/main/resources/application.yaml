@@ -33,6 +33,10 @@ flyway:
 
 queue:
   notifications:
+    access-key: ${QUEUE_READ_ACCESS_KEY}
+    access-key-name: ${QUEUE_ACCESS_KEY_LISTEN_NAME}
+    name: "notifications"
+    namespace: ${QUEUE_NAMESPACE}
     read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
     max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
 
