@@ -212,7 +212,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version:'0.1.0'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.4.4'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.4.6'
 
   implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
@@ -240,7 +240,7 @@ dependencies {
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.4.RELEASE', {
     exclude group: 'com.github.tomakehurst', module: 'wiremock-jre8-standalone'
   }
-  integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.26.3'
+  integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.27.1'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.14.3', {
     exclude group: 'junit', module: 'junit'
   }
@@ -248,7 +248,7 @@ dependencies {
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation libraries.junit5
-  smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+  smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.17.2'
   smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.0'
   smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1' // fix for >java9 envs
   smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured'
