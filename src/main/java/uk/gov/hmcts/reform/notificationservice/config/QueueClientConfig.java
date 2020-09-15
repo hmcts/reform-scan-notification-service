@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.notificationservice.config;
 import com.microsoft.azure.servicebus.ClientFactory;
 import com.microsoft.azure.servicebus.IMessageReceiver;
 import com.microsoft.azure.servicebus.ReceiveMode;
+import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +18,15 @@ public class QueueClientConfig {
     private static final Logger log = LoggerFactory.getLogger(QueueClientConfig.class);
 
     @Bean
-    @ConditionalOnProperty(name = "queue.notifications.read-connection-string")
+    @ConditionalOnProperty(name = "queue.notifications.access-key")
     public IMessageReceiver notificationsMessageReceiver(
-        @Value("${queue.notifications.read-connection-string}") String connectionString)
-        throws InterruptedException, ServiceBusException {
+        @Value("${queue.notifications.access-key}") String accessKey,
+        @Value("${queue.notifications.access-key-name}") String accessKeyName,
+        @Value("${queue.notifications.name}") String queueName,
+        @Value("${queue.notifications.namespace}") String namespace
+    ) throws InterruptedException, ServiceBusException {
         return ClientFactory.createMessageReceiverFromConnectionString(
-            connectionString,
+            new ConnectionStringBuilder(namespace, queueName, accessKeyName, accessKey).toString(),
             ReceiveMode.PEEKLOCK
         );
     }
