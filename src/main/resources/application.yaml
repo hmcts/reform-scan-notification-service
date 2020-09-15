@@ -35,7 +35,7 @@ queue:
   notifications:
     access-key: ${QUEUE_READ_ACCESS_KEY}
     access-key-name: ${QUEUE_ACCESS_KEY_LISTEN_NAME}
-    name: "notifications"
+    name: ${QUEUE_NAME}
     namespace: ${QUEUE_NAMESPACE}
     max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
 
