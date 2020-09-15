@@ -37,7 +37,6 @@ queue:
     access-key-name: ${QUEUE_ACCESS_KEY_LISTEN_NAME}
     name: ${QUEUE_NAME}
     namespace: ${QUEUE_NAMESPACE}
-    read-connection-string: ${QUEUE_NOTIFICATIONS_READ}
     max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
 
 scheduling:
