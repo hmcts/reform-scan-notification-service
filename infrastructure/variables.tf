@@ -11,11 +11,10 @@ variable "env" {}
 variable "subscription" {}
 
 variable "common_tags" {
-  type = map
+  type = map(string)
 }
 
 variable "location_db" {
-  type    = string
   default = "UK South"
 }
 
