@@ -17,8 +17,6 @@ module "reform-notifications-db" {
 }
 
 module "reform-notifications-staging-db" {
-  count = var.env == "aat" ? 1 : 0
-
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.component}-staging"
   location           = var.location_db
@@ -80,35 +78,30 @@ resource "azurerm_key_vault_secret" "db_database" {
 # region staging DB secrets
 
 resource "azurerm_key_vault_secret" "staging_db_user" {
-  count        = var.env == "aat" ? 1 : 0
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-staging-postgres-user"
   value        = module.reform-notifications-staging-db.user_name
 }
 
 resource "azurerm_key_vault_secret" "staging_db_password" {
-  count        = var.env == "aat" ? 1 : 0
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-staging-postgres-pass"
   value        = module.reform-notifications-staging-db.postgresql_password
 }
 
 resource "azurerm_key_vault_secret" "staging_db_host" {
-  count        = var.env == "aat" ? 1 : 0
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-staging-postgres-host"
   value        = module.reform-notifications-staging-db.host_name
 }
 
 resource "azurerm_key_vault_secret" "staging_db_port" {
-  count        = var.env == "aat" ? 1 : 0
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-staging-postgres-port"
   value        = module.reform-notifications-staging-db.postgresql_listen_port
 }
 
 resource "azurerm_key_vault_secret" "staging_db_database" {
-  count        = var.env == "aat" ? 1 : 0
   key_vault_id = data.azurerm_key_vault.reform_scan_key_vault.id
   name         = "${var.component}-staging-postgres-database"
   value        = module.reform-notifications-staging-db.postgresql_database
