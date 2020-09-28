@@ -33,7 +33,7 @@ class ReadinessTest {
     }
 
     @Test
-    void should_readiness_contain_db_status() throws Exception {
+    void readiness_should_contain_db_status() throws Exception {
         mockMvc
             .perform(
                 get("/health/readiness")
