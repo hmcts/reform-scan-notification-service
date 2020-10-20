@@ -31,8 +31,8 @@ module "reform-notifications-staging-db" {
 }
 
 data "azurerm_key_vault" "reform_scan_key_vault" {
-  name                = "reform-scan-${var.env}"
-  resource_group_name = "reform-scan-${var.env}"
+  name                = "reform-scan-v2-${var.env}"
+  resource_group_name = "reform-scan-v2-${var.env}"
 }
 
 data "azurerm_key_vault" "s2s_key_vault" {

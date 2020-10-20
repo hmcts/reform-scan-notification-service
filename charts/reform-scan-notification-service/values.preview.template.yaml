@@ -23,8 +23,8 @@ java:
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
   keyVaults:
-    reform-scan:
-      resourceGroup: reform-scan
+    reform-scan-v2:
+      resourceGroup: reform-scan-v2
       secrets:
         - error-notifications-password
         - error-notifications-url

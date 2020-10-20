@@ -10,8 +10,8 @@ java:
     FLYWAY_SKIP_MIGRATIONS: false
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
   keyVaults:
-    reform-scan:
-      resourceGroup: reform-scan
+    reform-scan-v2:
+      resourceGroup: reform-scan-v2
       secrets:
         - app-insights-instrumentation-key
         - error-notifications-password

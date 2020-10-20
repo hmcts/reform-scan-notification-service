@@ -4,8 +4,8 @@ java:
   aadIdentityName: reform-scan
   readinessPath: '/health/readiness'
   keyVaults:
-    reform-scan:
-      resourceGroup: reform-scan
+    reform-scan-v2:
+      resourceGroup: reform-scan-v2
       secrets:
         - app-insights-instrumentation-key
         - error-notifications-password
@@ -23,7 +23,7 @@ java:
     FLYWAY_SKIP_MIGRATIONS: true
     QUEUE_ACCESS_KEY_LISTEN_NAME: "ListenSharedAccessKey"
     QUEUE_NAME: "notifications"
-    QUEUE_NAMESPACE: reform-scan-servicebus-{{ .Values.global.environment }}
+    QUEUE_NAMESPACE: reform-scan-servicebus-v2-{{ .Values.global.environment }}
     QUEUE_NOTIFICATIONS_MAX_RETRY: 5
     S2S_URL: http://rpe-service-auth-provider-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
     NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS: 3000
