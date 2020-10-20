@@ -15,14 +15,14 @@ def channel = '#bsp-build-notices'
 GradleBuilder builder = new GradleBuilder(this, product)
 
 def nonPrSecrets = [
-  'reform-scan-${env}': [
+  'reform-scan-v2-${env}': [
     secret('notification-staging-queue-send-shared-access-key', 'NOTIFICATION_QUEUE_ACCESS_KEY_WRITE'),
     secret('test-s2s-secret', 'TEST_S2S_SECRET')
   ]
 ]
 
 def prSecrets = [
-  'reform-scan-${env}': [
+  'reform-scan-v2-${env}': [
     secret('test-s2s-secret', 'TEST_S2S_SECRET')
   ]
 ]
@@ -45,7 +45,7 @@ withPipeline(type, product, component) {
     // Vars needed for AKS testing
     env.TEST_S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
     env.NOTIFICATION_QUEUE_NAME = "notifications-staging"
-    env.NOTIFICATION_QUEUE_NAMESPACE = "reform-scan-servicebus-aat"
+    env.NOTIFICATION_QUEUE_NAMESPACE = "reform-scan-servicebus-v2-aat"
     env.NOTIFICATION_QUEUE_ACCESS_KEY_NAME_WRITE = "SendSharedAccessKey"
   }
 
@@ -69,7 +69,7 @@ withPipeline(type, product, component) {
     }
   }
 
-  enableDbMigration('reform-scan') // vault 'prefix'
+  enableDbMigration('reform-scan-v2') // vault 'prefix'
   enableAksStagingDeployment()
   enableSlackNotifications(channel)
   disableLegacyDeployment()
