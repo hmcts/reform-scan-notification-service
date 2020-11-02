@@ -249,7 +249,7 @@ dependencies {
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation libraries.junit5
   smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.18.0'
-  smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.0'
+  smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.1'
   smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured-all', version: '4.3.1' // fix for >java9 envs
   smokeTestImplementation group: 'io.rest-assured', name: 'rest-assured'
 
