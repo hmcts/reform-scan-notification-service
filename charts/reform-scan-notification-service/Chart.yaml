@@ -5,7 +5,7 @@ home: https://github.com/hmcts/reform-scan-notification-service
 version: 0.1.6
 maintainers:
   - name: HMCTS BSP Team
-     email: bspteam@hmcts.net
+    email: bspteam@hmcts.net
 dependencies:
   - name: java
     version: 3.4.4
