@@ -5,12 +5,12 @@ home: https://github.com/hmcts/reform-scan-notification-service
 version: 0.1.6
 maintainers:
   - name: HMCTS BSP Team
-    email: bspteam@hmcts.net
+     email: bspteam@hmcts.net
 dependencies:
   - name: java
-    version: 3.4.4
-    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+     version: 3.4.4
+     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
   - name: servicebus
-    version: 0.3.0
-    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
-    condition: servicebus.enabled
+     version: 0.3.0
+     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+     condition: servicebus.enabled
