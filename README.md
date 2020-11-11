@@ -12,6 +12,7 @@ Retrieves service bus queue messages from notifications queue and then processes
 
 ### Building the application
 
+
 The project uses [Gradle](https://gradle.org) as a build tool. It already contains
 `./gradlew` wrapper script, so there's no need to install gradle.
 
