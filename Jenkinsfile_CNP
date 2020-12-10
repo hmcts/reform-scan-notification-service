@@ -81,4 +81,6 @@ withPipeline(type, product, component) {
   onPR() {
     loadVaultSecrets(prSecrets)
   }
+  def branchesToSync = ['demo', 'perftest']
+  syncBranchesWithMaster(branchesToSync)
 }
