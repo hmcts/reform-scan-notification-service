@@ -6,6 +6,7 @@
 
 ## Purpose
 
+
 Retrieves service bus queue messages from notifications queue and then processes them by notifying external supplier's API and finally saves results to database in notifications table.
  
 ## Building and deploying the application
