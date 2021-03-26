@@ -7,25 +7,25 @@ java:
     reform-scan:
       secrets:
         - name: app-insights-instrumentation-key
-          alias: azure.application-insights.instrumentation-key
+           alias: azure.application-insights.instrumentation-key
         - name: error-notifications-password
-          alias: clients.error-notifications.password
+           alias: clients.error-notifications.password
         - name: error-notifications-url
-          alias: clients.error-notifications.url
+           alias: clients.error-notifications.url
         - name:  error-notifications-username
-          alias: clients.error-notifications.username
+           alias: clients.error-notifications.username
         - name: notification-service-POSTGRES-PASS
-          alias: DB_PASSWORD
+           alias: DB_PASSWORD
         - name: notification-service-POSTGRES-USER
-          alias: DB_USER
+           alias: DB_USER
         - name: notification-service-POSTGRES-HOST
-          alias: DB_HOST
+           alias: DB_HOST
         - name: notification-service-POSTGRES-PORT
-          alias: DB_PORT
+           alias: DB_PORT
         - name: notification-service-POSTGRES-DATABASE
-          alias: DB_NAME
+           alias: DB_NAME
         - name:  notification-queue-listen-shared-access-key
-          alias: QUEUE_READ_ACCESS_KEY
+           alias: QUEUE_READ_ACCESS_KEY
   environment:
     DB_CONN_OPTIONS: ?sslmode=require
     FLYWAY_SKIP_MIGRATIONS: true
