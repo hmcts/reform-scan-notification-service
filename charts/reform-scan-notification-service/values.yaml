@@ -4,7 +4,7 @@ java:
   aadIdentityName: reform-scan
   readinessPath: '/health/readiness'
   keyVaults:
-    reform-scan:
+    "reform-scan":
       secrets:
         - name: app-insights-instrumentation-key
           alias: azure.application-insights.instrumentation-key

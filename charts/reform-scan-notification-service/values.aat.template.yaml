@@ -10,7 +10,7 @@ java:
     FLYWAY_SKIP_MIGRATIONS: false
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
   keyVaults:
-    reform-scan:
+    "reform-scan":
       secrets:
         - name: app-insights-instrumentation-key
            alias: azure.application-insights.instrumentation-key
