@@ -25,11 +25,11 @@ java:
     reform-scan:
       secrets:
         - name: error-notifications-password
-           alias: clients.error-notifications.password
+          alias: clients.error-notifications.password
         - name: error-notifications-url
-           alias: clients.error-notifications.url
+          alias: clients.error-notifications.url
         - name:  error-notifications-username
-           alias: clients.error-notifications.username
+          alias: clients.error-notifications.username
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
