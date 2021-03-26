@@ -21,15 +21,6 @@ java:
     NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS: 1000
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
-  keyVaults:
-    "reform-scan":
-      secrets:
-        - name: error-notifications-password
-          alias: clients.error-notifications.password
-        - name: error-notifications-url
-          alias: clients.error-notifications.url
-        - name:  error-notifications-username
-          alias: clients.error-notifications.username
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
