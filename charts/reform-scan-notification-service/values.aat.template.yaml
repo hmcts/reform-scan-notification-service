@@ -13,7 +13,7 @@ java:
     "reform-scan":
       secrets:
         - name: app-insights-instrumentation-key
-           alias: azure.application-insights.instrumentation-key
+          alias: azure.application-insights.instrumentation-key
         - name: error-notifications-password
           alias: clients.error-notifications.password
         - name: error-notifications-url
