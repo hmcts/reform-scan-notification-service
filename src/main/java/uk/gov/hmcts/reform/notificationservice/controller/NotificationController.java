@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
@@ -116,7 +117,21 @@ public class NotificationController {
         List<NotificationInfo> notifications = list.stream()
             .map(notification -> toNotificationResponse(notification))
             .collect(toList());
-        return new NotificationsResponse(notifications.size(), notifications);
+
+        var sentNotificationsCount = notifications.stream()
+            .filter(n -> n.status.equals("SENT"))
+            .collect(Collectors.toList()).size();
+
+        var pendingNotificationsCount = notifications.stream()
+            .filter(n -> n.status.equals("PENDING"))
+            .collect(Collectors.toList()).size();
+
+        return new NotificationsResponse(
+            notifications.size(),
+            sentNotificationsCount,
+            pendingNotificationsCount,
+            notifications
+        );
     }
 
     private NotificationInfo toNotificationResponse(Notification notification) {
