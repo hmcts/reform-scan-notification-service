@@ -104,6 +104,8 @@ public class NotificationControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
+            .andExpect(jsonPath("$.sentNotificationsCount", is(1)))
+            .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
             .andExpect(jsonPath("$.notifications[0].id").isNotEmpty())
             .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
@@ -149,6 +151,8 @@ public class NotificationControllerTest {
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(0)))
+            .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
+            .andExpect(jsonPath("$.sentNotificationsCount", is(0)))
             .andExpect(jsonPath("$.notifications", hasSize(0)))
         ;
     }
@@ -253,6 +257,8 @@ public class NotificationControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(2)))
             .andExpect(jsonPath("$.notifications", hasSize(2)))
+            .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
+            .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
             .andExpect(jsonPath("$.notifications[0].id").isNotEmpty())
             .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
             .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))

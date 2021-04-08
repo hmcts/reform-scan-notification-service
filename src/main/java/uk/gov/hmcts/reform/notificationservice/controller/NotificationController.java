@@ -116,7 +116,8 @@ public class NotificationController {
         List<NotificationInfo> notifications = list.stream()
             .map(notification -> toNotificationResponse(notification))
             .collect(toList());
-        return new NotificationsResponse(notifications.size(), notifications);
+
+        return new NotificationsResponse(notifications);
     }
 
     private NotificationInfo toNotificationResponse(Notification notification) {
