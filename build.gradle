@@ -238,7 +238,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.2'
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.7.RELEASE'
 
-  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.6.1'
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.6.2'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.2'
