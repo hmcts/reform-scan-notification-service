@@ -189,12 +189,11 @@ dependencyManagement {
 }
 
 repositories {
-  mavenLocal()
-  jcenter()
-  mavenCentral()
-  maven {
-    url "https://dl.bintray.com/hmcts/hmcts-maven"
-  }
+    mavenLocal()
+    jcenter()
+    maven {
+        url = 'http://repo.maven.apache.org/maven2'
+    }
 }
 
 def versions = [
