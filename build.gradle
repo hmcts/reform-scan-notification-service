@@ -190,11 +190,12 @@ dependencyManagement {
 
 repositories {
     mavenLocal()
-    jcenter()
     maven {
-        url = 'http://repo.maven.apache.org/maven2'
+        url 'https://jitpack.io'
     }
+    jcenter()
 }
+
 
 def versions = [
   junit           : '5.7.1',
