@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdExcep
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,7 +59,7 @@ class NotificationMessageProcessorTest {
         String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
-        given(message.getMessageId()).willReturn(messageId);
+        mockMessageDetails(messageId);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
@@ -95,6 +96,7 @@ class NotificationMessageProcessorTest {
         // given
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
+        mockMessageDetails(UUID.randomUUID().toString());
         given(notificationMessageParser.parse(messageBody)).willThrow(new InvalidMessageException("Invalid Message"));
 
         //when
@@ -112,7 +114,7 @@ class NotificationMessageProcessorTest {
         String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(messageReceiver.receive()).willReturn(message);
-        given(message.getMessageId()).willReturn(messageId);
+        mockMessageDetails(messageId);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
@@ -135,7 +137,7 @@ class NotificationMessageProcessorTest {
         given(message.getMessageBody()).willReturn(messageBody);
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
-        given(message.getMessageId()).willReturn(messageId);
+        mockMessageDetails(messageId);
 
         given(messageReceiver.receive()).willReturn(message);
 
@@ -162,6 +164,7 @@ class NotificationMessageProcessorTest {
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
+        mockMessageDetails(UUID.randomUUID().toString());
 
         given(messageReceiver.receive()).willReturn(message);
 
@@ -185,7 +188,7 @@ class NotificationMessageProcessorTest {
         // given
         String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
-        given(message.getMessageId()).willReturn(messageId);
+        mockMessageDetails(messageId);
 
         given(messageReceiver.receive()).willReturn(message);
 
@@ -213,17 +216,17 @@ class NotificationMessageProcessorTest {
     @Test
     public void should_dead_letter_the_message_when_recoverable_failure_but_delivery_maxed() throws Exception {
         // given
-        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(message.getDeliveryCount()).willReturn(4L);
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
-        given(message.getMessageId()).willReturn(messageId);
         given(messageReceiver.receive()).willReturn(message);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
+        String messageId = UUID.randomUUID().toString();
+        mockMessageDetails(messageId);
 
         Exception processingFailureCause = new RuntimeException(
             "exception of type treated as recoverable"
@@ -259,14 +262,14 @@ class NotificationMessageProcessorTest {
     public void should_dead_letter_the_message_when_duplicate_messageId_received_for_already_processed_message()
         throws Exception {
         // given
-        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(message.getDeliveryCount()).willReturn(0L); // first delivery of the message
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
-        given(message.getMessageId()).willReturn(messageId);
         given(messageReceiver.receive()).willReturn(message);
+        String messageId = UUID.randomUUID().toString();
+        mockMessageDetails(messageId);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
@@ -294,14 +297,14 @@ class NotificationMessageProcessorTest {
     public void should_complete_the_message_when_duplicate_messageId_received_for_already_delivered_message()
         throws Exception {
         // given
-        String messageId = UUID.randomUUID().toString();
         given(message.getMessageBody()).willReturn(messageBody);
         given(message.getDeliveryCount()).willReturn(1L); // not the first delivery of the message
 
         UUID lock = UUID.randomUUID();
         given(message.getLockToken()).willReturn(lock);
-        given(message.getMessageId()).willReturn(messageId);
         given(messageReceiver.receive()).willReturn(message);
+        String messageId = UUID.randomUUID().toString();
+        mockMessageDetails(messageId);
 
         NotificationMsg notificationMsg = mock(NotificationMsg.class);
         given(notificationMessageParser.parse(messageBody)).willReturn(notificationMsg);
@@ -319,5 +322,11 @@ class NotificationMessageProcessorTest {
 
         // then the message should be completed because the message was delivered already
         verify(messageReceiver).complete(eq(lock));
+    }
+
+    private void mockMessageDetails(String messageId) {
+        given(message.getMessageId()).willReturn(messageId);
+        given(message.getLockedUntilUtc()).willReturn(Instant.now());
+        given(message.getExpiresAtUtc()).willReturn(Instant.now());
     }
 }

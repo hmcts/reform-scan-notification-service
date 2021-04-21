@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdExcep
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 
+import static java.time.LocalDateTime.ofInstant;
+import static java.time.ZoneOffset.UTC;
+
 @Service
 public class NotificationMessageProcessor {
 
@@ -39,11 +42,17 @@ public class NotificationMessageProcessor {
      * @return false if there was no message to process. Otherwise true.
      */
     public boolean processNextMessage() throws ServiceBusException, InterruptedException {
+        log.info("Getting notification message.");
         IMessage message = messageReceiver.receive();
         if (message != null) {
             try {
                 // DO NOT CHANGE, used in alert
                 log.info("Started processing notification message with ID {}", message.getMessageId());
+                log.info("Start processing notification message, ID {}, locked until {}, expires: {}",
+                         message.getMessageId(),
+                         ofInstant(message.getLockedUntilUtc(), UTC),
+                         ofInstant(message.getExpiresAtUtc(), UTC)
+                );
                 var notificationMsg = notificationMessageParser.parse(message.getMessageBody());
                 notificationMessageHandler.handleNotificationMessage(notificationMsg, message.getMessageId());
                 finaliseProcessedMessage(message, MessageProcessingResult.SUCCESS);
@@ -83,6 +92,7 @@ public class NotificationMessageProcessor {
 
     private void finaliseProcessedMessage(IMessage message, MessageProcessingResult processingResult) {
         try {
+            log.info("Finalising Notification Message with ID {} ", message.getMessageId());
             completeProcessedMessage(message, processingResult);
         } catch (InterruptedException ex) {
             log.error(
@@ -109,6 +119,7 @@ public class NotificationMessageProcessor {
 
         switch (processingResult) {
             case SUCCESS:
+                log.info("Completing Notification Message with ID {} ", message.getMessageId());
                 messageReceiver.complete(message.getLockToken());
                 log.info("Notification Message with ID {} has been completed successfully.", message.getMessageId());
                 break;
