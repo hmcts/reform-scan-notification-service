@@ -11,6 +11,9 @@ import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdExcep
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 
+import static java.time.LocalDateTime.ofInstant;
+import static java.time.ZoneOffset.UTC;
+
 @Service
 public class NotificationMessageProcessor {
 
@@ -45,6 +48,11 @@ public class NotificationMessageProcessor {
             try {
                 // DO NOT CHANGE, used in alert
                 log.info("Started processing notification message with ID {}", message.getMessageId());
+                log.info("Start processing notification message, ID {}, locked until {}, expires: {}",
+                         message.getMessageId(),
+                         ofInstant(message.getLockedUntilUtc(), UTC),
+                         ofInstant(message.getExpiresAtUtc(), UTC)
+                );
                 var notificationMsg = notificationMessageParser.parse(message.getMessageBody());
                 notificationMessageHandler.handleNotificationMessage(notificationMsg, message.getMessageId());
                 finaliseProcessedMessage(message, MessageProcessingResult.SUCCESS);
