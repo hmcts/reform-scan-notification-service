@@ -39,6 +39,7 @@ public class NotificationMessageProcessor {
      * @return false if there was no message to process. Otherwise true.
      */
     public boolean processNextMessage() throws ServiceBusException, InterruptedException {
+        log.info("Getting notification message.");
         IMessage message = messageReceiver.receive();
         if (message != null) {
             try {
@@ -83,6 +84,7 @@ public class NotificationMessageProcessor {
 
     private void finaliseProcessedMessage(IMessage message, MessageProcessingResult processingResult) {
         try {
+            log.info("Finalising Notification Message with ID {} ", message.getMessageId());
             completeProcessedMessage(message, processingResult);
         } catch (InterruptedException ex) {
             log.error(
@@ -109,6 +111,7 @@ public class NotificationMessageProcessor {
 
         switch (processingResult) {
             case SUCCESS:
+                log.info("Completing Notification Message with ID {} ", message.getMessageId());
                 messageReceiver.complete(message.getLockToken());
                 log.info("Notification Message with ID {} has been completed successfully.", message.getMessageId());
                 break;
