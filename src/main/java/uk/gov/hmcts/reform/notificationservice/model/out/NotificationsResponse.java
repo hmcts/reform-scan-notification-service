@@ -36,7 +36,7 @@ public class NotificationsResponse {
 
     public NotificationsResponse(List<NotificationInfo> notifications) {
         this.notifications = notifications.stream()
-            .sorted(Comparator.comparingLong(i->Long.parseLong(i.id)))
+            .sorted(Comparator.comparingLong(i -> Long.parseLong(i.id)))
             .collect(Collectors.toList());
         this.count = setNotificationsCount();
         this.sentNotificationsCount = setSentNotificationsCount();
