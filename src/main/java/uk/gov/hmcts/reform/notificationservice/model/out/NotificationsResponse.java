@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,9 @@ public class NotificationsResponse {
     public final List<NotificationInfo> notifications;
 
     public NotificationsResponse(List<NotificationInfo> notifications) {
-        this.notifications = notifications;
+        this.notifications = notifications.stream()
+            .sorted(Comparator.comparingLong(i->Long.parseLong(i.id)))
+            .collect(Collectors.toList());
         this.count = setNotificationsCount();
         this.sentNotificationsCount = setSentNotificationsCount();
         this.pendingNotificationsCount = setPendingNotificationsCount();
