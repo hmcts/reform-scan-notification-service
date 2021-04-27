@@ -59,6 +59,21 @@ public class NotificationControllerTest {
         cal.set(Calendar.MILLISECOND, 234);
         Instant instant = cal.toInstant();
         final String instantString = "2020-03-23T13:17:20";
+        var notification3 = new Notification(
+            3L,
+            "confirmation-id-3",
+            fileName,
+            "po_box3",
+            "container",
+            service,
+            "DCN3",
+            ErrorCode.ERR_PAYMENTS_DISABLED,
+            "invalid metafile3",
+            instant,
+            instant,
+            NotificationStatus.SENT,
+            "messageId3"
+        );
 
         var notification1 = new Notification(
             1L,
@@ -93,7 +108,7 @@ public class NotificationControllerTest {
 
         given(authService.authenticate(auth)).willReturn(service);
         given(notificationService.findByFileNameAndService(fileName, service))
-            .willReturn(asList(notification1, notification2));
+            .willReturn(asList(notification3, notification1, notification2));
 
 
         mockMvc
@@ -103,12 +118,12 @@ public class NotificationControllerTest {
                     .queryParam("file_name", fileName)
             )
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.count", is(2)))
-            .andExpect(jsonPath("$.sentNotificationsCount", is(1)))
+            .andExpect(jsonPath("$.count", is(3)))
+            .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
             .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
-            .andExpect(jsonPath("$.notifications", hasSize(2)))
+            .andExpect(jsonPath("$.notifications", hasSize(3)))
             .andExpect(jsonPath("$.notifications[0].id").isNotEmpty())
-            .andExpect(jsonPath("$.notifications[0].id").value(1L))
+            .andExpect(jsonPath("$.notifications[0].id").value(notification1.id))
             .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
             .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
             .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
@@ -120,8 +135,9 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
+
             .andExpect(jsonPath("$.notifications[1].id").isNotEmpty())
-            .andExpect(jsonPath("$.notifications[1].id").value(2L))
+            .andExpect(jsonPath("$.notifications[1].id").value(notification2.id))
             .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
             .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
             .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
@@ -133,7 +149,22 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[1].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
-        ;
+
+            .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
+            .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
+            .andExpect(jsonPath("$.notifications[2].id").isNotEmpty())
+            .andExpect(jsonPath("$.notifications[2].id").value(notification3.id))
+            .andExpect(jsonPath("$.notifications[2].confirmation_id").value(notification3.confirmationId))
+            .andExpect(jsonPath("$.notifications[2].zip_file_name").value(notification3.zipFileName))
+            .andExpect(jsonPath("$.notifications[2].po_box").value(notification3.poBox))
+            .andExpect(jsonPath("$.notifications[2].container").value(notification3.container))
+            .andExpect(jsonPath("$.notifications[2].service").value(notification3.service))
+            .andExpect(jsonPath("$.notifications[2].document_control_number")
+                           .value(notification3.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[2].error_code").value(notification3.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
     }
 
     @Test
