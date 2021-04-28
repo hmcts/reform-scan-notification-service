@@ -65,8 +65,7 @@ public class NotificationRepository {
 
     public List<Notification> findByDate(LocalDate date) {
         return jdbcTemplate.query(
-            "SELECT * FROM notifications WHERE DATE(created_at) = :date "
-                + "ORDER BY id",
+            "SELECT * FROM notifications WHERE DATE(created_at) = :date",
             new MapSqlParameterSource("date", date),
             this.mapper
         );
@@ -75,8 +74,7 @@ public class NotificationRepository {
     public List<Notification> findPending() {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
-                + "created_at < (now()::timestamp - interval '" + delayDurationToProcessPending + " minutes') "
-                + "ORDER BY id",
+                + "created_at < (now()::timestamp - interval '" + delayDurationToProcessPending + " minutes')",
             new MapSqlParameterSource("status", PENDING.name()),
             this.mapper
         );
