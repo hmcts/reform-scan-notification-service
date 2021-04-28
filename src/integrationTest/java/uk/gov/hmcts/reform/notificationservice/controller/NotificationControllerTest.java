@@ -59,21 +59,6 @@ public class NotificationControllerTest {
         cal.set(Calendar.MILLISECOND, 234);
         Instant instant = cal.toInstant();
         final String instantString = "2020-03-23T13:17:20";
-        var notification3 = new Notification(
-            3L,
-            "confirmation-id-3",
-            fileName,
-            "po_box3",
-            "container",
-            service,
-            "DCN3",
-            ErrorCode.ERR_PAYMENTS_DISABLED,
-            "invalid metafile3",
-            instant,
-            instant,
-            NotificationStatus.SENT,
-            "messageId3"
-        );
 
         var notification1 = new Notification(
             1L,
@@ -105,10 +90,24 @@ public class NotificationControllerTest {
             NotificationStatus.MANUALLY_HANDLED,
             "messageId2"
         );
-
+        var notification3 = new Notification(
+            3L,
+            "confirmation-id-3",
+            fileName,
+            "po_box3",
+            "container",
+            service,
+            "DCN3",
+            ErrorCode.ERR_PAYMENTS_DISABLED,
+            "invalid metafile3",
+            instant,
+            instant,
+            NotificationStatus.SENT,
+            "messageId3"
+        );
         given(authService.authenticate(auth)).willReturn(service);
         given(notificationService.findByFileNameAndService(fileName, service))
-            .willReturn(asList(notification3, notification1, notification2));
+            .willReturn(asList(notification1, notification2, notification3));
 
 
         mockMvc
@@ -234,8 +233,7 @@ public class NotificationControllerTest {
                     .queryParam("file_name", fileName)
                     .header("ServiceAuthorization", auth)
             )
-            .andExpect(status().isInternalServerError())
-        ;
+            .andExpect(status().isInternalServerError());
     }
 
     @Test
