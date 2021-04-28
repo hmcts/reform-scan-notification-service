@@ -169,7 +169,22 @@ public class NotificationRepositoryTest {
             .isNotEmpty()
             .hasSize(3)
             .usingElementComparatorIgnoringFields("createdAt", "processedAt")
-            .containsExactlyInAnyOrder(
+            .containsExactly(
+                new Notification(
+                    id4,
+                    null,
+                    newNotification4.zipFileName,
+                    newNotification4.poBox,
+                    newNotification4.container,
+                    newNotification4.service,
+                    newNotification4.documentControlNumber,
+                    newNotification4.errorCode,
+                    newNotification4.errorDescription,
+                    null,
+                    null,
+                    PENDING,
+                    newNotification4.messageId
+                ),
                 new Notification(
                     id1,
                     null,
@@ -199,21 +214,6 @@ public class NotificationRepositoryTest {
                     null,
                     PENDING,
                     newNotification3.messageId
-                ),
-                new Notification(
-                    id4,
-                    null,
-                    newNotification4.zipFileName,
-                    newNotification4.poBox,
-                    newNotification4.container,
-                    newNotification4.service,
-                    newNotification4.documentControlNumber,
-                    newNotification4.errorCode,
-                    newNotification4.errorDescription,
-                    null,
-                    null,
-                    PENDING,
-                    newNotification4.messageId
                 )
             )
         ;
@@ -269,7 +269,7 @@ public class NotificationRepositoryTest {
             .isNotEmpty()
             .hasSize(2)
             .usingElementComparatorIgnoringFields("createdAt", "processedAt")
-            .containsExactlyInAnyOrder(
+            .containsExactly(
                 new Notification(
                     id1,
                     null,
