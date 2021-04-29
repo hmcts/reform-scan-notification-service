@@ -53,7 +53,8 @@ public class NotificationRepository {
 
     public List<Notification> find(String zipFileName, String service) {
         return jdbcTemplate.query(
-            "SELECT * FROM notifications WHERE zip_file_name = :zipFileName AND service = :service",
+            "SELECT * FROM notifications WHERE zip_file_name = :zipFileName AND service = :service "
+                + "ORDER BY id",
             new MapSqlParameterSource()
                 .addValue("zipFileName", zipFileName)
                 .addValue("service", service),
@@ -63,7 +64,8 @@ public class NotificationRepository {
 
     public List<Notification> findByDate(LocalDate date) {
         return jdbcTemplate.query(
-            "SELECT * FROM notifications WHERE DATE(created_at) = :date",
+            "SELECT * FROM notifications WHERE DATE(created_at) = :date "
+                + "ORDER BY id",
             new MapSqlParameterSource("date", date),
             this.mapper
         );
