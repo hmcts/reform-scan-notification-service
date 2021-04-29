@@ -144,7 +144,19 @@ public class NotificationRepositoryTest {
             "124355676"
         );
 
+        final var newNotification4 = new NewNotification(
+            zipFileName,
+            "po_box4",
+            "scan",
+            service,
+            "dcn4",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "error_description4",
+            "124355666"
+        );
+
         // when
+        var id4 = notificationRepository.insert(newNotification4);
         var id1 = notificationRepository.insert(newNotification1);
         notificationRepository.insert(newNotificationFromOtherService);
         var id3 = notificationRepository.insert(newNotification3);
@@ -155,9 +167,24 @@ public class NotificationRepositoryTest {
         // then
         assertThat(notifications)
             .isNotEmpty()
-            .hasSize(2)
+            .hasSize(3)
             .usingElementComparatorIgnoringFields("createdAt", "processedAt")
-            .containsExactlyInAnyOrder(
+            .containsExactly(
+                new Notification(
+                    id4,
+                    null,
+                    newNotification4.zipFileName,
+                    newNotification4.poBox,
+                    newNotification4.container,
+                    newNotification4.service,
+                    newNotification4.documentControlNumber,
+                    newNotification4.errorCode,
+                    newNotification4.errorDescription,
+                    null,
+                    null,
+                    PENDING,
+                    newNotification4.messageId
+                ),
                 new Notification(
                     id1,
                     null,
@@ -242,7 +269,7 @@ public class NotificationRepositoryTest {
             .isNotEmpty()
             .hasSize(2)
             .usingElementComparatorIgnoringFields("createdAt", "processedAt")
-            .containsExactlyInAnyOrder(
+            .containsExactly(
                 new Notification(
                     id1,
                     null,
