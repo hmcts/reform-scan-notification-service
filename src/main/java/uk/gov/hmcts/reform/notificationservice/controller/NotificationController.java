@@ -35,7 +35,7 @@ public class NotificationController {
     private final NotificationService notificationService;
     private final AuthService authService;
 
-    private static final int MAX_ERROR_DESCRIPTION_LENGTH = 256;
+    private static final int MAX_ERROR_DESCRIPTION_LENGTH = 1024;
 
     public NotificationController(
         NotificationService notificationService,

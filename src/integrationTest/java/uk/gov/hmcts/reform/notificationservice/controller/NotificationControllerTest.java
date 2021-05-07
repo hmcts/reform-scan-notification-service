@@ -99,10 +99,22 @@ public class NotificationControllerTest {
             service,
             "DCN3",
             ErrorCode.ERR_PAYMENTS_DISABLED,
-            "very long error description exceeding the limit which is 256 characters; "
-                + "very long error description exceeding the limit which is 256 characters"
-                + "very long error description exceeding the limit which is 256 characters"
-                + "very long error description exceeding the limit which is 256 characters",
+            "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters",
             instant,
             instant,
             NotificationStatus.SENT,
@@ -167,7 +179,7 @@ public class NotificationControllerTest {
                            .value(notification3.documentControlNumber))
             .andExpect(jsonPath("$.notifications[2].error_code").value(notification3.errorCode.name()))
             .andExpect(jsonPath("$.notifications[2].error_description")
-                           .value(notification3.errorDescription.substring(0, 256)))
+                           .value(notification3.errorDescription.substring(0, 1024)))
             .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
