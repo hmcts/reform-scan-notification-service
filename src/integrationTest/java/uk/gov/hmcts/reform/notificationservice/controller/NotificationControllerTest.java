@@ -99,8 +99,10 @@ public class NotificationControllerTest {
             service,
             "DCN3",
             ErrorCode.ERR_PAYMENTS_DISABLED,
-            "very long error description exceeding the limit which is 128 characters; "
-                + "very long error description exceeding the limit which is 128 characters",
+            "very long error description exceeding the limit which is 256 characters; "
+                + "very long error description exceeding the limit which is 256 characters"
+                + "very long error description exceeding the limit which is 256 characters"
+                + "very long error description exceeding the limit which is 256 characters",
             instant,
             instant,
             NotificationStatus.SENT,
