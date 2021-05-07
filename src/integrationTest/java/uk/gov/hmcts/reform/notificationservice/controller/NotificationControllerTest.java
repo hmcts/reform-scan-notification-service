@@ -167,7 +167,7 @@ public class NotificationControllerTest {
                            .value(notification3.documentControlNumber))
             .andExpect(jsonPath("$.notifications[2].error_code").value(notification3.errorCode.name()))
             .andExpect(jsonPath("$.notifications[2].error_description")
-                           .value(notification3.errorDescription.substring(0, 128)))
+                           .value(notification3.errorDescription.substring(0, 256)))
             .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
