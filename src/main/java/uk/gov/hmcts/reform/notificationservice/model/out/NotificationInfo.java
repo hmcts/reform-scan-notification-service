@@ -45,6 +45,10 @@ public class NotificationInfo {
     @Schema(title = "Error code", name = "error_code", description = "Agreed error code")
     public final String errorCode;
 
+    @JsonProperty("error_description")
+    @Schema(title = "Error description", name = "error_description", description = "Error description")
+    public final String errorDescription;
+
     @JsonSerialize(using = CustomInstantSerializer.class)
     @JsonProperty("created_at")
     @Schema(title = "Created at", name = "created_at", description = "Time when notification was created")
@@ -72,6 +76,7 @@ public class NotificationInfo {
         String service,
         String documentControlNumber,
         String errorCode,
+        String errorDescription,
         Instant createdAt,
         Instant processedAt,
         String status
@@ -84,6 +89,7 @@ public class NotificationInfo {
         this.service = service;
         this.documentControlNumber = documentControlNumber;
         this.errorCode = errorCode;
+        this.errorDescription = errorDescription;
         this.createdAt = createdAt;
         this.processedAt = processedAt;
         this.status = status;

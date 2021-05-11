@@ -84,7 +84,7 @@ public class NotificationControllerTest {
             service,
             "DCN2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
-            "invalid metafile2",
+            null,
             instant,
             instant,
             NotificationStatus.MANUALLY_HANDLED,
@@ -99,7 +99,22 @@ public class NotificationControllerTest {
             service,
             "DCN3",
             ErrorCode.ERR_PAYMENTS_DISABLED,
-            "invalid metafile3",
+            "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters; "
+                + "very long error description exceeding the limit which is 1024 characters",
             instant,
             instant,
             NotificationStatus.SENT,
@@ -131,6 +146,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[0].document_control_number")
                            .value(notification1.documentControlNumber))
             .andExpect(jsonPath("$.notifications[0].error_code").value(notification1.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[0].error_description").value(notification1.errorDescription))
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
@@ -145,6 +161,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[1].document_control_number")
                            .value(notification2.documentControlNumber))
             .andExpect(jsonPath("$.notifications[1].error_code").value(notification2.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[1].error_description").value(""))
             .andExpect(jsonPath("$.notifications[1].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
@@ -161,6 +178,8 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[2].document_control_number")
                            .value(notification3.documentControlNumber))
             .andExpect(jsonPath("$.notifications[2].error_code").value(notification3.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[2].error_description")
+                           .value(notification3.errorDescription.substring(0, 1024)))
             .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
@@ -299,6 +318,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[0].document_control_number")
                 .value(notification1.documentControlNumber))
             .andExpect(jsonPath("$.notifications[0].error_code").value(notification1.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[0].error_description").value(notification1.errorDescription))
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
@@ -311,6 +331,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[1].document_control_number")
                 .value(notification2.documentControlNumber))
             .andExpect(jsonPath("$.notifications[1].error_code").value(notification2.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[1].error_description").value(notification2.errorDescription))
             .andExpect(jsonPath("$.notifications[1].created_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[1].processed_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()));

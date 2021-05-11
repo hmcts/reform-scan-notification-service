@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 import java.time.LocalDate;
 import java.util.List;
 
+import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 
@@ -33,6 +34,8 @@ import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
 public class NotificationController {
     private final NotificationService notificationService;
     private final AuthService authService;
+
+    private static final int MAX_ERROR_DESCRIPTION_LENGTH = 1024;
 
     public NotificationController(
         NotificationService notificationService,
@@ -114,7 +117,7 @@ public class NotificationController {
 
     private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {
         List<NotificationInfo> notifications = list.stream()
-            .map(notification -> toNotificationResponse(notification))
+            .map(this::toNotificationResponse)
             .collect(toList());
 
         return new NotificationsResponse(notifications);
@@ -130,6 +133,14 @@ public class NotificationController {
             notification.service,
             notification.documentControlNumber,
             notification.errorCode.name(),
+            notification.errorDescription == null
+                ?
+                ""
+                :
+                notification.errorDescription.substring(
+                    0,
+                    min(MAX_ERROR_DESCRIPTION_LENGTH, notification.errorDescription.length())
+                ),
             notification.createdAt,
             notification.processedAt,
             notification.status.name()
