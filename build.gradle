@@ -167,7 +167,7 @@ dependencyManagement {
       entry 'json-smart'
     }
     //avoid CVE-2021-21409
-    dependencySet(group: 'io.netty', version: '4.1.61.Final') {
+    dependencySet(group: 'io.netty', version: '4.1.64.Final') {
       entry 'netty-buffer'
       entry 'netty-codec'
       entry 'netty-codec-http'
@@ -202,8 +202,8 @@ repositories {
 }
 
 def versions = [
-  junit           : '5.7.1',
-  junitPlatform   : '1.7.1',
+  junit           : '5.7.2',
+  junitPlatform   : '1.7.2',
   reformLogging   : '5.1.1'
 ]
 
