@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.controller;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,8 +19,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -47,17 +46,8 @@ public class NotificationControllerTest {
         final String fileName = "zip_file_name.zip";
         final String auth = "auth";
         final String service = "service";
-
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-        cal.set(Calendar.YEAR, 2020);
-        cal.set(Calendar.MONTH, Calendar.MARCH);
-        cal.set(Calendar.DATE, 23);
-        cal.set(Calendar.HOUR_OF_DAY, 13);
-        cal.set(Calendar.MINUTE, 17);
-        cal.set(Calendar.SECOND, 20);
-        cal.set(Calendar.MILLISECOND, 234);
-        Instant instant = cal.toInstant();
+        Instant instant
+            = Instant.parse("2020-03-23T13:17:20.00Z");
         final String instantString = "2020-03-23T13:17:20";
 
         var notification1 = new Notification(
@@ -90,6 +80,8 @@ public class NotificationControllerTest {
             NotificationStatus.MANUALLY_HANDLED,
             "messageId2"
         );
+
+        var trimmedErrorDesc = "Start_" + RandomStringUtils.randomAlphabetic(1014) + "_end";
         var notification3 = new Notification(
             3L,
             "confirmation-id-3",
@@ -99,22 +91,7 @@ public class NotificationControllerTest {
             service,
             "DCN3",
             ErrorCode.ERR_PAYMENTS_DISABLED,
-            "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters; "
-                + "very long error description exceeding the limit which is 1024 characters",
+            trimmedErrorDesc + "_should_not_seen",
             instant,
             instant,
             NotificationStatus.SENT,
@@ -178,8 +155,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[2].document_control_number")
                            .value(notification3.documentControlNumber))
             .andExpect(jsonPath("$.notifications[2].error_code").value(notification3.errorCode.name()))
-            .andExpect(jsonPath("$.notifications[2].error_description")
-                           .value(notification3.errorDescription.substring(0, 1024)))
+            .andExpect(jsonPath("$.notifications[2].error_description").value(trimmedErrorDesc))
             .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
