@@ -21,6 +21,9 @@ import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SE
 @Repository
 public class NotificationRepository {
 
+    private static final String ORDER_BY_ID = "ORDER BY id";
+    private static final String ZIP_FILE_NAME = "zipFileName";
+    
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final NotificationMapper mapper;
     private final int delayDurationToProcessPending;
@@ -54,9 +57,9 @@ public class NotificationRepository {
     public List<Notification> find(String zipFileName, String service) {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE zip_file_name = :zipFileName AND service = :service "
-                + "ORDER BY id",
+                + ORDER_BY_ID,
             new MapSqlParameterSource()
-                .addValue("zipFileName", zipFileName)
+                .addValue(ZIP_FILE_NAME, zipFileName)
                 .addValue("service", service),
             mapper
         );
@@ -65,7 +68,7 @@ public class NotificationRepository {
     public List<Notification> findByDate(LocalDate date) {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE DATE(created_at) = :date "
-                + "ORDER BY id",
+                + ORDER_BY_ID,
             new MapSqlParameterSource("date", date),
             mapper
         );
@@ -74,8 +77,8 @@ public class NotificationRepository {
     public List<Notification> findByZipFileName(String zipFileName) {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE zip_file_name = :zipFileName "
-                + "ORDER BY id",
-            new MapSqlParameterSource("zipFileName", zipFileName),
+                + ORDER_BY_ID,
+            new MapSqlParameterSource(ZIP_FILE_NAME, zipFileName),
             mapper
         );
     }
@@ -100,7 +103,7 @@ public class NotificationRepository {
                     + ":errorDescription, CURRENT_TIMESTAMP, :status, :messageId"
                     + ")",
                 new MapSqlParameterSource()
-                    .addValue("zipFileName", notification.zipFileName)
+                    .addValue(ZIP_FILE_NAME, notification.zipFileName)
                     .addValue("poBox", notification.poBox)
                     .addValue("container", notification.container)
                     .addValue("service", notification.service)
