@@ -68,19 +68,32 @@ public class NotificationController {
         method = "GET",
         summary = "Get list of error notifications",
         description = "Get list of error notifications for specific file name and service",
-        parameters = @Parameter(
-            in = ParameterIn.QUERY,
-            name = "file_name",
-            description = "File name to look up",
-            example = "2000000000000_24-06-2020-12-28-19.example.zip"
-        )
+        parameters = {
+            @Parameter(
+                in = ParameterIn.QUERY,
+                name = "file_name",
+                description = "File name to look up",
+                example = "2000000000000_24-06-2020-12-28-19.example.zip"
+            ),
+            @Parameter(
+                in = ParameterIn.QUERY,
+                name = "service",
+                description = "Service name to look up",
+                example = "probate"
+            )
+        }
     )
     public NotificationsResponse getNotifications(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+        @RequestParam(name = "service", required = false) String serviceName,
         @RequestParam("file_name") String fileName
     ) {
-        String serviceName = authService.authenticate(serviceAuthHeader);
-        return mapToNotificationsResponse(notificationService.findByFileNameAndService(fileName, serviceName));
+        return mapToNotificationsResponse(
+                notificationService.findByFileNameAndService(
+                        fileName,
+                        serviceName == null ? authService.authenticate(serviceAuthHeader) : serviceName
+                )
+        );
     }
 
     @ApiResponses(value = {

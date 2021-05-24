@@ -162,6 +162,124 @@ public class NotificationControllerTest {
     }
 
     @Test
+    void should_get_notifications_by_file_name_and_service_param() throws Exception {
+        final String fileName = "zip_file_name.zip";
+        final String service = "service";
+        Instant instant
+            = Instant.parse("2020-03-23T13:17:20.00Z");
+        final String instantString = "2020-03-23T13:17:20";
+
+        var notification1 = new Notification(
+            1L,
+            "confirmation-id-1",
+            fileName,
+            "po_box1",
+            "container",
+            service,
+            "DCN1",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            instant,
+            instant,
+            NotificationStatus.SENT,
+            "messageId1"
+        );
+        var notification2 = new Notification(
+            2L,
+            "confirmation-id-2",
+            fileName,
+            "po_box2",
+            "container",
+            service,
+            "DCN2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            null,
+            instant,
+            instant,
+            NotificationStatus.MANUALLY_HANDLED,
+            "messageId2"
+        );
+
+        var trimmedErrorDesc = "Start_" + RandomStringUtils.randomAlphabetic(1014) + "_end";
+        var notification3 = new Notification(
+            3L,
+            "confirmation-id-3",
+            fileName,
+            "po_box3",
+            "container",
+            service,
+            "DCN3",
+            ErrorCode.ERR_PAYMENTS_DISABLED,
+            trimmedErrorDesc + "_should_not_seen",
+            instant,
+            instant,
+            NotificationStatus.SENT,
+            "messageId3"
+        );
+        given(notificationService.findByFileNameAndService(fileName, service))
+            .willReturn(asList(notification1, notification2, notification3));
+
+
+        mockMvc
+            .perform(
+                get("/notifications")
+                    .queryParam("service", service)
+                    .queryParam("file_name", fileName)
+            )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count", is(3)))
+            .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
+            .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
+            .andExpect(jsonPath("$.notifications", hasSize(3)))
+            .andExpect(jsonPath("$.notifications[0].id").isNotEmpty())
+            .andExpect(jsonPath("$.notifications[0].id").value(notification1.id))
+            .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
+            .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
+            .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
+            .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
+            .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
+            .andExpect(jsonPath("$.notifications[0].document_control_number")
+                           .value(notification1.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[0].error_code").value(notification1.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[0].error_description").value(notification1.errorDescription))
+            .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
+
+            .andExpect(jsonPath("$.notifications[1].id").isNotEmpty())
+            .andExpect(jsonPath("$.notifications[1].id").value(notification2.id))
+            .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
+            .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
+            .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
+            .andExpect(jsonPath("$.notifications[1].container").value(notification2.container))
+            .andExpect(jsonPath("$.notifications[1].service").value(notification2.service))
+            .andExpect(jsonPath("$.notifications[1].document_control_number")
+                           .value(notification2.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[1].error_code").value(notification2.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[1].error_description").value(""))
+            .andExpect(jsonPath("$.notifications[1].created_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[1].processed_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
+
+            .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
+            .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
+            .andExpect(jsonPath("$.notifications[2].id").isNotEmpty())
+            .andExpect(jsonPath("$.notifications[2].id").value(notification3.id))
+            .andExpect(jsonPath("$.notifications[2].confirmation_id").value(notification3.confirmationId))
+            .andExpect(jsonPath("$.notifications[2].zip_file_name").value(notification3.zipFileName))
+            .andExpect(jsonPath("$.notifications[2].po_box").value(notification3.poBox))
+            .andExpect(jsonPath("$.notifications[2].container").value(notification3.container))
+            .andExpect(jsonPath("$.notifications[2].service").value(notification3.service))
+            .andExpect(jsonPath("$.notifications[2].document_control_number")
+                           .value(notification3.documentControlNumber))
+            .andExpect(jsonPath("$.notifications[2].error_code").value(notification3.errorCode.name()))
+            .andExpect(jsonPath("$.notifications[2].error_description").value(trimmedErrorDesc))
+            .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
+            .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
+    }
+
+    @Test
     void should_return_empty_list_if_no_notifications_found_for_given_file_name_and_service() throws Exception {
         final String fileName = "hello.zip";
         final String auth = "auth";
