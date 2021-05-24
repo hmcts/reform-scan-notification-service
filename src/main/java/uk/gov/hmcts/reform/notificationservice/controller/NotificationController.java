@@ -115,6 +115,38 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.findByDate(date));
     }
 
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Success",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = NotificationsResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Error getting data"
+        )
+    })
+    @GetMapping(params = "zip_file_name")
+    @Operation(
+        method = "GET",
+        summary = "Get list of error notifications",
+        description = "Get list of error notifications by file name",
+        parameters = @Parameter(
+            in = ParameterIn.QUERY,
+            name = "zip_file_name",
+            description = "File name to look-up notifications",
+            example = "2022304020414_17-08-2020-11-19-12.zip"
+        )
+    )
+    public NotificationsResponse getNotificationsByZipFileName(
+        @RequestParam(name = "zip_file_name") String zipFileName
+    ) {
+        return mapToNotificationsResponse(notificationService.findByZipFileName(zipFileName));
+    }
+
     private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {
         List<NotificationInfo> notifications = list.stream()
             .map(this::toNotificationResponse)
