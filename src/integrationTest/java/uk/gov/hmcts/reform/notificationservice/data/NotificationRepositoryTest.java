@@ -454,6 +454,44 @@ public class NotificationRepositoryTest {
     }
 
     @Test
+    void should_find_notification_by_zip_file_name() {
+        // given
+        final var newNotification = new NewNotification(
+            "zip_file_123213.zip",
+            "po_box2",
+            "bulkscan",
+            "other_service",
+            "dcn2",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "error_description2",
+            "123455"
+        );
+        notificationRepository.insert(newNotification);
+
+        // when
+        List<Notification> notifications = notificationRepository.findByZipFileName("zip_file_123213.zip");
+
+        // then
+        assertThat(notifications)
+            .isNotEmpty()
+            .hasSize(1);
+        assertThat(notifications.get(0))
+            .satisfies(n -> {
+                assertThat(n.zipFileName).isEqualTo(newNotification.zipFileName);
+                assertThat(n.poBox).isEqualTo(newNotification.poBox);
+                assertThat(n.service).isEqualTo(newNotification.service);
+                assertThat(n.container).isEqualTo(newNotification.container);
+                assertThat(n.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
+                assertThat(n.errorCode).isEqualTo(newNotification.errorCode);
+                assertThat(n.errorDescription).isEqualTo(newNotification.errorDescription);
+                assertThat(n.createdAt).isNotNull();
+                assertThat(n.processedAt).isNull();
+                assertThat(n.status).isEqualTo(PENDING);
+                assertThat(n.messageId).isEqualTo(newNotification.messageId);
+            });
+    }
+
+    @Test
     void should_throw_exception_for_duplicate_message_id() {
         // given
         String messageId = UUID.randomUUID().toString();
