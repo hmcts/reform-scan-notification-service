@@ -282,7 +282,6 @@ class NotificationServiceTest {
     @Test
     void should_return_notifications_for_date() {
         // given
-        final String service = "service";
         LocalDate searchDate = LocalDate.now();
 
         var notification1 = new Notification(
@@ -330,6 +329,37 @@ class NotificationServiceTest {
         verify(notificationRepository, times(1)).findByDate(searchDate);
     }
 
+    @Test
+    void should_return_notifications_for_zip_file_name() {
+        // given
+        String zipFileName = "zip_file_name_12";
+        var notification1 = new Notification(
+            1L,
+            "notification_id_1",
+            zipFileName,
+            "po_box_1",
+            "bulk_scan",
+            "service_1",
+            "DCN_1",
+            ErrorCode.ERR_AV_FAILED,
+            "invalid metafile_1",
+            Instant.now(),
+            Instant.now(),
+            NotificationStatus.SENT,
+            "messageId1"
+        );
+        given(notificationRepository.findByZipFileName(zipFileName))
+            .willReturn(singletonList(notification1));
+
+        // when
+        var notificationResponses = notificationService.findByZipFileName(zipFileName);
+
+        // then
+        assertThat(notificationResponses)
+            .hasSize(1)
+            .usingRecursiveFieldByFieldElementComparator()
+            .containsExactly(notification1);
+    }
 
     private Tuple getTupleFromNotification(Notification notification) {
         return new Tuple(
