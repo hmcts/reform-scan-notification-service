@@ -41,7 +41,7 @@ public class NotificationRepository {
             Notification notification = jdbcTemplate.queryForObject(
                 "SELECT * FROM notifications WHERE id = :id",
                 new MapSqlParameterSource("id", id),
-                this.mapper
+                mapper
             );
 
             // API suggests that it might be null
@@ -58,7 +58,7 @@ public class NotificationRepository {
             new MapSqlParameterSource()
                 .addValue("zipFileName", zipFileName)
                 .addValue("service", service),
-            this.mapper
+            mapper
         );
     }
 
@@ -67,7 +67,7 @@ public class NotificationRepository {
             "SELECT * FROM notifications WHERE DATE(created_at) = :date "
                 + "ORDER BY id",
             new MapSqlParameterSource("date", date),
-            this.mapper
+            mapper
         );
     }
 
@@ -76,7 +76,7 @@ public class NotificationRepository {
             "SELECT * FROM notifications WHERE zip_file_name = :zipFileName "
                 + "ORDER BY id",
             new MapSqlParameterSource("zipFileName", zipFileName),
-            this.mapper
+            mapper
         );
     }
 
@@ -85,7 +85,7 @@ public class NotificationRepository {
             "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
                 + "created_at < (now()::timestamp - interval '" + delayDurationToProcessPending + " minutes')",
             new MapSqlParameterSource("status", PENDING.name()),
-            this.mapper
+            mapper
         );
     }
 
