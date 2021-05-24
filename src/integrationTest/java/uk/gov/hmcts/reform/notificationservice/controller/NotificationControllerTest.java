@@ -19,9 +19,12 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 
+import static java.time.Instant.now;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
@@ -321,5 +324,48 @@ public class NotificationControllerTest {
                     .queryParam("date", "3232")
             )
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void should_get_notifications_by_zip_file_name() throws Exception {
+
+        String zipFileName = "zip_file_name_123.zip";
+        var notification1 = new Notification(
+                1L,
+                "confirmation-id-1",
+                zipFileName,
+                "po_box1",
+                "container",
+                "bulk_scan",
+                "DCN1",
+                ErrorCode.ERR_METAFILE_INVALID,
+                "invalid metafile1",
+                now(),
+                now(),
+                NotificationStatus.SENT,
+                "messageId1"
+        );
+
+        given(notificationService.findByZipFileName(zipFileName))
+                .willReturn(singletonList(notification1));
+
+        mockMvc
+                .perform(
+                        get("/notifications")
+                                .queryParam("zip_file_name", zipFileName)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count", is(1)))
+                .andExpect(jsonPath("$.notifications", hasSize(1)))
+                .andExpect(jsonPath("$.sentNotificationsCount", is(1)))
+                .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
+                .andExpect(jsonPath("$.notifications[0].id").isNotEmpty())
+                .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
+                .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
+                .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
+                .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
+                .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
+                .andExpect(jsonPath("$.notifications[0].document_control_number")
+                        .value(notification1.documentControlNumber));
     }
 }
