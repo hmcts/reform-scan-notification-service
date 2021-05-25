@@ -100,6 +100,6 @@ public class AuthServiceTest {
         String serviceName = service.authenticate(SERVICE_HEADER);
 
         // then
-        assertThat(serviceName).isEqualTo(serviceName);
+        assertThat(serviceName).isEqualTo(someServiceName);
     }
 }

@@ -94,7 +94,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByZipFileName(String zipFileName) {
-        log.info("Getting notifications for zip file name {}", zipFileName);
+        log.info("Getting notifications for zip file name");
         return notificationRepository.findByZipFileName(zipFileName);
     }
 
