@@ -23,7 +23,8 @@ public class NotificationRepository {
 
     private static final String ORDER_BY_ID = "ORDER BY id";
     private static final String ZIP_FILE_NAME = "zipFileName";
-    
+    private static final String STATUS = "status";
+
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final NotificationMapper mapper;
     private final int delayDurationToProcessPending;
@@ -87,7 +88,7 @@ public class NotificationRepository {
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
                 + "created_at < (now()::timestamp - interval '" + delayDurationToProcessPending + " minutes')",
-            new MapSqlParameterSource("status", PENDING.name()),
+            new MapSqlParameterSource(STATUS, PENDING.name()),
             mapper
         );
     }
@@ -110,7 +111,7 @@ public class NotificationRepository {
                     .addValue("DCN", notification.documentControlNumber)
                     .addValue("errorCode", notification.errorCode.name())
                     .addValue("errorDescription", notification.errorDescription)
-                    .addValue("status", PENDING.name())
+                    .addValue(STATUS, PENDING.name())
                     .addValue("messageId", notification.messageId),
                 keyHolder,
                 new String[]{"id"}
@@ -141,7 +142,7 @@ public class NotificationRepository {
                 + "WHERE id = :id",
             new MapSqlParameterSource()
                 .addValue("confirmationId", confirmationId)
-                .addValue("status", SENT.name())
+                .addValue(STATUS, SENT.name())
                 .addValue("id", id)
         );
 
@@ -161,7 +162,7 @@ public class NotificationRepository {
                 + "  status = :status "
                 + "WHERE id = :id",
             new MapSqlParameterSource()
-                .addValue("status", FAILED.name())
+                .addValue(STATUS, FAILED.name())
                 .addValue("id", id)
         );
 
