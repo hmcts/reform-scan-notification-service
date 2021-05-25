@@ -94,7 +94,9 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByZipFileName(String zipFileName) {
-        log.info("Getting notifications for zip file name");
+        // fix vulnerability "Logging should not be vulnerable to injection attacks"
+        log.info("Getting notifications for zip file name {}", zipFileName.replaceAll("[\n\r\t]", "_"));
+
         return notificationRepository.findByZipFileName(zipFileName);
     }
 
