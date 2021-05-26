@@ -80,7 +80,6 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
-        log.info("Getting notifications for file {}, service {}", fileName, service);
         return notificationRepository.find(fileName, service);
     }
 
