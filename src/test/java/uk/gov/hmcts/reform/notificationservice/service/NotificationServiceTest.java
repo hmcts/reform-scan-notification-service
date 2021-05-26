@@ -206,14 +206,13 @@ class NotificationServiceTest {
     @Test
     void should_return_notifications_for_cleaned_up_file_name_and_service() {
         // given
-        final String zipFileName = "zip_\nfile_\tname\r.zip";
-        final String zipFileNameCleanedUp = "zip_file_name.zip";
+        final String zipFileName = "zip_file_name.zip";
         final String service = "service";
 
         var notification1 = new Notification(
             1L,
             "notificationId1",
-            zipFileNameCleanedUp,
+            zipFileName,
             "po_box1",
             "bulkscan",
             service,
@@ -228,7 +227,7 @@ class NotificationServiceTest {
         var notification2 = new Notification(
             2L,
             "notificationId2",
-            zipFileNameCleanedUp,
+            zipFileName,
             "po_box2",
             "reformscan",
             service,
@@ -240,7 +239,7 @@ class NotificationServiceTest {
             NotificationStatus.SENT,
             "messageId2"
         );
-        given(notificationRepository.find(zipFileNameCleanedUp, service))
+        given(notificationRepository.find(zipFileName, service))
                   .willReturn(asList(notification1, notification2));
 
         // when
@@ -276,7 +275,7 @@ class NotificationServiceTest {
                     notification2.messageId
                 )
             );
-        verify(notificationRepository, times(1)).find(zipFileNameCleanedUp, service);
+        verify(notificationRepository, times(1)).find(zipFileName, service);
     }
 
     @Test
