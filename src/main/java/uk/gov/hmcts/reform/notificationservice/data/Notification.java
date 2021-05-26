@@ -50,16 +50,14 @@ public class Notification {
         this.messageId = messageId;
     }
 
-    @Override
     public String toString() {
-        return "Notification{" +
-            "id=" + id +
-            ", zipFileName='" + zipFileName + '\'' +
-            ", container='" + container + '\'' +
-            ", service='" + service + '\'' +
-            ", errorCode=" + errorCode +
-            ", status=" + status +
-            ", messageId='" + messageId + '\'' +
-            '}';
+        return String.format(
+            "Notification{id=%d, zipFileName='%s', container='%s', service='%s', errorCode='%s'}",
+            id,
+            zipFileName,
+            container,
+            service,
+            errorCode
+        );
     }
 }
