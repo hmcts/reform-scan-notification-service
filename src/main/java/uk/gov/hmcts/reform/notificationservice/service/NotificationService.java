@@ -38,12 +38,12 @@ public class NotificationService {
 
         log.info("Notifications to process: {}", notifications.size());
 
-        int okCount = 0;
-        int failedCount = 0;
-        int postponedCount = 0;
+        var okCount = 0;
+        var failedCount = 0;
+        var postponedCount = 0;
 
         for (var notification : notifications) {
-            log.info("Sending error notification. {}", notification.basicInfo());
+            log.info("Sending error notification. {}", notification);
 
             try {
                 ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
@@ -52,7 +52,7 @@ public class NotificationService {
 
                 log.info(
                     "Error notification sent. {}. Notification ID: {}",
-                    notification.basicInfo(),
+                    notification,
                     response.getNotificationId()
                 );
                 okCount++;
@@ -80,10 +80,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
-        final String fileNameCleanedUp = fileName.replaceAll("[\n|\r|\t]", "");
-        log.info("Getting notifications for file {}, service {}", fileNameCleanedUp, service);
-
-        return notificationRepository.find(fileNameCleanedUp, service);
+        return notificationRepository.find(fileName, service);
     }
 
     @Transactional(readOnly = true)
@@ -112,7 +109,7 @@ public class NotificationService {
         log.error(
             "Received http status {} from client. Marking as failure. {}. Client response: {}",
             exception.status(),
-            notification.basicInfo(),
+            notification,
             exception.contentUTF8(),
             exception
         );
@@ -124,13 +121,13 @@ public class NotificationService {
         log.error(
             "Received http status {} from client. Postponing notification for later. {}. Client response: {}",
             exception.status(),
-            notification.basicInfo(),
+            notification,
             exception.contentUTF8(),
             exception
         );
     }
 
     private void postpone(Notification notification, Exception exc) {
-        log.error("Error processing pending notifications. {}", notification.basicInfo(), exc);
+        log.error("Error processing pending notifications. {}", notification, exc);
     }
 }
