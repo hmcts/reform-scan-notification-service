@@ -80,6 +80,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
+        log.info("Getting notifications for file {}, service {}", fileName, service);
         return notificationRepository.find(fileName, service);
     }
 
@@ -91,6 +92,7 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByZipFileName(String zipFileName) {
+        log.info("Getting notifications for zip file name {}", zipFileName);
         return notificationRepository.findByZipFileName(zipFileName);
     }
 
