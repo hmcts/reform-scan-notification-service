@@ -222,7 +222,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.2'
 
-  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.6.3'
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.6.4'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.2'
