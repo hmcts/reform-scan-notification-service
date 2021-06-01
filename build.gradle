@@ -225,7 +225,7 @@ dependencies {
   implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.6.4'
 
   // region: feign clients
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.2'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.3'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.2'
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '11.2'
   // end region
