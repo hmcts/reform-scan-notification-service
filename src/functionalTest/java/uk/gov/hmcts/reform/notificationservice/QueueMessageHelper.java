@@ -1,15 +1,14 @@
 package uk.gov.hmcts.reform.notificationservice;
 
+import com.azure.core.util.BinaryData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
-import com.microsoft.azure.servicebus.MessageBody;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationMessageParser;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static com.google.common.io.Resources.getResource;
-import static java.util.Collections.singletonList;
 import static java.util.UUID.randomUUID;
 
 final class QueueMessageHelper {
@@ -23,7 +22,7 @@ final class QueueMessageHelper {
 
     static QueueMessageDetails getQueueMessageDetails(String resourceFileName) {
         var rawContent = fileContentAsBytes("servicebus/message/" + resourceFileName);
-        var messageBody = MessageBody.fromBinaryData(singletonList(rawContent));
+        var messageBody = BinaryData.fromBytes(rawContent);
         var notificationMessage = MESSAGE_PARSER.parse(messageBody);
 
         return new QueueMessageDetails(
