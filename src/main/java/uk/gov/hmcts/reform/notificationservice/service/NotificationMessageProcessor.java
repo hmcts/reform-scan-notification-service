@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
-import com.microsoft.azure.servicebus.IMessage;
-import com.microsoft.azure.servicebus.IMessageReceiver;
-import com.microsoft.azure.servicebus.primitives.ServiceBusException;
+import com.azure.core.util.IterableStream;
+import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
+import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.models.DeadLetterOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,21 +12,21 @@ import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdExcep
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 
-import static java.time.LocalDateTime.ofInstant;
-import static java.time.ZoneOffset.UTC;
+import java.util.Optional;
+
 
 @Service
 public class NotificationMessageProcessor {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageProcessor.class);
 
-    private final IMessageReceiver messageReceiver;
+    private final ServiceBusReceiverClient messageReceiver;
     private final NotificationMessageHandler notificationMessageHandler;
     private final NotificationMessageParser notificationMessageParser;
     private final int maxDeliveryCount;
 
     public NotificationMessageProcessor(
-        IMessageReceiver messageReceiver,
+        ServiceBusReceiverClient messageReceiver,
         NotificationMessageHandler notificationMessageHandler,
         NotificationMessageParser notificationMessageParser,
         @Value("${queue.notifications.max-delivery-count}") int maxDeliveryCount
@@ -41,19 +42,23 @@ public class NotificationMessageProcessor {
      *
      * @return false if there was no message to process. Otherwise true.
      */
-    public boolean processNextMessage() throws ServiceBusException, InterruptedException {
+    public boolean processNextMessage() throws InterruptedException {
         log.info("Getting notification message.");
-        IMessage message = messageReceiver.receive();
-        if (message != null) {
+        IterableStream<ServiceBusReceivedMessage> messages
+            = messageReceiver.receiveMessages(1);
+        Optional<ServiceBusReceivedMessage> messageOpt = messages.stream().findFirst();
+
+        if (messageOpt.isPresent()) {
+            ServiceBusReceivedMessage message = messageOpt.get();
             try {
                 // DO NOT CHANGE, used in alert
                 log.info("Started processing notification message with ID {}", message.getMessageId());
                 log.info("Start processing notification message, ID {}, locked until {}, expires: {}",
                          message.getMessageId(),
-                         ofInstant(message.getLockedUntilUtc(), UTC),
-                         ofInstant(message.getExpiresAtUtc(), UTC)
+                         message.getLockedUntil(),
+                         message.getExpiresAt()
                 );
-                var notificationMsg = notificationMessageParser.parse(message.getMessageBody());
+                var notificationMsg = notificationMessageParser.parse(message.getBody());
                 notificationMessageHandler.handleNotificationMessage(notificationMsg, message.getMessageId());
                 finaliseProcessedMessage(message, MessageProcessingResult.SUCCESS);
             } catch (InvalidMessageException ex) {
@@ -67,13 +72,13 @@ public class NotificationMessageProcessor {
             }
         } else {
             log.debug("No notification messages to process by notification processor.");
+            return false;
         }
 
-        return message != null;
+        return true;
     }
 
-    private void handleDuplicateMessageId(IMessage message, String errorMessage)
-        throws InterruptedException, ServiceBusException {
+    private void handleDuplicateMessageId(ServiceBusReceivedMessage message, String errorMessage) {
         if (message.getDeliveryCount() == 0) {
             deadLetterTheMessage(
                 message,
@@ -86,22 +91,14 @@ public class NotificationMessageProcessor {
                 message.getMessageId(),
                 errorMessage
             );
-            messageReceiver.complete(message.getLockToken());
+            messageReceiver.complete(message);
         }
     }
 
-    private void finaliseProcessedMessage(IMessage message, MessageProcessingResult processingResult) {
+    private void finaliseProcessedMessage(ServiceBusReceivedMessage message, MessageProcessingResult processingResult) {
         try {
             log.info("Finalising Notification Message with ID {} ", message.getMessageId());
             completeProcessedMessage(message, processingResult);
-        } catch (InterruptedException ex) {
-            log.error(
-                "Failed to finalise notification message with ID {}. Processing result: {}",
-                message.getMessageId(),
-                processingResult,
-                ex
-            );
-            Thread.currentThread().interrupt();
         } catch (Exception ex) {
             log.error(
                 "Failed to finalise notification message with ID {}. Processing result: {}",
@@ -113,14 +110,14 @@ public class NotificationMessageProcessor {
     }
 
     private void completeProcessedMessage(
-        IMessage message,
+        ServiceBusReceivedMessage message,
         MessageProcessingResult processingResult
-    ) throws InterruptedException, ServiceBusException {
+    ) {
 
         switch (processingResult) {
             case SUCCESS:
                 log.info("Completing Notification Message with ID {} ", message.getMessageId());
-                messageReceiver.complete(message.getLockToken());
+                messageReceiver.complete(message);
                 log.info("Notification Message with ID {} has been completed successfully.", message.getMessageId());
                 break;
             case UNRECOVERABLE_FAILURE:
@@ -140,9 +137,7 @@ public class NotificationMessageProcessor {
         }
     }
 
-    private void deadLetterIfMaxDeliveryCountIsReached(IMessage message)
-        throws InterruptedException, ServiceBusException {
-
+    private void deadLetterIfMaxDeliveryCountIsReached(ServiceBusReceivedMessage message) {
         int deliveryCount = (int) message.getDeliveryCount() + 1;
 
         if (deliveryCount < maxDeliveryCount) {
@@ -162,14 +157,13 @@ public class NotificationMessageProcessor {
     }
 
     private void deadLetterTheMessage(
-        IMessage message,
+        ServiceBusReceivedMessage message,
         String reason,
         String description
-    ) throws InterruptedException, ServiceBusException {
+    ) {
         messageReceiver.deadLetter(
-            message.getLockToken(),
-            reason,
-            description
+            message,
+            new DeadLetterOptions().setDeadLetterReason(reason).setDeadLetterErrorDescription(description)
         );
 
         log.error(
