@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.notificationservice;
 
+import com.azure.messaging.servicebus.ServiceBusMessage;
+import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.microsoft.azure.servicebus.IQueueClient;
-import com.microsoft.azure.servicebus.Message;
-import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -18,17 +17,13 @@ import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SE
 class ProcessNotificationTest {
 
     @Test
-    void should_process_message_from_queue_and_notify_provider() throws InterruptedException, ServiceBusException {
+    void should_process_message_from_queue_and_notify_provider() {
         // given
-        IQueueClient queueClient = Configuration.getSendClient();
+        ServiceBusSenderClient queueClient = Configuration.getSendClient();
         var messageDetails = QueueMessageHelper.getQueueMessageDetails("valid-notification.json");
 
         // when
-        queueClient.send(new Message(
-            messageDetails.messageId,
-            messageDetails.messageBody,
-            messageDetails.contentType
-        ));
+        queueClient.sendMessage(new ServiceBusMessage(messageDetails.messageBody));
 
         // and
         String serviceAuthToken = RestAssuredHelper.s2sSignIn(messageDetails.service);
