@@ -15,6 +15,8 @@ public class QueueClientConfig {
 
     private static final Logger log = LoggerFactory.getLogger(QueueClientConfig.class);
 
+    public static String LOG_CON;
+
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.access-key")
     public ServiceBusReceiverClient notificationsMessageReceiver(
@@ -32,6 +34,7 @@ public class QueueClientConfig {
             accessKey
         );
 
+        LOG_CON = connectionString + "---" + queueName;
 
         return new ServiceBusClientBuilder()
             .connectionString(connectionString)

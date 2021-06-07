@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.notificationservice.config.QueueClientConfig;
 import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
@@ -43,7 +44,7 @@ public class NotificationMessageProcessor {
      * @return false if there was no message to process. Otherwise true.
      */
     public boolean processNextMessage() throws InterruptedException {
-        log.info("Getting notification message.");
+        log.info("Getting notification message. CONxx:{}" + QueueClientConfig.LOG_CON);
 
 
         var mess = messageReceiver.peekMessage();
