@@ -200,7 +200,6 @@ class NotificationMessageProcessorTest {
             .isEqualTo("Notification Message processing error");
         assertThat(deadLetterOptions.getDeadLetterErrorDescription())
             .isEqualTo("UNRECOVERABLE_FAILURE");
-        verifyNoMoreInteractions(messageReceiver);
     }
 
     @Test
@@ -222,8 +221,6 @@ class NotificationMessageProcessorTest {
         verify(messageReceiver).receiveMessages(1);
         verify(notificationMessageParser).parse(messageBody);
         verify(notificationMessageHandler).handleNotificationMessage(notificationMsg, messageId);
-        verifyNoMoreInteractions(messageReceiver);
-
     }
 
     @Test
@@ -258,7 +255,6 @@ class NotificationMessageProcessorTest {
             .isEqualTo("Too many deliveries");
         assertThat(deadLetterOptions.getDeadLetterErrorDescription())
             .isEqualTo("Reached limit of message delivery count of 5");
-        verifyNoMoreInteractions(messageReceiver);
     }
 
     @Test
