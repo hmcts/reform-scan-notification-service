@@ -44,16 +44,15 @@ public class NotificationMessageProcessor {
      */
     public boolean processNextMessage() throws InterruptedException {
         log.info("Getting notification message.");
-        if (messageReceiver != null) {
-            log.info(
-                "Getting notification message.getEntityPath={}, getFullyQualifiedNamespace={}",
-                messageReceiver.getEntityPath(),
-                messageReceiver.getFullyQualifiedNamespace()
-            );
-        }
+
         IterableStream<ServiceBusReceivedMessage> messages
             = messageReceiver.receiveMessages(1);
         Optional<ServiceBusReceivedMessage> messageOpt = messages.stream().findFirst();
+        log.info(
+            "Getting notification message.getEntityPath={}, getFullyQualifiedNamespace={}",
+            messageReceiver.getEntityPath(),
+            messageReceiver.getFullyQualifiedNamespace()
+        );
 
         if (messageOpt.isPresent()) {
             ServiceBusReceivedMessage message = messageOpt.get();
