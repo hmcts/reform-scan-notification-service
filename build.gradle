@@ -222,8 +222,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.3'
 
-  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.2.2'
-  implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
+  implementation group: 'com.microsoft.azure', name: 'azure-servicebus', version: '3.6.4'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.3'
@@ -238,8 +237,6 @@ dependencies {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
-  testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.11.0'
-
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath

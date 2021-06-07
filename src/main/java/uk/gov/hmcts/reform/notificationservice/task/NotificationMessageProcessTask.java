@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.task;
 
-import com.azure.messaging.servicebus.ServiceBusException;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
