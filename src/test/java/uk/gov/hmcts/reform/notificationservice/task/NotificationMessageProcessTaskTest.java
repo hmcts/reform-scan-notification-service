@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.task;
 
-import com.azure.messaging.servicebus.ServiceBusErrorSource;
-import com.azure.messaging.servicebus.ServiceBusException;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,8 +41,7 @@ public class NotificationMessageProcessTaskTest {
     @Test
     public void consumeMessages_stops_processing_when_envelope_processor_throws_exception() throws Exception {
         // given
-        willThrow(new ServiceBusException(new RuntimeException("Queue Test Error"), ServiceBusErrorSource.ABANDON))
-            .given(notificationMessageProcessor).processNextMessage();
+        willThrow(new ServiceBusException(true)).given(notificationMessageProcessor).processNextMessage();
 
         // when
         notificationMessageProcessTask.consumeMessages();

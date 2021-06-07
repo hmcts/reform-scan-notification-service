@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.notificationservice.config;
 
-import com.azure.messaging.servicebus.ServiceBusClientBuilder;
-import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.microsoft.azure.servicebus.ClientFactory;
+import com.microsoft.azure.servicebus.IMessageReceiver;
+import com.microsoft.azure.servicebus.ReceiveMode;
+import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,28 +19,16 @@ public class QueueClientConfig {
 
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.access-key")
-    public ServiceBusReceiverClient notificationsMessageReceiver(
+    public IMessageReceiver notificationsMessageReceiver(
         @Value("${queue.notifications.access-key}") String accessKey,
         @Value("${queue.notifications.access-key-name}") String accessKeyName,
         @Value("${queue.notifications.name}") String queueName,
         @Value("${queue.notifications.namespace}") String namespace
-    ) {
-
-
-        String connectionString  = String.format(
-            "Endpoint=sb://%s;SharedAccessKeyName=%s;SharedAccessKey=%s;",
-            namespace,
-            accessKeyName,
-            accessKey
+    ) throws InterruptedException, ServiceBusException {
+        return ClientFactory.createMessageReceiverFromConnectionString(
+            new ConnectionStringBuilder(namespace, queueName, accessKeyName, accessKey).toString(),
+            ReceiveMode.PEEKLOCK
         );
-
-
-        return new ServiceBusClientBuilder()
-            .connectionString(connectionString)
-            .receiver()
-            .queueName(queueName)
-            .disableAutoComplete()
-            .buildClient();
     }
 
 }

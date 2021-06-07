@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.notificationservice;
 
-import com.azure.messaging.servicebus.ServiceBusClientBuilder;
-import com.azure.messaging.servicebus.ServiceBusSenderClient;
+import com.microsoft.azure.servicebus.QueueClient;
+import com.microsoft.azure.servicebus.ReceiveMode;
+import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -27,19 +29,23 @@ final class Configuration {
         // utility class construct
     }
 
-    static ServiceBusSenderClient getSendClient() {
-        String connectionString = String.format(
-            "Endpoint=sb://%s;SharedAccessKeyName=%s;SharedAccessKey=%s;",
-            NOTIFICATION_QUEUE_NAMESPACE,
-            NOTIFICATION_QUEUE_ACCESS_KEY_NAME_WRITE,
-            NOTIFICATION_QUEUE_ACCESS_KEY_WRITE
-        );
+    static QueueClient getSendClient() {
+        try {
+            return new QueueClient(
+                new ConnectionStringBuilder(
+                    NOTIFICATION_QUEUE_NAMESPACE,
+                    NOTIFICATION_QUEUE_NAME,
+                    NOTIFICATION_QUEUE_ACCESS_KEY_NAME_WRITE,
+                    NOTIFICATION_QUEUE_ACCESS_KEY_WRITE
+                ),
+                ReceiveMode.PEEKLOCK
+            );
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
 
-        return new ServiceBusClientBuilder()
-            .connectionString(connectionString)
-            .sender()
-            .queueName(NOTIFICATION_QUEUE_NAME)
-            .buildClient();
-
+            throw new RuntimeException(ERROR_MESSAGE, exception);
+        } catch (ServiceBusException exception) {
+            throw new RuntimeException(ERROR_MESSAGE, exception);
+        }
     }
 }
