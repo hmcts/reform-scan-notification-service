@@ -45,6 +45,11 @@ public class NotificationMessageProcessor {
     public boolean processNextMessage() throws InterruptedException {
         log.info("Getting notification message.");
 
+
+        var mess = messageReceiver.peekMessage();
+        if (mess != null) {
+            log.info("PEEK Message id {} ", mess.getMessageId());
+        }
         IterableStream<ServiceBusReceivedMessage> messages
             = messageReceiver.receiveMessages(1);
         Optional<ServiceBusReceivedMessage> messageOpt = messages.stream().findFirst();
