@@ -43,6 +43,7 @@ public class QueueClientConfig {
             .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
             .disableAutoComplete()
             .processMessage(notificationMessageProcessor::processNextMessage)
+            .processError(c -> log.error("Notification queue handle error {}", c.getErrorSource(), c.getException()))
             .buildProcessorClient();
     }
 
