@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.notificationservice.config;
 
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.models.ServiceBusReceiveMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ public class QueueClientConfig {
             .connectionString(connectionString)
             .receiver()
             .queueName(queueName)
+            .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
             .disableAutoComplete()
             .buildClient();
     }
