@@ -1,10 +1,8 @@
 package uk.gov.hmcts.reform.notificationservice.config;
 
-import com.microsoft.azure.servicebus.ClientFactory;
-import com.microsoft.azure.servicebus.IMessageReceiver;
-import com.microsoft.azure.servicebus.ReceiveMode;
-import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
-import com.microsoft.azure.servicebus.primitives.ServiceBusException;
+import com.azure.messaging.servicebus.ServiceBusClientBuilder;
+import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.models.ServiceBusReceiveMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,16 +17,29 @@ public class QueueClientConfig {
 
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.access-key")
-    public IMessageReceiver notificationsMessageReceiver(
+    public ServiceBusReceiverClient notificationsMessageReceiver(
         @Value("${queue.notifications.access-key}") String accessKey,
         @Value("${queue.notifications.access-key-name}") String accessKeyName,
         @Value("${queue.notifications.name}") String queueName,
         @Value("${queue.notifications.namespace}") String namespace
-    ) throws InterruptedException, ServiceBusException {
-        return ClientFactory.createMessageReceiverFromConnectionString(
-            new ConnectionStringBuilder(namespace, queueName, accessKeyName, accessKey).toString(),
-            ReceiveMode.PEEKLOCK
+    ) {
+
+
+        String connectionString  = String.format(
+            "Endpoint=sb://%s.servicebus.windows.net;SharedAccessKeyName=%s;SharedAccessKey=%s;",
+            namespace,
+            accessKeyName,
+            accessKey
         );
+
+
+        return new ServiceBusClientBuilder()
+            .connectionString(connectionString)
+            .receiver()
+            .queueName(queueName)
+            .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
+            .disableAutoComplete()
+            .buildClient();
     }
 
 }
