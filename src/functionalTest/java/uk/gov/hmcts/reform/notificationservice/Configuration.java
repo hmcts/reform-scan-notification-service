@@ -29,7 +29,7 @@ final class Configuration {
 
     static ServiceBusSenderClient getSendClient() {
         String connectionString = String.format(
-            "Endpoint=sb://%s;SharedAccessKeyName=%s;SharedAccessKey=%s;",
+            "Endpoint=sb://%s.servicebus.windows.net;SharedAccessKeyName=%s;SharedAccessKey=%s;",
             NOTIFICATION_QUEUE_NAMESPACE,
             NOTIFICATION_QUEUE_ACCESS_KEY_NAME_WRITE,
             NOTIFICATION_QUEUE_ACCESS_KEY_WRITE

@@ -26,7 +26,7 @@ public class QueueClientConfig {
 
 
         String connectionString  = String.format(
-            "Endpoint=sb://%s;SharedAccessKeyName=%s;SharedAccessKey=%s;",
+            "Endpoint=sb://%s.servicebus.windows.net;SharedAccessKeyName=%s;SharedAccessKey=%s;",
             namespace,
             accessKeyName,
             accessKey
