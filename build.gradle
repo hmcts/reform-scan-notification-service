@@ -150,15 +150,6 @@ dependencyCheck {
   }
 }
 
-dependencyManagement {
-  dependencies {
-    // avoid CVE-2021-29425
-    dependencySet(group: 'commons-io', version: '2.9.0') {
-      entry 'commons-io'
-    }
-  }
-}
-
 repositories {
   mavenLocal()
   jcenter()
