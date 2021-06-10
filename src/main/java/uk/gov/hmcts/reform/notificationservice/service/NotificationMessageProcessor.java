@@ -71,7 +71,7 @@ public class NotificationMessageProcessor {
                 finaliseProcessedMessage(message, MessageProcessingResult.POTENTIALLY_RECOVERABLE_FAILURE);
             }
         } else {
-            log.debug("No notification messages to process by notification processor.");
+            log.info("No notification messages to process.");
             return false;
         }
 
