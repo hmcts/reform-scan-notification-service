@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.notificationservice.config;
 
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
-import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.ServiceBusProcessorClient;
 import com.azure.messaging.servicebus.models.ServiceBusReceiveMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.notificationservice.service.NotificationMessageProcessor;
 
 @Configuration
 public class QueueClientConfig {
@@ -17,13 +18,13 @@ public class QueueClientConfig {
 
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.access-key")
-    public ServiceBusReceiverClient notificationsMessageReceiver(
+    public ServiceBusProcessorClient notificationsMessageReceiver(
         @Value("${queue.notifications.access-key}") String accessKey,
         @Value("${queue.notifications.access-key-name}") String accessKeyName,
         @Value("${queue.notifications.name}") String queueName,
-        @Value("${queue.notifications.namespace}") String namespace
+        @Value("${queue.notifications.namespace}") String namespace,
+        NotificationMessageProcessor notificationMessageProcessor
     ) {
-
 
         String connectionString  = String.format(
             "Endpoint=sb://%s.servicebus.windows.net;SharedAccessKeyName=%s;SharedAccessKey=%s;",
@@ -32,14 +33,15 @@ public class QueueClientConfig {
             accessKey
         );
 
-
         return new ServiceBusClientBuilder()
             .connectionString(connectionString)
-            .receiver()
+            .processor()
             .queueName(queueName)
             .receiveMode(ServiceBusReceiveMode.PEEK_LOCK)
             .disableAutoComplete()
-            .buildClient();
+            .processMessage(notificationMessageProcessor::processNextMessage)
+            .processError(c -> log.error("Notification queue handle error {}", c.getErrorSource(), c.getException()))
+            .buildProcessorClient();
     }
 
 }
