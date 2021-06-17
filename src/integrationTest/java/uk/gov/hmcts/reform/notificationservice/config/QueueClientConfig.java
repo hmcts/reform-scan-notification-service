@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.config;
 
-import com.azure.messaging.servicebus.ServiceBusReceiverClient;
+import com.azure.messaging.servicebus.ServiceBusProcessorClient;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ public class QueueClientConfig {
 
     @Bean
     @ConditionalOnProperty(name = "queue.notifications.access-key", havingValue = "false")
-    public ServiceBusReceiverClient notificationMessageReceiver() {
-        return mock(ServiceBusReceiverClient.class);
+    public ServiceBusProcessorClient notificationMessageReceiver() {
+        return mock(ServiceBusProcessorClient.class);
     }
 }
