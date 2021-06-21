@@ -27,7 +27,7 @@ public class NotificationMessageProcessTask {
         serviceBusProcessorClient.start();
     }
 
-    @Scheduled(fixedDelayString = "${scheduling.task.notifications-check.delay}")
+    @Scheduled(fixedDelayString = "${scheduling.task.notifications-consume.check.delay}")
     public void checkServiceBusProcessorClient() {
         if (!serviceBusProcessorClient.isRunning()) {
             log.error("Notification queue consume listener is NOT running!!!");
