@@ -49,7 +49,7 @@ scheduling:
   task:
     notifications-consume:
       check:
-        delay: ${NOTIFICATIONS_CONSUME_TASK_DELAY_IN_MS} # in ms
+        delay: ${NOTIFICATIONS_CONSUME_TASK_CHECK_DELAY_IN_MS} # in ms
       enabled: ${NOTIFICATIONS_CONSUME_TASK_ENABLED}
     pending-notifications:
       delay: ${PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS}
