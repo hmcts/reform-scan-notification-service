@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.slf4j.event.Level.ERROR;
 import static org.slf4j.event.Level.INFO;
@@ -29,19 +30,17 @@ class NotificationMessageProcessTaskTest {
     public void should_log_when_listener_is_not_working() {
         given(serviceBusProcessorClient.isRunning()).willReturn(false);
         notificationMessageProcessTask.checkServiceBusProcessorClient();
-        logs.assertContains(
-            event -> event.getLevel() == ERROR,
-            "Notification queue consume listener is NOT running!!!"
-        );
+        assertThat(
+            logs.assertContains(event -> event.getLevel() == ERROR, "Error level log not found").getMessage())
+            .isEqualTo("Notification queue consume listener is NOT running!!!");
     }
 
     @Test
     public void should_log_when_listener_is_working() {
         given(serviceBusProcessorClient.isRunning()).willReturn(true);
         notificationMessageProcessTask.checkServiceBusProcessorClient();
-        logs.assertContains(
-            event -> event.getLevel() == INFO,
-            "Notification queue consume listener is NOT running!!!"
-        );
+        assertThat(
+            logs.assertContains(event -> event.getLevel() == INFO, "Info level log not found").getMessage())
+            .isEqualTo("Notification queue consume listener is working.");
     }
 }
