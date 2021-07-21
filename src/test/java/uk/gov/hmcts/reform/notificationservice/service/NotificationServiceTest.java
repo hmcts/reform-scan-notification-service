@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -324,8 +325,8 @@ class NotificationServiceTest {
 
         try {
             return exceptionClass
-                .getConstructor(String.class, Request.class, request.body().getClass())
-                .newInstance("message", request, request.body());
+                .getConstructor(String.class, Request.class, request.body().getClass(), Map.class)
+                .newInstance("message", request, request.body(), null);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException("Could not construct FeignException", e);
         }
