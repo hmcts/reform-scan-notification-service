@@ -334,7 +334,7 @@ class NotificationServiceTest {
     private FeignException getDefaultFeignException() {
         var request = getFeignRequest();
 
-        return new FeignException.FeignClientException(-1, "some error", request, request.body());
+        return new FeignException.FeignClientException(-1, "some error", request, request.body(), null);
     }
 
     private Request getFeignRequest() {
