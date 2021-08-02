@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
-import feign.Request;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,13 +16,10 @@ import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -31,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -319,34 +316,12 @@ class NotificationServiceTest {
         );
     }
 
-    @SuppressWarnings("LineLength")
     private FeignException instantiateFeignException(Class<FeignException> exceptionClass) {
-        var request = getFeignRequest();
-
-        try {
-            return exceptionClass
-                .getConstructor(String.class, Request.class, request.body().getClass(), Map.class)
-                .newInstance("message", request, request.body(), null);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("Could not construct FeignException", e);
-        }
+        return mock(exceptionClass);
     }
 
     private FeignException getDefaultFeignException() {
-        var request = getFeignRequest();
-
-        return new FeignException.FeignClientException(-1, "some error", request, request.body(), null);
+        return mock(FeignException.FeignClientException.class);
     }
 
-    private Request getFeignRequest() {
-        var emptyByteArray = new byte[]{};
-
-        return Request.create(
-            Request.HttpMethod.POST,
-            "/notify",
-            emptyMap(),
-            Request.Body.create(emptyByteArray),
-            null
-        );
-    }
 }
