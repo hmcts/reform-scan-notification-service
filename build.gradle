@@ -209,7 +209,7 @@ dependencies {
   implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.0.3'
 
-  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.2.3'
+  implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.3.0'
   implementation group: 'com.google.guava', name: 'guava', version: '30.1.1-jre'
 
   // region: feign clients
