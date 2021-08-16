@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -281,6 +282,21 @@ class NotificationServiceTest {
             .hasSize(1)
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(notification1);
+    }
+
+    @Test
+    void should_call_repository_for_all_pending_notifications() {
+        // given
+        Notification notification1 = mock(Notification.class);
+        Notification notification2 = mock(Notification.class);
+        List<Notification> notifications = asList(notification1,notification2);
+        given(notificationRepository.findPending()).willReturn(notifications);
+
+        // when
+        List<Notification> res = notificationService.getAllPendingNotifications();
+
+        // then
+        assertThat(res).isSameAs(notifications);
     }
 
     private Tuple getTupleFromNotification(Notification notification) {
