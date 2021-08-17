@@ -78,6 +78,10 @@ public class NotificationService {
         );
     }
 
+    public List<Notification> getAllPendingNotifications() {
+        return notificationRepository.findPending();
+    }
+
     @Transactional(readOnly = true)
     public List<Notification> findByFileNameAndService(String fileName, String service) {
         return notificationRepository.find(fileName, service);

@@ -147,6 +147,34 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.findByZipFileName(zipFileName));
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = NotificationsResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthenticated / Invalid token"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error validating service header"
+            )
+    })
+    @GetMapping(path = "/all-pending")
+    @Operation(
+            method = "GET",
+            summary = "Get list of error notifications",
+            description = "Get list of all pending notifications"
+    )
+    public NotificationsResponse getAllPendingNotifications() {
+        return mapToNotificationsResponse(notificationService.getAllPendingNotifications());
+    }
+
     private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {
         List<NotificationInfo> notifications = list.stream()
             .map(this::toNotificationResponse)

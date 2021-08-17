@@ -367,4 +367,68 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.notifications[0].document_control_number")
                         .value(notification1.documentControlNumber));
     }
+
+    @Test
+    void should_get_all_pending_notifications() throws Exception {
+
+        var notification1 = new Notification(
+                1L,
+                "confirmation-id-1",
+                "zip_file_name_123.zip",
+                "po_box1",
+                "container",
+                "bulk_scan",
+                "DCN1",
+                ErrorCode.ERR_METAFILE_INVALID,
+                "invalid metafile1",
+                now(),
+                now(),
+                NotificationStatus.PENDING,
+                "messageId1"
+        );
+        var notification2 = new Notification(
+                2L,
+                "confirmation-id-2",
+                "zip_file_name_234.zip",
+                "po_box1",
+                "container",
+                "bulk_scan",
+                "DCN2",
+                ErrorCode.ERR_METAFILE_INVALID,
+                "invalid metafile2",
+                now(),
+                now(),
+                NotificationStatus.PENDING,
+                "messageId2"
+        );
+
+        given(notificationService.getAllPendingNotifications())
+                .willReturn(asList(notification1, notification2));
+
+        mockMvc
+                .perform(
+                        get("/notifications/all-pending")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count", is(2)))
+                .andExpect(jsonPath("$.notifications", hasSize(2)))
+                .andExpect(jsonPath("$.sentNotificationsCount", is(0)))
+                .andExpect(jsonPath("$.pendingNotificationsCount", is(2)))
+                .andExpect(jsonPath("$.notifications[0].id").value(notification1.id))
+                .andExpect(jsonPath("$.notifications[0].confirmation_id").value(notification1.confirmationId))
+                .andExpect(jsonPath("$.notifications[0].zip_file_name").value(notification1.zipFileName))
+                .andExpect(jsonPath("$.notifications[0].po_box").value(notification1.poBox))
+                .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
+                .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
+                .andExpect(jsonPath("$.notifications[0].document_control_number")
+                        .value(notification1.documentControlNumber))
+                .andExpect(jsonPath("$.notifications[1].id").value(notification2.id))
+                .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
+                .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
+                .andExpect(jsonPath("$.notifications[1].po_box").value(notification2.poBox))
+                .andExpect(jsonPath("$.notifications[1].container").value(notification2.container))
+                .andExpect(jsonPath("$.notifications[1].service").value(notification2.service))
+                .andExpect(jsonPath("$.notifications[1].document_control_number")
+                        .value(notification2.documentControlNumber));
+    }
 }
