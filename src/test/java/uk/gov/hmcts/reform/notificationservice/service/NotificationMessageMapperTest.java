@@ -7,12 +7,12 @@ import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class NotificationMessageMapperTest {
+class NotificationMessageMapperTest {
 
-    private NotificationMessageMapper notificationMessageMapper = new NotificationMessageMapper();
+    private final NotificationMessageMapper notificationMessageMapper = new NotificationMessageMapper();
 
     @Test
-    public void should_return_valid_NewNotification_when_NotificationMsg_is_valid() {
+    void should_return_valid_NewNotification_when_NotificationMsg_is_valid() {
         NotificationMsg notificationMsg =
             new NotificationMsg(
                 "zipfile.zip",

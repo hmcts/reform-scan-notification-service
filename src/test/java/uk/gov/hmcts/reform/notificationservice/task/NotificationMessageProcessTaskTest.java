@@ -27,7 +27,7 @@ class NotificationMessageProcessTaskTest {
     private ServiceBusProcessorClient serviceBusProcessorClient;
 
     @Test
-    public void should_log_when_listener_is_not_working() {
+    void should_log_when_listener_is_not_working() {
         given(serviceBusProcessorClient.isRunning()).willReturn(false);
         notificationMessageProcessTask.checkServiceBusProcessorClient();
         assertThat(
@@ -36,7 +36,7 @@ class NotificationMessageProcessTaskTest {
     }
 
     @Test
-    public void should_log_when_listener_is_working() {
+    void should_log_when_listener_is_working() {
         given(serviceBusProcessorClient.isRunning()).willReturn(true);
         notificationMessageProcessTask.checkServiceBusProcessorClient();
         assertThat(
