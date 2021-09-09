@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class NotificationMessageHandlerTest {
+class NotificationMessageHandlerTest {
 
     private NotificationMessageHandler notificationMessageHandler;
 
@@ -36,7 +36,7 @@ public class NotificationMessageHandlerTest {
     }
 
     @Test
-    public void should_notify_for_successful_notification_message() {
+    void should_notify_for_successful_notification_message() {
         NotificationMsg notificationMsg =
             new NotificationMsg(
                 "Zipfile.zip",
@@ -74,7 +74,7 @@ public class NotificationMessageHandlerTest {
     }
 
     @Test
-    public void should_rethrow_feign_exception_when_notification_call_fails() {
+    void should_rethrow_feign_exception_when_notification_call_fails() {
         NotificationMsg notificationMsg =
             new NotificationMsg(
                 "file.txt",
@@ -116,7 +116,7 @@ public class NotificationMessageHandlerTest {
     }
 
     @Test
-    public void should_rethrow_invalid_message_exception_when_parsing_fails() {
+    void should_rethrow_invalid_message_exception_when_parsing_fails() {
         NotificationMsg notificationMsg =
             new NotificationMsg(
                 "file.txt",

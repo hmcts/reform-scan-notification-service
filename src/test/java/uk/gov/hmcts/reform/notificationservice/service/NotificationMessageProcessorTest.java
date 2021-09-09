@@ -48,7 +48,7 @@ class NotificationMessageProcessorTest {
 
 
     @BeforeEach
-    public void before() {
+    void before() {
         notificationMessageProcessor = new NotificationMessageProcessor(
             notificationMessageHandler,
             notificationMessageParser,
@@ -58,7 +58,7 @@ class NotificationMessageProcessorTest {
 
 
     @Test
-    public void should_not_throw_exception_when_queue_message_is_invalid() throws Exception {
+    void should_not_throw_exception_when_queue_message_is_invalid() throws Exception {
         // given
         String messageId = UUID.randomUUID().toString();
         mockMessageDetails(messageId);
@@ -78,7 +78,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_not_throw_exception_when_notification_handler_fails() {
+    void should_not_throw_exception_when_notification_handler_fails() {
         // given
         String messageId = mockQueueMessageAndParse();
 
@@ -94,7 +94,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_complete_the_message_when_processing_is_successful() {
+    void should_complete_the_message_when_processing_is_successful() {
         // given
         String messageId = mockQueueMessageAndParse();
 
@@ -113,7 +113,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_dead_letter_the_message_when_unrecoverable_failure() {
+    void should_dead_letter_the_message_when_unrecoverable_failure() {
         // given
         mockQueueMessageAndParse();
 
@@ -138,7 +138,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_not_dead_letter_the_message_when_recoverable_failure() throws Exception {
+    void should_not_dead_letter_the_message_when_recoverable_failure() throws Exception {
         // given
         var messageId = mockQueueMessageAndParse();
 
@@ -158,7 +158,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_dead_letter_the_message_when_recoverable_failure_but_delivery_maxed() {
+    void should_dead_letter_the_message_when_recoverable_failure_but_delivery_maxed() {
         // given
         var messageId = mockQueueMessageAndParse();
         ;
@@ -190,7 +190,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_throw_exception_when_message_receiver_fails() {
+    void should_throw_exception_when_message_receiver_fails() {
         ServiceBusException receiverException = new ServiceBusException(
             new RuntimeException("Test service bus exception "),
             ServiceBusErrorSource.ABANDON
@@ -204,7 +204,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_dead_letter_the_message_when_duplicate_messageId_received_for_already_processed_message() {
+    void should_dead_letter_the_message_when_duplicate_messageId_received_for_already_processed_message() {
         // given
         var messageId = mockQueueMessageAndParse();
         ;
@@ -236,7 +236,7 @@ class NotificationMessageProcessorTest {
     }
 
     @Test
-    public void should_complete_the_message_when_duplicate_messageId_received_for_already_delivered_message() {
+    void should_complete_the_message_when_duplicate_messageId_received_for_already_delivered_message() {
         // given
         var messageId = mockQueueMessageAndParse();
         ;
@@ -273,6 +273,4 @@ class NotificationMessageProcessorTest {
         given(messageContext.getMessage()).willReturn(message);
         return messageId;
     }
-
-
 }

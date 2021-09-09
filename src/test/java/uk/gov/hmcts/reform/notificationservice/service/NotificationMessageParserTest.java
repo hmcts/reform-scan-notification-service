@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-public class NotificationMessageParserTest {
+class NotificationMessageParserTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -20,7 +20,7 @@ public class NotificationMessageParserTest {
         new NotificationMessageParser(objectMapper);
 
     @Test
-    public void should_return_valid_notificationMessage_when_queue_message_is_valid() throws JSONException {
+    void should_return_valid_notificationMessage_when_queue_message_is_valid() throws JSONException {
         NotificationMsg expected = new NotificationMsg(
             "fileName.zip",
             "divorce",
@@ -52,14 +52,15 @@ public class NotificationMessageParserTest {
     }
 
     @Test
-    public void should_throw_invalidMessageException_when_queue_message_is_invalid() {
-        assertThatThrownBy(() -> notificationMsgParser.parse(
-            BinaryData.fromBytes("parse exception".getBytes()))
-        ).isInstanceOf(InvalidMessageException.class);
+    void should_throw_invalidMessageException_when_queue_message_is_invalid() {
+        BinaryData messageBody = BinaryData.fromBytes("parse exception".getBytes());
+
+        assertThatThrownBy(() -> notificationMsgParser.parse(messageBody))
+                .isInstanceOf(InvalidMessageException.class);
     }
 
     @Test
-    public void should_throw_InvalidMessageException_when_queue_message_is_null() {
+    void should_throw_InvalidMessageException_when_queue_message_is_null() {
         BinaryData nullBinaryData = BinaryData.fromObject((new Object()));
         assertThatThrownBy(() -> notificationMsgParser.parse(nullBinaryData))
             .isInstanceOf(InvalidMessageException.class);
@@ -73,8 +74,8 @@ public class NotificationMessageParserTest {
         String documentControlNumber,
         ErrorCode errorCode,
         String errorDescription,
-        String service)
-        throws JSONException {
+        String service
+    ) throws JSONException {
         return new JSONObject()
             .put("zip_file_name", zipFileName)
             .put("jurisdiction", jurisdiction)
