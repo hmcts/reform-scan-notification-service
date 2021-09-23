@@ -219,6 +219,7 @@ dependencies {
   // end region
 
   implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '4.0.0'
+  implementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.0.0'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
@@ -228,6 +229,7 @@ dependencies {
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.12.4'
   testImplementation group: 'io.github.netmikey.logunit', name: 'logunit-core', version: '1.1.0'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.1', classifier: 'all'
+
   testRuntimeOnly group: 'io.github.netmikey.logunit', name: 'logunit-logback', version: '1.1.0'
 
   integrationTestImplementation sourceSets.main.runtimeClasspath
