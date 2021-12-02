@@ -226,7 +226,7 @@ dependencies {
   implementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 
   // region: feign clients
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.0.5'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.0'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '11.7'
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '11.7'
   // end region
