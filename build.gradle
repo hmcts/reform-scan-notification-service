@@ -214,7 +214,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.5.13'
+  implementation group: 'org.springdoc', name: 'springdoc-openapi-webmvc-core', version: '1.6.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: versions.reformLogging
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
