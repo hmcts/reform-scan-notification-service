@@ -237,7 +237,7 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.1.0'
-  testImplementation group: 'io.github.netmikey.logunit', name: 'logunit-core', version: '1.1.1'
+  testImplementation group: 'io.github.netmikey.logunit', name: 'logunit-core', version: '1.1.2'
   testImplementation group: 'com.github.hmcts', name: 'fortify-client', version: '1.2.2', classifier: 'all'
   testRuntimeOnly group: 'io.github.netmikey.logunit', name: 'logunit-logback', version: '1.1.2'
 
