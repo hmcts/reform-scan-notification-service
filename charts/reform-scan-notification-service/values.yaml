@@ -25,7 +25,7 @@ java:
         - name: notification-service-POSTGRES-DATABASE
           alias: DB_NAME
         - name:  notification-queue-listen-shared-access-key-premium
-          alias: QUEUE_READ_ACCESS_KEYƒ
+          alias: QUEUE_READ_ACCESS_KEY
   environment:
     DB_CONN_OPTIONS: ?sslmode=require
     FLYWAY_SKIP_MIGRATIONS: true
