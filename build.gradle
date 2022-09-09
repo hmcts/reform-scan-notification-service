@@ -14,9 +14,10 @@ plugins {
 group = 'uk.gov.hmcts.reform'
 version = '0.0.1'
 
-allprojects {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
 }
 
 sourceSets {
@@ -44,6 +45,10 @@ sourceSets {
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+}
+
+tasks.withType(JavaExec).configureEach {
+  javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
 tasks.withType(Test) {
@@ -90,9 +95,10 @@ task fortifyScan(type: JavaExec)  {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '8.30'
+  toolVersion = '9.2.1'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
+
 
 pmd {
   toolVersion = "6.21.0"
