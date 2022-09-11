@@ -1,5 +1,6 @@
 # Reform Scan Notification Service
 
+
 ![](https://github.com/hmcts/reform-scan-notification-service/workflows/CI/badge.svg)
 [![](https://github.com/hmcts/reform-scan-notification-service/workflows/Publish%20Swagger%20Specs/badge.svg)](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/reform-scan-notification-service.json)
 [![codecov](https://codecov.io/gh/hmcts/reform-scan-notification-service/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/reform-scan-notification-service)
