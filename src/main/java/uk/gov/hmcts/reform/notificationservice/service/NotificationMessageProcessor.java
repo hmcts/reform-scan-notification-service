@@ -32,8 +32,7 @@ public class NotificationMessageProcessor {
 
     /**
      * Reads and processes next message from the queue.
-     *
-     * @return false if there was no message to process. Otherwise true.
+     * return false if there was no message to process. Otherwise true.
      */
     public void processNextMessage(ServiceBusReceivedMessageContext messageContext) {
         ServiceBusReceivedMessage message = messageContext.getMessage();
