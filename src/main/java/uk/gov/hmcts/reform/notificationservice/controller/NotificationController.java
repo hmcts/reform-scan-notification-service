@@ -45,23 +45,24 @@ public class NotificationController {
         this.authService = authService;
     }
 
-    @ApiResponses(value =
-        {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Success",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = NotificationsResponse.class))
-            ),
-            @ApiResponse(
-                responseCode = "401",
-                description = "Unauthenticated / Invalid token"),
-            @ApiResponse(
-                responseCode = "500",
-                description = "Error validating service header")
-        }
-    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Success",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = NotificationsResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthenticated / Invalid token"
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Error validating service header"
+        )
+    })
     @GetMapping
     @Operation(
         method = "GET",
@@ -82,20 +83,20 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.findByFileNameAndService(fileName, serviceName));
     }
 
-    @ApiResponses(value =
-        {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Success",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = NotificationsResponse.class)
-                )),
-            @ApiResponse(
-                responseCode = "500",
-                description = "Error getting data")
-        }
-    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Success",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = NotificationsResponse.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Error getting data"
+        )
+    })
     @GetMapping(params = "date")
     @Operation(
         method = "GET",
@@ -114,21 +115,20 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.findByDate(date));
     }
 
-    @ApiResponses(value =
-        {
-            @ApiResponse(
-                responseCode = "200",
-                description = "Success",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = NotificationsResponse.class)
-                )),
-            @ApiResponse(
-                responseCode = "500",
-                description = "Error getting data"
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Success",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = NotificationsResponse.class)
             )
-        }
-    )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Error getting data"
+        )
+    })
     @GetMapping(params = "zip_file_name")
     @Operation(
         method = "GET",
@@ -147,26 +147,24 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.findByZipFileName(zipFileName));
     }
 
-    @ApiResponses(value =
-        {
+    @ApiResponses(value = {
             @ApiResponse(
-                responseCode = "200",
-                description = "Success",
-                content = @Content(
-                    mediaType = "application/json",
-                    schema = @Schema(implementation = NotificationsResponse.class)
-                )
+                    responseCode = "200",
+                    description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = NotificationsResponse.class)
+                    )
             ),
             @ApiResponse(
-                responseCode = "401",
-                description = "Unauthenticated / Invalid token"
+                    responseCode = "401",
+                    description = "Unauthenticated / Invalid token"
             ),
             @ApiResponse(
-                responseCode = "500",
-                description = "Error validating service header"
+                    responseCode = "500",
+                    description = "Error validating service header"
             )
-        }
-    )
+    })
     @GetMapping(path = "/all-pending")
     @Operation(
             method = "GET",
