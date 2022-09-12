@@ -36,8 +36,7 @@ public class NotificationService {
     public void processPendingNotifications() {
         List<Notification> notifications = notificationRepository.findPending();
 
-        log.info("""
-        Notifications to process: {}""", notifications.size());
+        log.info("Notifications to process: {}", notifications.size());
 
         var okCount = 0;
         var failedCount = 0;
