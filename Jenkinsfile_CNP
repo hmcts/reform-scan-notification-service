@@ -1,6 +1,5 @@
 #!groovy @Library("Infrastructure") @Library("Infrastructure")
-
-@Library("Infrastructure@renovate/openjdk-18.x")
+@Library("Infrastructure")
 
 import uk.gov.hmcts.contino.DockerImage
 import uk.gov.hmcts.contino.GradleBuilder
