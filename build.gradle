@@ -173,7 +173,7 @@ dependencyManagement {
       entry 'log4j-to-slf4j'
     }
     //CVE-2022-23181
-    dependencySet(group: 'org.apache.tomcat.embed', version: '9.0.58') {
+    dependencySet(group: 'org.apache.tomcat.embed', version: '10.1.1') {
       entry 'tomcat-embed-core'
       entry 'tomcat-embed-el'
       entry 'tomcat-embed-websocket'
@@ -183,7 +183,7 @@ dependencyManagement {
       entry 'logback-classic'
     }
     //CVE-2022-24823
-    dependencySet(group: 'io.netty', version: '4.1.82.Final') {
+    dependencySet(group: 'io.netty', version: '4.1.84.Final') {
       entry 'netty-buffer'
       entry 'netty-codec'
       entry 'netty-codec-dns'
