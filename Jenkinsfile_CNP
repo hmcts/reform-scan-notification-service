@@ -37,11 +37,11 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 withPipeline(type, product, component) {
-  after('test') {
+  afterSuccess('test') {
     builder.gradle('integration')
   }
 
-  after('akschartsinstall') {
+  afterSuccess('akschartsinstall') {
     // Vars needed for AKS testing
     env.TEST_S2S_URL = 'http://rpe-service-auth-provider-aat.service.core-compute-aat.internal'
     env.NOTIFICATION_QUEUE_NAME = "notifications-staging"
