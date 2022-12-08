@@ -22,4 +22,8 @@
     <cve>CVE-2022-31692</cve>
     <cve>CVE-2022-31690</cve>
   </suppress>
+  <suppress until="2023-03-08">
+    <notes>commons-codec-1.15.jar and commons-fileupload-1.4.jar vulnerability</notes>
+    <cve>CVE-2021-37533</cve>
+  </suppress>
 </suppressions>
