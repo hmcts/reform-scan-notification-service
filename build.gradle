@@ -101,7 +101,7 @@ checkstyle {
 }
 
 pmd {
-  toolVersion = "6.21.0"
+  toolVersion = "6.52.0"
   ignoreFailures = true
   incrementalAnalysis = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.integrationTest, sourceSets.smokeTest, sourceSets.functionalTest]
