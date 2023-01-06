@@ -26,4 +26,7 @@
     <notes>commons-codec-1.15.jar and commons-fileupload-1.4.jar vulnerability</notes>
     <cve>CVE-2021-37533</cve>
   </suppress>
+  <suppress until="2023-04-06">
+    <cve>CVE-2021-4277</cve>
+  </suppress>
 </suppressions>
