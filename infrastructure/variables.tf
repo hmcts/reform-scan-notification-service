@@ -21,5 +21,3 @@ variable "location_db" {
 variable "deployment_namespace" {
   default = ""
 }
-
-variable "ilbIp" {}
