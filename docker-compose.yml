@@ -1,6 +1,14 @@
 version: '2.1'
 
 services:
+  reform-notification-db:
+    build:
+      context: ./docker/database
+    image: hmcts/dm-store-db:latest
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5437:5432 # Different port to run more than one DB locally
   notification-service:
     build:
       context: .
