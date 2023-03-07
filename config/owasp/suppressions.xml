@@ -10,4 +10,7 @@
     <cve>CVE-2022-42003</cve>
     <cve>CVE-2022-42004</cve>
   </suppress>
+  <suppress until="2023-05-27">
+    <cve>CVE-2022-45688</cve>
+  </suppress>
 </suppressions>
