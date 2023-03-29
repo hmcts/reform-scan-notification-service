@@ -1,7 +1,7 @@
 version: '2.1'
 
 services:
-  reform-notification-db:
+  reform-scan-notification-service-db:
     build:
       context: ./docker/database
     image: hmcts/dm-store-db:latest
@@ -31,4 +31,6 @@ services:
       - LOGBACK_REQUIRE_ALERT_LEVEL=false
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
-      - $SERVER_PORT:$SERVER_PORT
+      - 8585:8585
+    env_file:
+      - .env
