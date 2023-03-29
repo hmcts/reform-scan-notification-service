@@ -32,3 +32,5 @@ services:
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
       - 8585:8585
+    env_file:
+      - .env
