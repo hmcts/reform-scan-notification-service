@@ -81,7 +81,10 @@ public class NotificationController {
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @RequestParam("file_name") String fileName
     ) {
-        //        String serviceName = authService.authenticate(serviceAuthHeader);
+        // String serviceName = authService.authenticate(serviceAuthHeader);
+        // return mapToNotificationsResponse(notificationService.findByFileNameAndService(fileName, serviceName));
+
+        // String serviceName = authService.authenticate(serviceAuthHeader);
         String serviceName = "reform_scan_notification_tests";
         NotificationsResponse derp = mapToNotificationsResponse(notificationService
                                                                     .findByFileNameAndService(fileName, serviceName));

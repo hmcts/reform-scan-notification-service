@@ -70,8 +70,7 @@ public class JmsConfiguration {
 
     @Bean
     public JmsListenerContainerFactory<DefaultMessageListenerContainer> notificationsEventQueueContainerFactory(
-        ConnectionFactory notificationsJmsConnectionFactory,
-        DefaultJmsListenerContainerFactoryConfigurer defaultJmsListenerContainerFactoryConfigurer) {
+        ConnectionFactory notificationsJmsConnectionFactory) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setSessionAcknowledgeMode(2);
         factory.setConnectionFactory(notificationsJmsConnectionFactory);
@@ -79,7 +78,6 @@ public class JmsConfiguration {
         factory.setSessionTransacted(Boolean.TRUE);
         factory.setSessionAcknowledgeMode(Session.SESSION_TRANSACTED);
         factory.setMessageConverter(new CustomMessageConverter());
-        defaultJmsListenerContainerFactoryConfigurer.configure(factory, notificationsJmsConnectionFactory);
         return factory;
     }
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -40,7 +41,7 @@ public class JmsNotificationMessageProcessor {
             try {
                 // DO NOT CHANGE, used in alert
                 log.info("Started processing notification message with ID {}", message.getJMSMessageID());
-                var notificationMsg = notificationMessageParser.parse(BinaryData.fromString(messageBody));
+                NotificationMsg notificationMsg = notificationMessageParser.parse(BinaryData.fromString(messageBody));
                 notificationMessageHandler.handleNotificationMessage(notificationMsg, message.getJMSMessageID());
                 finaliseProcessedMessage(message, MessageProcessingResult.SUCCESS);
             } catch (InvalidMessageException ex) {

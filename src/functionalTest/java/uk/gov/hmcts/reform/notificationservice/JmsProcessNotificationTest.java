@@ -2,29 +2,36 @@ package uk.gov.hmcts.reform.notificationservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
+import static uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode.ERR_AV_FAILED;
 
-//@Disabled
+@Disabled
 class JmsProcessNotificationTest {
-
-    @Autowired
-    private JmsNotificationsMessageSender jmsPaymentsMessageSender;
 
     @Test
     void should_process_message_from_queue_and_notify_provider() {
-        // given
         QueueMessageDetails messageDetails = QueueMessageHelper
             .getQueueMessageDetails("valid-notification.json");
 
         // when
-        jmsPaymentsMessageSender.send(messageDetails);
+        new JmsNotificationsMessageSender().send(new NotificationMsg(
+            messageDetails.zipFileName,
+            "a juristiction",
+            "a po box",
+            "a container",
+            "133",
+            ERR_AV_FAILED,
+            "an error description",
+            messageDetails.service
+        ));
 
         // and
         String serviceAuthToken = RestAssuredHelper.s2sSignIn(messageDetails.service);

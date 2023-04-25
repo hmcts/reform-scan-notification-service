@@ -1,36 +1,37 @@
 package uk.gov.hmcts.reform.notificationservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.apache.qpid.jms.JmsConnectionFactory;
 import org.apache.qpid.jms.policy.JmsDefaultRedeliveryPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import javax.jms.ConnectionFactory;
 
-@Service
 public class JmsNotificationsMessageSender {
 
     private static final Logger log = LoggerFactory.getLogger(JmsNotificationsMessageSender.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public void send(QueueMessageDetails cmd) {
+    public void send(NotificationMsg notificationMsg) {
         try {
-            final String messageContent = objectMapper.writeValueAsString(cmd);
-
             JmsTemplate jmsTemplate = new JmsTemplate();
             jmsTemplate.setConnectionFactory(getTestFactory());
             jmsTemplate.setReceiveTimeout(5000); // Set the receive timeout to 5 seconds
 
-            jmsTemplate.convertAndSend("notifications", messageContent);
+            // to make sure json props have _'s between values
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+
+            jmsTemplate.convertAndSend("notifications",
+                                       objectMapper.writeValueAsString(notificationMsg));
 
             log.info(
                 "Sent message to notifications queue. Content: {}",
-                messageContent
+                notificationMsg
             );
         } catch (Exception ex) {
             throw new RuntimeException(
