@@ -22,3 +22,6 @@ bin/main/application.yaml
 *.ipr
 
 .DS_Store
+/bin/setup-env.sh
+/bin/create-env-file.sh
+/bin/substitutions.json
