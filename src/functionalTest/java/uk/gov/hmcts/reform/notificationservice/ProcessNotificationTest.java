@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 
-//@Disabled
 class ProcessNotificationTest {
 
     @Test
