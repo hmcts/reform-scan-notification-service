@@ -252,7 +252,6 @@ dependencies {
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.6'
 
-  integrationTestImplementation group: 'com.github.tomakehurst', name: 'wiremock', version: '2.35.0'
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.0', {
     exclude group: 'junit', module: 'junit'
   }
