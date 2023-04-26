@@ -167,7 +167,7 @@ dependencyManagement {
     dependencySet(group: 'commons-io', version: '2.11.0') {
       entry 'commons-io'
     }
-     // CVE-2022-25857
+    // CVE-2022-25857
     dependencySet(group: 'org.yaml', version: '1.33') {
       entry 'snakeyaml'
     }
