@@ -1,28 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-  <suppress until="2023-07-07">
-    <notes><![CDATA[
-        This suppresses CVE vulnerabilities for wiremock
-        ]]></notes>
-    <cve>CVE-2023-20860</cve>
+  <suppress until="2023-07-26">
     <cve>CVE-2020-8908</cve>
     <cve>CVE-2022-1471</cve>
     <cve>CVE-2020-5408</cve>
     <cve>CVE-2016-1000027</cve>
-    <cve>CVE-2022-42003</cve>
-    <cve>CVE-2022-42004</cve>
-    <cve>CVE-2022-2048</cve>
-    <cve>CVE-2023-24998</cve>
-    <cve>CVE-2023-1370</cve>
-    <cve>CVE-2022-2047</cve>
-    <cve>CVE-2023-26048</cve>
-    <cve>CVE-2022-42889</cve>
-    <cve>CVE-2023-26049</cve>
-  </suppress>
-  <suppress until="2023-07-26">
-    <cve>CVE-2023-20863</cve>
-  </suppress>
-  <suppress until="2023-07-26">
-    <cve>CVE-2023-20863</cve>
   </suppress>
 </suppressions>
