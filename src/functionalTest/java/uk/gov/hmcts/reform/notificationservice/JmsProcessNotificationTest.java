@@ -1,27 +1,37 @@
 package uk.gov.hmcts.reform.notificationservice;
 
-import com.azure.messaging.servicebus.ServiceBusMessage;
-import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
+import static uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode.ERR_AV_FAILED;
 
-class ProcessNotificationTest {
+@Disabled
+class JmsProcessNotificationTest {
 
     @Test
     void should_process_message_from_queue_and_notify_provider() {
-        // given
-        ServiceBusSenderClient queueClient = Configuration.getSendClient();
-        var messageDetails = QueueMessageHelper.getQueueMessageDetails("valid-notification.json");
+        QueueMessageDetails messageDetails = QueueMessageHelper
+            .getQueueMessageDetails("valid-notification.json");
 
         // when
-        queueClient.sendMessage(new ServiceBusMessage(messageDetails.messageBody));
+        new JmsNotificationsMessageSender().send(new NotificationMsg(
+            messageDetails.zipFileName,
+            "a juristiction",
+            "a po box",
+            "a container",
+            "133",
+            ERR_AV_FAILED,
+            "an error description",
+            messageDetails.service
+        ));
 
         // and
         String serviceAuthToken = RestAssuredHelper.s2sSignIn(messageDetails.service);

@@ -32,19 +32,9 @@ spring:
       poolName: NotificationHikariCP
       maxLifetime: 7200000
       connectionTimeout: 30000
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration,org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration
 
 flyway:
   skip-migrations: ${FLYWAY_SKIP_MIGRATIONS}
-
-queue:
-  notifications:
-    access-key: ${QUEUE_READ_ACCESS_KEY}
-    access-key-name: ${QUEUE_ACCESS_KEY_LISTEN_NAME}
-    name: ${QUEUE_NAME}
-    namespace: ${QUEUE_NAMESPACE}
-    max-delivery-count: ${QUEUE_NOTIFICATIONS_MAX_RETRY}
 
 scheduling:
   lock_at_most_for: PT10M # 10 minutes in ISO-8601
@@ -65,7 +55,14 @@ idam:
     url: ${S2S_URL}
 
 jms:
-  # Set to disable configuration in envs besides local/dev
+  # JMS Configuration for local dev
+  application-name: BulkScanNotificationsApiDev
   enabled: ${JMS_ENABLED:false}
+  namespace: ${JMS_NAMESPACE:5672}
+  amqp-connection-string-template: ${JMS_AMQP_CONNECTION_TEMPLATE:amqp://localhost:%1s?amqp.idleTimeout=%2d}
+  username: ${JMS_USERNAME:admin}
+  password: ${JMS_PASSWORD:admin}
+  receiveTimeout: ${JMS_RECEIVE_TIMEOUT:30000}
+  idleTimeout: ${JMS_IDLE_TIMEOUT:30000}
 
 # end of clients region
