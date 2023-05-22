@@ -1,7 +1,7 @@
 java:
   secrets:
     SB_ACCESS_KEY:
-      secretRef: servicebus-secret-namespace-{{ .Release.Name }}-servicebus
+      secretRef: reform-scan-sb-preview
       key: primaryKey
     SB_NAMESPACE:
       secretRef: servicebus-secret-namespace-{{ .Release.Name }}-servicebus
@@ -15,7 +15,7 @@ java:
     DB_CONN_OPTIONS: ""
     FLYWAY_SKIP_MIGRATIONS: false
     QUEUE_ACCESS_KEY_LISTEN_NAME: "RootManageSharedAccessKey"
-    QUEUE_NAMESPACE: "$(SB_NAMESPACE)"
+    QUEUE_NAMESPACE: "reform-scan-sb-preview"
     QUEUE_READ_ACCESS_KEY: "$(SB_ACCESS_KEY)"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
