@@ -39,10 +39,11 @@ java:
     postgresqlPassword: db_password
     postgresqlDatabase: db_database
 servicebus:
-  resourceGroup: reform-scan-aks
+  resourceGroup: reform-scan-aso-preview-rg
   teamName: "BSP"
   location: uksouth
   serviceplan: basic
+  sbNamespace: reform-scan-sb-preview
   setup:
     queues:
       - name: notifications
