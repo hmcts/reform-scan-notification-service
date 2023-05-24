@@ -35,14 +35,10 @@ final class Configuration {
             NOTIFICATION_QUEUE_ACCESS_KEY_WRITE
         );
 
-        System.out.printf("Connecting with namespace: %s to queue %s",
-                          NOTIFICATION_QUEUE_NAMESPACE, NOTIFICATION_QUEUE_NAME);
-
         return new ServiceBusClientBuilder()
             .connectionString(connectionString)
             .sender()
             .queueName(NOTIFICATION_QUEUE_NAME)
             .buildClient();
-
     }
 }

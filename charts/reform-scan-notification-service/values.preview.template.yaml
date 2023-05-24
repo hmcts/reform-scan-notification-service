@@ -47,5 +47,5 @@ servicebus:
   sbNamespace: reform-scan
   setup:
     queues:
-      - name: notifications
+      - name: notificationstest
   enabled: true
