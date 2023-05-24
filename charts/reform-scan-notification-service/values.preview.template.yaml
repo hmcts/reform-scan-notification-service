@@ -20,6 +20,7 @@ java:
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
+    SB_NAMESPACE: "reform-scan-sb-preview"
   keyVaults:
     "reform-scan":
       secrets:
