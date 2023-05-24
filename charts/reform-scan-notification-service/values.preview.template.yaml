@@ -44,7 +44,7 @@ servicebus:
   teamName: "BSP"
   location: uksouth
   serviceplan: basic
-  sbNamespace: reform-scan-sb-preview
+  sbNamespace: reform-scan
   setup:
     queues:
       - name: notifications
