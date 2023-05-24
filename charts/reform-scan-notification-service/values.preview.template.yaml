@@ -15,7 +15,7 @@ java:
     DB_CONN_OPTIONS: ""
     FLYWAY_SKIP_MIGRATIONS: false
     QUEUE_ACCESS_KEY_LISTEN_NAME: "RootManageSharedAccessKey"
-    QUEUE_NAME: "{{ .Release.Name }}-notifications"
+    QUEUE_NAME: "{{ .Release.Name }}-servicebus-notifications"
     QUEUE_NAMESPACE: "reform-scan-sb-preview"
     QUEUE_READ_ACCESS_KEY: "$(SB_ACCESS_KEY)"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
