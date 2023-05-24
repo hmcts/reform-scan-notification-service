@@ -40,6 +40,5 @@ final class Configuration {
             .sender()
             .queueName(NOTIFICATION_QUEUE_NAME)
             .buildClient();
-
     }
 }
