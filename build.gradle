@@ -96,7 +96,7 @@ task fortifyScan(type: JavaExec)  {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.11.0'
+  toolVersion = '10.12.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -204,7 +204,7 @@ ext.libraries = [
 
 dependencies {
   implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
-  implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.18.0'
+  implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.19.1'
 
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.3.0'
   implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.3.0'
@@ -227,7 +227,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '3.1.6'
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.14.0'
-  implementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '32.0.0-jre'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.7'
@@ -252,10 +252,10 @@ dependencies {
 
   integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.1.7'
 
-  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.1', {
+  integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.18.2', {
     exclude group: 'junit', module: 'junit'
   }
-  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.18.1'
+  integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.18.2'
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
   smokeTestImplementation libraries.junit5
