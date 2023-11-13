@@ -21,3 +21,5 @@ variable "location_db" {
 variable "deployment_namespace" {
   default = ""
 }
+
+variable "aks_subscription_id" {}

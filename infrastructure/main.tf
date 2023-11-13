@@ -1,7 +1,3 @@
-provider "azurerm" {
-  features {}
-}
-
 module "reform-notifications-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
   product            = "${var.product}-${var.component}"
