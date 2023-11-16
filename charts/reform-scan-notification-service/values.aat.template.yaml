@@ -32,3 +32,13 @@ java:
           alias: DB_NAME
         - name:  notification-staging-queue-listen-shared-access-key
           alias: QUEUE_READ_ACCESS_KEY
+servicebus:
+  resourceGroup: reform-scan-aat
+  teamName: "BSP"
+  location: uksouth
+  serviceplan: basic
+  sbNamespace: reform-scan
+  setup:
+    queues:
+      - name: notifications
+  enabled: true
