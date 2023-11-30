@@ -16,7 +16,7 @@ GradleBuilder builder = new GradleBuilder(this, product)
 
 def nonPrSecrets = [
   'reform-scan-${env}': [
-    secret('notification-staging-queue-send-shared-access-key', 'NOTIFICATION_QUEUE_ACCESS_KEY_WRITE'),
+    secret('notification-staging-queue-send-shared-access-key-premium', 'NOTIFICATION_QUEUE_ACCESS_KEY_WRITE'),
     secret('test-s2s-secret', 'TEST_S2S_SECRET')
   ]
 ]
