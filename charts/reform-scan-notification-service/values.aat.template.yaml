@@ -30,5 +30,5 @@ java:
           alias: DB_PORT
         - name: notification-service-staging-postgres-database
           alias: DB_NAME
-        - name:  notification-queue-listen-shared-access-key-premium
+        - name:  notification-staging-queue-listen-shared-access-key
           alias: QUEUE_READ_ACCESS_KEY
