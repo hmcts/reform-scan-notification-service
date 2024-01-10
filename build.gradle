@@ -267,6 +267,7 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.smokeTest.runtimeClasspath
+  functionalTestImplementation sourceSets.test.runtimeClasspath
   functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 }
 

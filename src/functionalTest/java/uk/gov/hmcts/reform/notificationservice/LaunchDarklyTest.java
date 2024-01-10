@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notificationservice.launchdarkly;
+package uk.gov.hmcts.reform.notificationservice;
 
 import com.launchdarkly.sdk.server.interfaces.DataSourceStatusProvider;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.notificationservice.launchdarkly.LaunchDarklyClient;
+import uk.gov.hmcts.reform.notificationservice.launchdarkly.LaunchDarklyClientFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@TestPropertySource("classpath:application.properties")
+@TestPropertySource("classpath:application.conf")
 @ExtendWith(SpringExtension.class)
 class LaunchDarklyTest {
 
