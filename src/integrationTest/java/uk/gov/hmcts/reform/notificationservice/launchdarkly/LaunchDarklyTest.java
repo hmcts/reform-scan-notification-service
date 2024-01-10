@@ -34,6 +34,7 @@ class LaunchDarklyTest {
 
     @Test
     void checkLaunchDarklyStatus() {
+        System.out.println("OUTPUT VALUES ARE: " + sdkKey + " AND " + offlineMode);
         DataSourceStatusProvider.Status ldStatus = ldClient.getDataSourceStatus();
         assertThat(ldStatus.getState()).isEqualTo(DataSourceStatusProvider.State.VALID);
     }
