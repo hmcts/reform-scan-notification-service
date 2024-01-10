@@ -259,6 +259,7 @@ dependencies {
   integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.3'
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
+  smokeTestImplementation sourceSets.test.runtimeClasspath
   smokeTestImplementation libraries.junit5
   smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
   smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.3'
@@ -267,7 +268,6 @@ dependencies {
 
   functionalTestImplementation sourceSets.main.runtimeClasspath
   functionalTestImplementation sourceSets.smokeTest.runtimeClasspath
-  functionalTestImplementation sourceSets.test.runtimeClasspath
   functionalTestImplementation group: 'org.awaitility', name: 'awaitility', version: '4.2.0'
 }
 
