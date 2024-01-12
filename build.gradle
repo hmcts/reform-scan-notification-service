@@ -236,6 +236,8 @@ dependencies {
 
   implementation group: 'org.apache.qpid', name: 'qpid-jms-client', version: '1.11.0'
 
+  implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
+
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {
     exclude group: 'junit', module: 'junit'
@@ -257,6 +259,7 @@ dependencies {
   integrationTestImplementation group: 'org.testcontainers', name: 'junit-jupiter', version: '1.19.3'
 
   smokeTestImplementation sourceSets.main.runtimeClasspath
+  smokeTestImplementation sourceSets.test.runtimeClasspath
   smokeTestImplementation libraries.junit5
   smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
   smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.3'
