@@ -1,6 +1,6 @@
 # Postgres 15 flexible servers
 locals {
-  db_host_name = "${var.product}-${var.component}-flexible-postgres-db-v15"
+  db_host_name = "${var.product}-${var.component}-flexible-db-v15"
   db_name      = "notifications"
   pg_user      = "notifier"
 }
