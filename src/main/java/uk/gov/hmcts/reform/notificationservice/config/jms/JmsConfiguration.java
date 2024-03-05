@@ -1,11 +1,17 @@
 package uk.gov.hmcts.reform.notificationservice.config.jms;
 
-import org.apache.qpid.jms.JmsConnectionFactory;
-import org.apache.qpid.jms.policy.JmsDefaultRedeliveryPolicy;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.RedeliveryPolicy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
@@ -15,11 +21,6 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.stereotype.Component;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 @Configuration
 @EnableJms
@@ -44,18 +45,24 @@ public class JmsConfiguration {
     @Value("${jms.amqp-connection-string-template}")
     public String amqpConnectionStringTemplate;
 
+    @Primary
+    @Bean
+    public JmsProperties jmsProperties() {
+        return new JmsProperties();
+    }
+
     @Bean
     public ConnectionFactory notificationsJmsConnectionFactory(@Value("${jms.application-name}")
                                                                    final String clientId) {
         String connection = String.format(amqpConnectionStringTemplate, namespace, idleTimeout);
-        JmsConnectionFactory jmsConnectionFactory = new JmsConnectionFactory(connection);
-        jmsConnectionFactory.setUsername(username);
-        jmsConnectionFactory.setPassword(password);
-        JmsDefaultRedeliveryPolicy jmsDefaultRedeliveryPolicy = new JmsDefaultRedeliveryPolicy();
-        jmsDefaultRedeliveryPolicy.setMaxRedeliveries(3);
-        jmsConnectionFactory.setRedeliveryPolicy(jmsDefaultRedeliveryPolicy);
-        jmsConnectionFactory.setClientID(clientId);
-        return new CachingConnectionFactory(jmsConnectionFactory);
+        ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(connection);
+        activeMQConnectionFactory.setUserName(username);
+        activeMQConnectionFactory.setPassword(password);
+        RedeliveryPolicy redeliveryPolicy = new RedeliveryPolicy();
+        redeliveryPolicy.setMaximumRedeliveries(3);
+        activeMQConnectionFactory.setRedeliveryPolicy(redeliveryPolicy);
+        activeMQConnectionFactory.setClientID(clientId);
+        return new CachingConnectionFactory(activeMQConnectionFactory);
     }
 
     // for if we need to write a message back to a specific queue
@@ -69,7 +76,8 @@ public class JmsConfiguration {
 
     @Bean
     public JmsListenerContainerFactory<DefaultMessageListenerContainer> notificationsEventQueueContainerFactory(
-        ConnectionFactory notificationsJmsConnectionFactory) {
+        ConnectionFactory notificationsJmsConnectionFactory,
+        JmsProperties jmsProperties) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setSessionAcknowledgeMode(2);
         factory.setConnectionFactory(notificationsJmsConnectionFactory);
@@ -77,6 +85,7 @@ public class JmsConfiguration {
         factory.setSessionTransacted(Boolean.TRUE);
         factory.setSessionAcknowledgeMode(Session.SESSION_TRANSACTED);
         factory.setMessageConverter(new CustomMessageConverter());
+        factory.setPubSubDomain(jmsProperties.isPubSubDomain());
         return factory;
     }
 
