@@ -1,6 +1,8 @@
 module "reform-notifications-db" {
   source             = "git@github.com:hmcts/cnp-module-postgres?ref=master"
-  product            = "${var.product}-${var.component}"
+  product            = var.product
+  component          = var.component
+  name               = "${var.product}-${var.component}"
   location           = var.location_db
   env                = var.env
   database_name      = "notifications"
