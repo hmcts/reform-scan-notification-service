@@ -54,7 +54,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
      * @param ex The `ex` parameter in the `handleInvalidTokenException` method is an
      *           instance of the `InvalidTokenException` class. It represents the exception that was
      *           thrown and caught by the `@ExceptionHandler` annotation for handling invalid token exceptions.
-     * @return A ResponseEntity<Void> is being returned.
+     * @return An empty ResponseEntity is being returned.
      */
     @ExceptionHandler(InvalidTokenException.class)
     protected ResponseEntity<Void> handleInvalidTokenException(InvalidTokenException ex) {
