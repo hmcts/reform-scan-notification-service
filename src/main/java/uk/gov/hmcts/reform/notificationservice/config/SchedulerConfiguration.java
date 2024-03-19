@@ -21,6 +21,10 @@ import java.util.function.Supplier;
 import static java.time.Instant.now;
 import static org.slf4j.LoggerFactory.getLogger;
 
+/**
+ * The `SchedulerConfiguration` class in Java configures a task scheduler for handling notifications with specified
+ * settings and error handling.
+ */
 @Configuration
 @EnableScheduling
 public class SchedulerConfiguration implements SchedulingConfigurer {
@@ -40,6 +44,12 @@ public class SchedulerConfiguration implements SchedulingConfigurer {
         taskRegistrar.setTaskScheduler(notificationTaskScheduler());
     }
 
+    /**
+     * The function creates a TaskScheduler bean for handling notifications with a specified pool size,
+     * thread name prefix, error handling, and initialization.
+     *
+     * @return An instance of `ThreadPoolTaskScheduler` named `scheduler` is being returned.
+     */
     @Bean
     public TaskScheduler notificationTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new NotificationTaskScheduler();

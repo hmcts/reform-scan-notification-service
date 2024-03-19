@@ -183,6 +183,14 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.getAllPendingNotifications());
     }
 
+    /**
+     * The function `mapToNotificationsResponse` converts a list of `Notification` objects to a list
+     * of `NotificationInfo` objects and creates a `NotificationsResponse` object with the converted list.
+     *
+     * @param list The `list` parameter is a List of Notification objects that contains the notifications to
+     *             be mapped to a NotificationsResponse object.
+     * @return A `NotificationsResponse` object is being returned, which contains a list of `NotificationInfo` objects.
+     */
     private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {
         List<NotificationInfo> notifications = list.stream()
             .map(this::toNotificationResponse)
@@ -191,6 +199,16 @@ public class NotificationController {
         return new NotificationsResponse(notifications);
     }
 
+    /**
+     * The function `toNotificationResponse` converts a `Notification` object to a `NotificationInfo` object
+     * by mapping specific fields and applying certain transformations.
+     *
+     * @param notification The `toNotificationResponse` method takes a `Notification` object as input and
+     *                     creates a `NotificationInfo` object with the corresponding values extracted from the
+     *                     `Notification` object.
+     * @return A `NotificationInfo` object is being returned, which is created using the properties of the
+     *      `Notification` object passed as a parameter to the method.
+     */
     private NotificationInfo toNotificationResponse(Notification notification) {
         return new NotificationInfo(
             notification.id,

@@ -9,6 +9,10 @@ import org.springframework.context.annotation.Bean;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * The `ErrorNotificationConfiguration` class in Java defines beans for decoding and creating a
+ * BasicAuthRequestInterceptor for error notifications.
+ */
 public class ErrorNotificationConfiguration {
 
     @Bean
@@ -16,6 +20,19 @@ public class ErrorNotificationConfiguration {
         return new JacksonDecoder(objectMapper);
     }
 
+    /**
+     * The function creates a BasicAuthRequestInterceptor bean with the provided username, password, and charset
+     * for error notifications.
+     *
+     * @param username The username parameter is typically a string value that represents the username used
+     *                 for basic authentication when making HTTP requests to a server or API. It is often
+     *                 required for authenticating and authorizing access to certain resources.
+     * @param password The password parameter in the code snippet is used to retrieve the value of
+     *                 the "clients.error-notifications.password" property from the application configuration.
+     *                 This password is likely used for basic authentication when making requests to a service
+     *                 that requires authentication.
+     * @return A BasicAuthRequestInterceptor bean is being returned.
+     */
     @Bean
     public BasicAuthRequestInterceptor basicAuthRequestInterceptor(
         @Value("${clients.error-notifications.username}") String username,

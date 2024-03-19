@@ -17,6 +17,15 @@ import javax.sql.DataSource;
 @EnableSchedulerLock(defaultLockAtMostFor = "${scheduling.lock_at_most_for}")
 public class ShedlockConfiguration {
 
+    /**
+     * The function creates a LockProvider bean using a DataSource to provide locking functionality.
+     *
+     * @param dataSource The `dataSource` parameter in the `lockProvider` method is an instance of the
+     *                   `DataSource` class. It is used to provide the necessary database connection
+     *                   information for creating a `JdbcTemplateLockProvider` instance, which is responsible
+     *                   for managing locks in the application.
+     * @return An instance of `JdbcTemplateLockProvider` is being returned.
+     */
     @Bean
     public LockProvider lockProvider(DataSource dataSource) {
         return new JdbcTemplateLockProvider(dataSource);

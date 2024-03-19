@@ -31,18 +31,46 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ResponseExceptionHandler.class);
 
+    /**
+     * This Java function handles UnauthenticatedException by logging the error message and returning an HTTP 401
+     * Unauthorized response.
+     *
+     * @param ex The `ex` parameter in the `handleUnauthenticatedException` method represents the instance
+     *           of the `UnauthenticatedException` that was thrown. This parameter allows you to access
+     *           information about the exception, such as the error message or any other relevant details
+     *           that may have been set when the exception was created.
+     * @return A ResponseEntity<Void> is being returned.
+     */
     @ExceptionHandler(UnauthenticatedException.class)
     protected ResponseEntity<Void> handleUnauthenticatedException(UnauthenticatedException ex) {
         log.error(ex.getMessage(), ex);
         return status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    /**
+     * This Java function handles InvalidTokenException by logging the error message and
+     * returning an HTTP status code of UNAUTHORIZED.
+     *
+     * @param ex The `ex` parameter in the `handleInvalidTokenException` method is an
+     *           instance of the `InvalidTokenException` class. It represents the exception that was
+     *           thrown and caught by the `@ExceptionHandler` annotation for handling invalid token exceptions.
+     * @return A ResponseEntity<Void> is being returned.
+     */
     @ExceptionHandler(InvalidTokenException.class)
     protected ResponseEntity<Void> handleInvalidTokenException(InvalidTokenException ex) {
         log.error(ex.getMessage(), ex);
         return status(HttpStatus.UNAUTHORIZED).build();
     }
 
+    /**
+     * The function handles ServiceException by logging the error message and returning an internal
+     * server error response.
+     *
+     * @param ex The `ex` parameter in the `handleServiceException` method is an instance of
+     *           the `ServiceException` class. It represents the exception that was thrown and caught
+     *           by the exception handler.
+     * @return A ResponseEntity<Void> is being returned.
+     */
     @ExceptionHandler(ServiceException.class)
     protected ResponseEntity<Void> handleServiceException(ServiceException ex) {
         log.error(ex.getMessage(), ex);
