@@ -39,7 +39,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
      *           of the `UnauthenticatedException` that was thrown. This parameter allows you to access
      *           information about the exception, such as the error message or any other relevant details
      *           that may have been set when the exception was created.
-     * @return A ResponseEntity<Void> is being returned.
+     * @return An empty ResponseEntity is being returned.
      */
     @ExceptionHandler(UnauthenticatedException.class)
     protected ResponseEntity<Void> handleUnauthenticatedException(UnauthenticatedException ex) {
@@ -69,7 +69,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
      * @param ex The `ex` parameter in the `handleServiceException` method is an instance of
      *           the `ServiceException` class. It represents the exception that was thrown and caught
      *           by the exception handler.
-     * @return A ResponseEntity<Void> is being returned.
+     * @return An empty ResponseEntity is being returned.
      */
     @ExceptionHandler(ServiceException.class)
     protected ResponseEntity<Void> handleServiceException(ServiceException ex) {

@@ -26,7 +26,7 @@ public class FeatureFlagController {
      * @param flag The `flag` parameter in the `flagStatus` method represents the feature flag that you want
      *             to check the status of. The method calls the `isFeatureEnabled` method from the
      *             `featureToggleService` to determine if the specified feature flag is enabled or not.
-     * @return A ResponseEntity<String> object is being returned, which contains the flag name and its
+     * @return A ResponseEntity of type String object is being returned, which contains the flag name and its
      *      corresponding status (enabled or disabled).
      */
     @GetMapping("/feature-flags/{flag}")
