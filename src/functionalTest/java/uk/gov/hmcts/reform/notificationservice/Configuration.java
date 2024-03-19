@@ -9,8 +9,6 @@ final class Configuration {
 
     private static final Config CONFIG = ConfigFactory.load();
 
-    private static final String ERROR_MESSAGE = "Failure building queue client";
-
     static final String TEST_URL = CONFIG.getString("test-url");
     static final String TEST_S2S_SECRET = CONFIG.getString("test-s2s-secret");
     static final String TEST_S2S_URL = CONFIG.getString("test-s2s-url");
@@ -27,6 +25,12 @@ final class Configuration {
         // utility class construct
     }
 
+    /**
+     * The function `getSendClient` creates and returns a ServiceBusSenderClient for sending messages
+     * to a specified queue using the provided connection string and queue name.
+     *
+     * @return A `ServiceBusSenderClient` object is being returned.
+     */
     static ServiceBusSenderClient getSendClient() {
         String connectionString = String.format(
             "Endpoint=sb://%s.servicebus.windows.net;SharedAccessKeyName=%s;SharedAccessKey=%s;",

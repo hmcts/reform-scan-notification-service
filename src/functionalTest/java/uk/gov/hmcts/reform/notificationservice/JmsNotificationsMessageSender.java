@@ -15,6 +15,15 @@ public class JmsNotificationsMessageSender {
 
     private static final Logger log = LoggerFactory.getLogger(JmsNotificationsMessageSender.class);
 
+    /**
+     * The `send` method sends a `NotificationMsg` object as a JSON string to a JMS queue named "notifications" after
+     * setting up the JmsTemplate with a connection factory and a receive timeout of 5 seconds.
+     *
+     * @param notificationMsg The `send` method you provided is responsible for sending a `NotificationMsg`
+     *                        object to a JMS queue named "notifications". The `NotificationMsg` object is
+     *                        serialized to JSON format using an `ObjectMapper` with a property naming strategy
+     *                        that converts property names to snake case.
+     */
     public void send(NotificationMsg notificationMsg) {
         try {
             JmsTemplate jmsTemplate = new JmsTemplate();
@@ -40,6 +49,12 @@ public class JmsNotificationsMessageSender {
         }
     }
 
+    /**
+     * The function returns a ConnectionFactory configured with ActiveMQ settings for connecting
+     * to a local AMQP server with specific credentials and redelivery policies.
+     *
+     * @return A ConnectionFactory object is being returned.
+     */
     public ConnectionFactory getTestFactory() {
         String connection = String.format("amqp://localhost:%1s?amqp.idleTimeout=%2d", "5672", 30000);
         ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory(connection);

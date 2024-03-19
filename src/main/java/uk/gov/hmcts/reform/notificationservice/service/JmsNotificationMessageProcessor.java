@@ -13,6 +13,10 @@ import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+/**
+ * The `JmsNotificationMessageProcessor` class in Java processes notification messages from a queue, handling various
+ * scenarios such as message parsing, duplicate handling, and finalizing message processing.
+ */
 @Service
 public class JmsNotificationMessageProcessor {
 
@@ -58,6 +62,18 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
+    /**
+     * The function `handleDuplicateMessageId` checks if a message has already been processed and logs a warning if so.
+     *
+     * @param messageContext The `messageContext` parameter in the `handleDuplicateMessageId` method is
+     *                       of type `Message` and represents the message being processed. It contains
+     *                       information and properties related to the message, such as the message ID,
+     *                       delivery count, and error message.
+     * @param errorMessage The `errorMessage` parameter in the `handleDuplicateMessageId` method is a string
+     *                     that represents the reason for the duplicate message handling. It is
+     *                     used in the log message to provide information about why the notification
+     *                     message was already processed for a specific message ID.
+     */
     private void handleDuplicateMessageId(Message messageContext, String errorMessage) throws JMSException {
         if (messageContext.getStringProperty("JMSXDeliveryCount").equals("0")) {
             log.error("Message dead-lettered...if this was ASB");
@@ -71,6 +87,19 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
+    /**
+     * The `finaliseProcessedMessage` method logs information about finalizing a notification message and catches any
+     * exceptions that occur during the process.
+     *
+     * @param messageContext The `messageContext` parameter in the `finaliseProcessedMessage` method represents
+     *                       the message being processed. It contains information about the message, such
+     *                       as its ID (`JMSMessageID`) and other relevant details needed for processing
+     *                       and finalizing the message.
+     * @param processingResult The `processingResult` parameter is of type `MessageProcessingResult` and is
+     *                         used to store the result of processing a message. It likely contains
+     *                         information such as whether the processing was successful, any errors
+     *                         encountered, or any relevant data related to the processing of the message.
+     */
     private void finaliseProcessedMessage(
         Message messageContext,
         MessageProcessingResult processingResult
@@ -88,6 +117,17 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
+    /**
+     * The `completeProcessedMessage` function processes a message based on the result of message processing and handles
+     * success, unrecoverable failure, potentially recoverable failure, and unknown result cases.
+     *
+     * @param messageContext The `messageContext` parameter in the `completeProcessedMessage` method
+     *                       represents the message that was processed and needs to be completed.
+     *                       It contains information about the message, such as its ID (`JMSMessageID`) and
+     *                       allows actions like acknowledging the message.
+     * @param processingResult The `processingResult` parameter in the `completeProcessedMessage` method
+     *                         represents the result of processing a message.
+     */
     private void completeProcessedMessage(
         Message messageContext,
         MessageProcessingResult processingResult
@@ -113,6 +153,15 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
+    /**
+     * The function `deadLetterIfMaxDeliveryCountIsReached` checks if the maximum delivery count is reached for a
+     * message and either allows it to return to the queue or moves it to a dead letter queue accordingly.
+     *
+     * @param messageContext The `messageContext` parameter in the `deadLetterIfMaxDeliveryCountIsReached`
+     *                       method represents the message that is being processed. It contains information
+     *                       about the message, such as its delivery count, message ID, and properties.
+     *                       The method checks the delivery count of the message against a maximum delivery count
+     */
     private void deadLetterIfMaxDeliveryCountIsReached(Message messageContext) throws JMSException {
         int deliveryCount = (Integer.parseInt(messageContext.getStringProperty("JMSXDeliveryCount")) + 1);
 
@@ -133,6 +182,22 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
+    /**
+     * The `deadLetterTheMessage` function logs an error message indicating that a notification message has been
+     * dead-lettered with the provided reason and description.
+     *
+     * @param messageContext The `messageContext` parameter in the `deadLetterTheMessage`
+     *                       method is of type `Message` and represents the message context or the
+     *                       message that needs to be dead-lettered.
+     * @param reason The `reason` parameter in the `deadLetterTheMessage` method is used to specify the
+     *               reason why the message is being dead-lettered. It provides a brief explanation or
+     *               categorization of why the message could not be processed successfully and had to be
+     *               moved to the dead-letter queue.
+     * @param description The `description` parameter in the `deadLetterTheMessage` method is a string
+     *                    that provides additional information or details about why the message was
+     *                    dead-lettered. It is used to give more context or explanation about the
+     *                    reason for dead-lettering the message.
+     */
     private void deadLetterTheMessage(
         Message messageContext,
         String reason,

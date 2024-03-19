@@ -10,6 +10,10 @@ import uk.gov.hmcts.reform.notificationservice.service.JmsNotificationMessagePro
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+/**
+ * The `JmsReceivers` class in Java listens for messages on a JMS destination, processes the message content, and logs
+ * relevant information.
+ */
 @Configuration()
 @ConditionalOnProperty(name = "jms.enabled", havingValue = "true")
 public class JmsReceivers {
@@ -24,6 +28,14 @@ public class JmsReceivers {
         this.jmsNotificationMessageProcessor = jmsNotificationMessageProcessor;
     }
 
+    /**
+     * This Java function listens for messages on a JMS destination, processes the message content, and logs relevant
+     * information.
+     *
+     * @param message The `message` parameter in the `receiveMessage` method represents the JMS message
+     *                that is received from the "notifications" destination. It is of type `Message`
+     *                which is a generic JMS message type.
+     */
     @JmsListener(destination = "notifications", containerFactory = "notificationsEventQueueContainerFactory")
     public void receiveMessage(Message message) throws JMSException {
         String messageBody = ((javax.jms.TextMessage) message).getText();
