@@ -218,13 +218,13 @@ dependencies {
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '7.4'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
 
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.1'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.3'
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.14.7'
   implementation group: 'com.google.guava', name: 'guava', version: '33.0.0-jre'
 
   // region: feign clients
-  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.0'
+  implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.2'
   implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: '13.2.1'
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.2.1'
   // end region
@@ -246,7 +246,7 @@ dependencies {
   integrationTestImplementation sourceSets.main.runtimeClasspath
   integrationTestImplementation sourceSets.test.runtimeClasspath
 
-  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '4.1.1'
+  integrationTestImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '4.1.3'
 
   integrationTestImplementation group: 'org.testcontainers', name: 'postgresql', version: '1.19.3', {
     exclude group: 'junit', module: 'junit'
