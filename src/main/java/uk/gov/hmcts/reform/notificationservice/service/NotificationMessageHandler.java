@@ -32,6 +32,5 @@ public class NotificationMessageHandler {
             notificationMsg.zipFileName,
             id
         );
-
     }
 }

@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
 import com.azure.core.util.BinaryData;
+import jakarta.jms.JMSException;
+import org.apache.activemq.command.ActiveMQMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,9 +11,6 @@ import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdExcep
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
-
-import javax.jms.JMSException;
-import javax.jms.Message;
 
 @Service
 public class JmsNotificationMessageProcessor {
@@ -36,7 +35,7 @@ public class JmsNotificationMessageProcessor {
      * Reads and processes next message from the queue.
      * return false if there was no message to process. Otherwise true.
      */
-    public void processNextMessage(Message message, String messageBody) throws JMSException {
+    public void processNextMessage(ActiveMQMessage message, String messageBody) throws JMSException {
         if (message != null && !messageBody.isEmpty()) {
             try {
                 // DO NOT CHANGE, used in alert
@@ -58,7 +57,7 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
-    private void handleDuplicateMessageId(Message messageContext, String errorMessage) throws JMSException {
+    private void handleDuplicateMessageId(ActiveMQMessage messageContext, String errorMessage) throws JMSException {
         if (messageContext.getStringProperty("JMSXDeliveryCount").equals("0")) {
             log.error("Message dead-lettered...if this was ASB");
         } else {
@@ -72,9 +71,9 @@ public class JmsNotificationMessageProcessor {
     }
 
     private void finaliseProcessedMessage(
-        Message messageContext,
+        ActiveMQMessage messageContext,
         MessageProcessingResult processingResult
-    ) throws JMSException {
+    ) {
         try {
             log.info("Finalising Notification Message with ID {} ", messageContext.getJMSMessageID());
             completeProcessedMessage(messageContext, processingResult);
@@ -89,9 +88,9 @@ public class JmsNotificationMessageProcessor {
     }
 
     private void completeProcessedMessage(
-        Message messageContext,
+        ActiveMQMessage messageContext,
         MessageProcessingResult processingResult
-    ) throws JMSException {
+    ) throws jakarta.jms.JMSException {
         switch (processingResult) {
             case SUCCESS -> {
                 log.info("Completing Notification Message with ID {} ", messageContext.getJMSMessageID());
@@ -113,7 +112,7 @@ public class JmsNotificationMessageProcessor {
         }
     }
 
-    private void deadLetterIfMaxDeliveryCountIsReached(Message messageContext) throws JMSException {
+    private void deadLetterIfMaxDeliveryCountIsReached(ActiveMQMessage messageContext) throws jakarta.jms.JMSException {
         int deliveryCount = (Integer.parseInt(messageContext.getStringProperty("JMSXDeliveryCount")) + 1);
 
         if (deliveryCount < maxDeliveryCount) {
@@ -134,10 +133,10 @@ public class JmsNotificationMessageProcessor {
     }
 
     private void deadLetterTheMessage(
-        Message messageContext,
+        ActiveMQMessage messageContext,
         String reason,
         String description
-    ) throws JMSException {
+    ) {
         log.error(
             "Notification Message with ID {} has been dead-lettered (if this was ASB). Reason: '{}'. Description: '{}'",
             messageContext.getJMSMessageID(),
