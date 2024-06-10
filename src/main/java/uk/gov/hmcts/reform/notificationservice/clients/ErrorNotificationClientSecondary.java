@@ -8,7 +8,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(
     name = "error-notifications-secondary",
-    url = "${clients.error-notifications.url.secondary}",
+    url = "${clients.error-notifications.secondary.url}",
     configuration = ErrorNotificationConfigurationSecondary.class
 )
 public interface ErrorNotificationClientSecondary {
