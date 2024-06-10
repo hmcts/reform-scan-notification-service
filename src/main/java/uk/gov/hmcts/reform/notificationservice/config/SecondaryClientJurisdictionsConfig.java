@@ -12,7 +12,7 @@ public class SecondaryClientJurisdictionsConfig {
 
     private static final Logger log = LoggerFactory.getLogger(SecondaryClientJurisdictionsConfig.class);
 
-    @Value("${clients.error_notifications_secondary.jurisdictions}")
+    @Value("${clients.error-notifications.secondary.jurisdictions}")
     private String jurisdictions;
 
     public String[] getJurisdictionList() {
