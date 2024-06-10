@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
+import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClientSecondary;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
@@ -43,11 +44,16 @@ class NotificationServiceTest {
     @Mock
     private ErrorNotificationClient notificationClient;
 
+    @Mock
+    private ErrorNotificationClientSecondary errorNotificationClientSecondary;
+
     private NotificationService notificationService;
 
     @BeforeEach
     void setUp() {
-        notificationService = new NotificationService(notificationRepository, notificationClient);
+        notificationService = new NotificationService(notificationRepository,
+                                                      notificationClient,
+                                                      errorNotificationClientSecondary);
     }
 
     @Test
@@ -146,7 +152,8 @@ class NotificationServiceTest {
             Instant.now(),
             Instant.now(),
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            "primary"
         );
         var notification2 = new Notification(
             2L,
@@ -161,7 +168,8 @@ class NotificationServiceTest {
             Instant.now(),
             Instant.now(),
             NotificationStatus.SENT,
-            "messageId2"
+            "messageId2",
+            "primary"
         );
         given(notificationRepository.find(zipFileName, service))
                   .willReturn(asList(notification1, notification2));
@@ -220,7 +228,8 @@ class NotificationServiceTest {
             Instant.now(),
             Instant.now(),
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            "primary"
         );
         var notification2 = new Notification(
             2L,
@@ -235,7 +244,8 @@ class NotificationServiceTest {
             Instant.now(),
             Instant.now(),
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            "primary"
         );
         given(notificationRepository.findByDate(searchDate))
             .willReturn(asList(notification1, notification2));
@@ -269,7 +279,8 @@ class NotificationServiceTest {
             Instant.now(),
             Instant.now(),
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            "primary"
         );
         given(notificationRepository.findByZipFileName(zipFileName))
             .willReturn(singletonList(notification1));
@@ -328,7 +339,8 @@ class NotificationServiceTest {
             Instant.now(),
             null,
             NotificationStatus.PENDING,
-            "messageId1"
+            "messageId1",
+            "primary"
         );
     }
 

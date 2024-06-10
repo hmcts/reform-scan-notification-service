@@ -4,12 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClientSecondary;
 import uk.gov.hmcts.reform.notificationservice.config.SecondaryClientJurisdictionsConfig;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 @Service
 public class NotificationMessageHandler {
@@ -34,7 +34,7 @@ public class NotificationMessageHandler {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 
         String client = Arrays.asList(secondaryClientJurisdictions)
-            .contains(notificationMsg.jurisdiction) ? "secondary" : "primary";
+            .contains(notificationMsg.jurisdiction.toLowerCase(Locale.ROOT)) ? "secondary" : "primary";
         var newNotification = notificationMessageMapper
             .map(notificationMsg, messageId, client);
 

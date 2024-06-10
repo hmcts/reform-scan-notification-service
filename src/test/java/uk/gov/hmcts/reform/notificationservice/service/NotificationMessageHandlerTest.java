@@ -24,8 +24,7 @@ import static org.mockito.Mockito.when;
 class NotificationMessageHandlerTest {
 
     private NotificationMessageHandler notificationMessageHandler;
-    private final String PRIMARY_CLIENT = "primary";
-    private final String SECONDARY_CLIENT = "secondary";
+    private static final String PRIMARY_CLIENT = "primary";
 
     @Mock
     private NotificationMessageMapper notificationMessageMapper;
@@ -97,6 +96,7 @@ class NotificationMessageHandlerTest {
             );
 
         String messageId = "message12345";
+        String secondaryClient = "secondary";
         NewNotification newNotification =
             new NewNotification(
                 "Zipfile.zip",
@@ -107,17 +107,17 @@ class NotificationMessageHandlerTest {
                 ErrorCode.ERR_AV_FAILED,
                 "error description Av not valid",
                 messageId,
-                SECONDARY_CLIENT
+                secondaryClient
             );
 
-        when(notificationMessageMapper.map(notificationMsg, messageId, SECONDARY_CLIENT)).thenReturn(newNotification);
+        when(notificationMessageMapper.map(notificationMsg, messageId, secondaryClient)).thenReturn(newNotification);
         when(notificationRepository.insert(newNotification))
             .thenReturn(21321312L);
 
         notificationMessageHandler.handleNotificationMessage(notificationMsg, messageId);
 
         // then
-        verify(notificationMessageMapper).map(notificationMsg, messageId, SECONDARY_CLIENT);
+        verify(notificationMessageMapper).map(notificationMsg, messageId, secondaryClient);
         verify(notificationRepository).insert(newNotification);
     }
 

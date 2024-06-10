@@ -43,6 +43,8 @@ public class NotificationControllerTest {
     @MockBean
     protected AuthService authService;
 
+    private static final String PRIMARY_CLIENT = "primary";
+
     @Test
     void should_get_notifications_by_file_name_and_service() throws Exception {
         final String fileName = "zip_file_name.zip";
@@ -65,7 +67,8 @@ public class NotificationControllerTest {
             instant,
             instant,
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            PRIMARY_CLIENT
         );
         var notification2 = new Notification(
             2L,
@@ -80,7 +83,8 @@ public class NotificationControllerTest {
             instant,
             instant,
             NotificationStatus.MANUALLY_HANDLED,
-            "messageId2"
+            "messageId2",
+            PRIMARY_CLIENT
         );
 
         var trimmedErrorDesc = "Start_" + RandomStringUtils.randomAlphabetic(1014) + "_end";
@@ -97,12 +101,12 @@ public class NotificationControllerTest {
             instant,
             instant,
             NotificationStatus.SENT,
-            "messageId3"
+            "messageId3",
+            PRIMARY_CLIENT
         );
         given(authService.authenticate(auth)).willReturn(service);
         given(notificationService.findByFileNameAndService(fileName, service))
             .willReturn(asList(notification1, notification2, notification3));
-
 
         mockMvc
             .perform(
@@ -129,6 +133,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
+            .andExpect(jsonPath("$.notifications[0].client").value(notification1.client))
 
             .andExpect(jsonPath("$.notifications[1].id").isNotEmpty())
             .andExpect(jsonPath("$.notifications[1].id").value(notification2.id))
@@ -144,6 +149,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[1].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
+            .andExpect(jsonPath("$.notifications[1].client").value(notification2.client))
 
             .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
             .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
@@ -160,7 +166,8 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[2].error_description").value(trimmedErrorDesc))
             .andExpect(jsonPath("$.notifications[2].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[2].processed_at").value(instantString))
-            .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()));
+            .andExpect(jsonPath("$.notifications[2].status").value(notification3.status.name()))
+            .andExpect(jsonPath("$.notifications[2].client").value(notification3.client));
     }
 
     @Test
@@ -256,7 +263,8 @@ public class NotificationControllerTest {
             instantNow,
             instantNow,
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            PRIMARY_CLIENT
         );
         var notification2 = new Notification(
             2L,
@@ -271,7 +279,8 @@ public class NotificationControllerTest {
             instantNow,
             instantNow,
             NotificationStatus.SENT,
-            "messageId2"
+            "messageId2",
+            PRIMARY_CLIENT
         );
 
         given(notificationService.findByDate(date))
@@ -300,6 +309,7 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
+            .andExpect(jsonPath("$.notifications[0].client").value(notification1.client))
             .andExpect(jsonPath("$.notifications[1].id").isNotEmpty())
             .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
             .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
@@ -312,7 +322,8 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[1].error_description").value(notification2.errorDescription))
             .andExpect(jsonPath("$.notifications[1].created_at").value(instantNowStr))
             .andExpect(jsonPath("$.notifications[1].processed_at").value(instantNowStr))
-            .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()));
+            .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
+            .andExpect(jsonPath("$.notifications[1].client").value(notification2.client));
     }
 
     @Test
@@ -342,7 +353,8 @@ public class NotificationControllerTest {
                 now(),
                 now(),
                 NotificationStatus.SENT,
-                "messageId1"
+                "messageId1",
+                PRIMARY_CLIENT
         );
 
         given(notificationService.findByZipFileName(zipFileName))
@@ -365,7 +377,8 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.notifications[0].container").value(notification1.container))
                 .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
                 .andExpect(jsonPath("$.notifications[0].document_control_number")
-                        .value(notification1.documentControlNumber));
+                        .value(notification1.documentControlNumber))
+                .andExpect(jsonPath("$.notifications[0].client").value(notification1.client));
     }
 
     @Test
@@ -384,7 +397,8 @@ public class NotificationControllerTest {
                 now(),
                 now(),
                 NotificationStatus.PENDING,
-                "messageId1"
+                "messageId1",
+                PRIMARY_CLIENT
         );
         var notification2 = new Notification(
                 2L,
@@ -399,7 +413,8 @@ public class NotificationControllerTest {
                 now(),
                 now(),
                 NotificationStatus.PENDING,
-                "messageId2"
+                "messageId2",
+                PRIMARY_CLIENT
         );
 
         given(notificationService.getAllPendingNotifications())
@@ -422,6 +437,7 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.notifications[0].service").value(notification1.service))
                 .andExpect(jsonPath("$.notifications[0].document_control_number")
                         .value(notification1.documentControlNumber))
+                .andExpect(jsonPath("$.notifications[0].client").value(notification1.client))
                 .andExpect(jsonPath("$.notifications[1].id").value(notification2.id))
                 .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
                 .andExpect(jsonPath("$.notifications[1].zip_file_name").value(notification2.zipFileName))
@@ -429,6 +445,7 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.notifications[1].container").value(notification2.container))
                 .andExpect(jsonPath("$.notifications[1].service").value(notification2.service))
                 .andExpect(jsonPath("$.notifications[1].document_control_number")
-                        .value(notification2.documentControlNumber));
+                        .value(notification2.documentControlNumber))
+                .andExpect(jsonPath("$.notifications[1].client").value(notification1.client));
     }
 }
