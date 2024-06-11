@@ -31,6 +31,14 @@ java:
           alias: clients.error-notifications.url
         - name:  error-notifications-username
           alias: clients.error-notifications.username
+        - name: error-notifications-secondary-jurisdictions
+          alias: clients.error-notifications.secondary.jurisdictions
+        - name: error-notifications-secondary-password
+          alias: clients.error-notifications.secondary.password
+        - name: error-notifications-secondary-url
+          alias: clients.error-notifications.secondary.url
+        - name:  error-notifications-secondary-username
+          alias: clients.error-notifications.secondary.username
   # Don't modify below here
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
