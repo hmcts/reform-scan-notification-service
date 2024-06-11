@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 @AutoConfigureWireMock(port = 0)
 @SpringBootTest(properties = {"clients.error-notifications.url=http://localhost:${wiremock.server.port}",
-    "clients.error-notifications.secondary.url=http://localhost:1"})
+    "clients.error-notifications.secondary.url=http://localhost:${wiremock.server.port}"})
 public class ErrorNotificationClientTest {
 
     private static final ErrorNotificationRequest TEST_NOTIFICATION_REQUEST = new ErrorNotificationRequest(
