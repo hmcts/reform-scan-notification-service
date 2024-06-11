@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class NotificationMessageHandler {
@@ -33,8 +34,10 @@ public class NotificationMessageHandler {
     public void handleNotificationMessage(NotificationMsg notificationMsg, String messageId) {
         log.info("Handle notification message, Zip File: {}", notificationMsg.zipFileName);
 
-        String client = Arrays.asList(secondaryClientJurisdictions)
-            .contains(notificationMsg.jurisdiction.toLowerCase(Locale.ROOT)) ? "secondary" : "primary";
+        // Cater for the possibility of the jurisdiction being not present. If it is, set it to primary
+        String jurisdiction = Objects.requireNonNullElse(notificationMsg.jurisdiction, "").toLowerCase(Locale.ROOT);
+        String client = Arrays.asList(secondaryClientJurisdictions).contains(jurisdiction) ? "secondary" : "primary";
+
         var newNotification = notificationMessageMapper
             .map(notificationMsg, messageId, client);
 
@@ -45,7 +48,7 @@ public class NotificationMessageHandler {
             notificationMsg.zipFileName,
             id,
             client,
-            notificationMsg.jurisdiction
+            jurisdiction
         );
     }
 }
