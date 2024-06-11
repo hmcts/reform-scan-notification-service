@@ -52,7 +52,7 @@ java:
     PENDING_NOTIFICATIONS_TASK_ENABLED: true
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 120
     JMS_ENABLED: false
-    CLIENTS_ERROR_NOTIFICATIONS_SECONDARY_JURISDICTIONS: "cmc"
+    CLIENTS_ERROR_NOTIFICATIONS_SECONDARY_JURISDICTIONS: ""
   image: 'hmctspublic.azurecr.io/reform-scan/notification-service:latest'
 servicebus:
   enabled: false
