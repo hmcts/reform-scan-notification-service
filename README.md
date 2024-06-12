@@ -2,11 +2,27 @@
 
 ![](https://github.com/hmcts/reform-scan-notification-service/workflows/CI/badge.svg)
 [![](https://github.com/hmcts/reform-scan-notification-service/workflows/Publish%20Swagger%20Specs/badge.svg)](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/reform-scan-notification-service.json)
-[![codecov](https://codecov.io/gh/hmcts/reform-scan-notification-service/branch/master/graph/badge.svg)](https://codecov.io/gh/hmcts/reform-scan-notification-service)
 
 ## Purpose
 
 Retrieves service bus queue messages from notifications queue and then processes them by notifying external supplier's API and finally saves results to database in notifications table.
+
+## Features
+  - Retrieves messages from service bus queue
+  - Notifies external supplier via API
+  - Persists results in notifications table
+  - Health endpoint for monitoring application status
+
+## Getting Started
+### Prerequisites
+
+- [JDK 17](https://www.oracle.com/java)
+- Project requires Spring Boot v3.x to be present
+
+## Quick Start
+An alternative faster way getting started is by using the automated setup script. This script will help set up all
+bulk scan/print repos including reform-scan-notification-service and its dependencies.
+See [common-dev-env-bsbp](https://github.com/hmcts/common-dev-env-bsbp) repository for more information.
  
 ## Building and deploying the application
 
