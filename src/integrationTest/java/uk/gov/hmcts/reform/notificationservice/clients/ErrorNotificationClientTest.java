@@ -17,7 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 @AutoConfigureWireMock(port = 0)
-@SpringBootTest(properties = "clients.error-notifications.url=http://localhost:${wiremock.server.port}")
+@SpringBootTest(properties = {"clients.error-notifications.url=http://localhost:${wiremock.server.port}",
+    "clients.error-notifications.secondary.url=http://localhost:${wiremock.server.port}"})
 public class ErrorNotificationClientTest {
 
     private static final ErrorNotificationRequest TEST_NOTIFICATION_REQUEST = new ErrorNotificationRequest(
@@ -32,6 +33,9 @@ public class ErrorNotificationClientTest {
 
     @Autowired
     private ErrorNotificationClient client;
+
+    @Autowired
+    private ErrorNotificationClientSecondary secondaryClient;
 
     @Autowired
     private ObjectMapper mapper;
@@ -49,12 +53,36 @@ public class ErrorNotificationClientTest {
     }
 
     @Test
+    public void should_return_Created_when_everything_is_ok_with_request_secondary() throws JsonProcessingException {
+        // given
+        stubWithResponse(created().withBody(mapper.writeValueAsBytes(TEST_NOTIFICATION_RESPONSE)));
+
+        // when
+        ErrorNotificationResponse notificationResponse = secondaryClient.notify(TEST_NOTIFICATION_REQUEST);
+
+        // then
+        assertThat(notificationResponse).isEqualToComparingFieldByField(TEST_NOTIFICATION_RESPONSE);
+    }
+
+    @Test
     public void should_return_NotificationClientException_when_badly_authorised() {
         // given
         stubWithResponse(unauthorized());
 
         // when
         Throwable throwable = catchThrowable(() -> client.notify(TEST_NOTIFICATION_REQUEST));
+
+        // then
+        assertThat(throwable).isInstanceOf(FeignException.Unauthorized.class);
+    }
+
+    @Test
+    public void should_return_NotificationClientException_when_second_client_badly_authorised() {
+        // given
+        stubWithResponse(unauthorized());
+
+        // when
+        Throwable throwable = catchThrowable(() -> secondaryClient.notify(TEST_NOTIFICATION_REQUEST));
 
         // then
         assertThat(throwable).isInstanceOf(FeignException.Unauthorized.class);

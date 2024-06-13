@@ -12,6 +12,7 @@ public class NewNotification {
     public final ErrorCode errorCode;
     public final String errorDescription;
     public final String messageId;
+    public final String client;
 
     @SuppressWarnings("squid:S00107") // number of params
     public NewNotification(
@@ -22,7 +23,8 @@ public class NewNotification {
         String documentControlNumber,
         ErrorCode errorCode,
         String errorDescription,
-        String messageId
+        String messageId,
+        String client
     ) {
         this.zipFileName = zipFileName;
         this.poBox = poBox;
@@ -32,5 +34,6 @@ public class NewNotification {
         this.errorCode = errorCode;
         this.errorDescription = errorDescription;
         this.messageId = messageId;
+        this.client = client;
     }
 }

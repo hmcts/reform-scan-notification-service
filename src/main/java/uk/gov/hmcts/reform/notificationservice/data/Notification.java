@@ -19,6 +19,7 @@ public class Notification {
     public final Instant processedAt;
     public final NotificationStatus status;
     public final String messageId;
+    public final String client;
 
     public Notification(
         long id,
@@ -33,7 +34,8 @@ public class Notification {
         Instant createdAt,
         Instant processedAt,
         NotificationStatus status,
-        String messageId
+        String messageId,
+        String client
     ) {
         this.id = id;
         this.confirmationId = confirmationId;
@@ -48,16 +50,18 @@ public class Notification {
         this.processedAt = processedAt;
         this.status = status;
         this.messageId = messageId;
+        this.client = client;
     }
 
     public String toString() {
         return String.format(
-            "Notification{id=%d, zipFileName='%s', container='%s', service='%s', errorCode='%s'}",
+            "Notification{id=%d, zipFileName='%s', container='%s', service='%s', errorCode='%s, client='%s'}",
             id,
             zipFileName,
             container,
             service,
-            errorCode
+            errorCode,
+            client
         );
     }
 }

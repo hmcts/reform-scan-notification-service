@@ -43,6 +43,8 @@ public class NotificationControllerTest {
     @MockBean
     protected AuthService authService;
 
+    private static final String PRIMARY_CLIENT = "primary";
+
     @Test
     void should_get_notifications_by_file_name_and_service() throws Exception {
         final String fileName = "zip_file_name.zip";
@@ -65,7 +67,8 @@ public class NotificationControllerTest {
             instant,
             instant,
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            PRIMARY_CLIENT
         );
         var notification2 = new Notification(
             2L,
@@ -80,7 +83,8 @@ public class NotificationControllerTest {
             instant,
             instant,
             NotificationStatus.MANUALLY_HANDLED,
-            "messageId2"
+            "messageId2",
+            PRIMARY_CLIENT
         );
 
         var trimmedErrorDesc = "Start_" + RandomStringUtils.randomAlphabetic(1014) + "_end";
@@ -97,12 +101,12 @@ public class NotificationControllerTest {
             instant,
             instant,
             NotificationStatus.SENT,
-            "messageId3"
+            "messageId3",
+            PRIMARY_CLIENT
         );
         given(authService.authenticate(auth)).willReturn(service);
         given(notificationService.findByFileNameAndService(fileName, service))
             .willReturn(asList(notification1, notification2, notification3));
-
 
         mockMvc
             .perform(
@@ -129,7 +133,6 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[0].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[0].status").value(notification1.status.name()))
-
             .andExpect(jsonPath("$.notifications[1].id").isNotEmpty())
             .andExpect(jsonPath("$.notifications[1].id").value(notification2.id))
             .andExpect(jsonPath("$.notifications[1].confirmation_id").value(notification2.confirmationId))
@@ -144,7 +147,6 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.notifications[1].created_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].processed_at").value(instantString))
             .andExpect(jsonPath("$.notifications[1].status").value(notification2.status.name()))
-
             .andExpect(jsonPath("$.sentNotificationsCount", is(2)))
             .andExpect(jsonPath("$.pendingNotificationsCount", is(0)))
             .andExpect(jsonPath("$.notifications[2].id").isNotEmpty())
@@ -256,7 +258,8 @@ public class NotificationControllerTest {
             instantNow,
             instantNow,
             NotificationStatus.SENT,
-            "messageId1"
+            "messageId1",
+            PRIMARY_CLIENT
         );
         var notification2 = new Notification(
             2L,
@@ -271,7 +274,8 @@ public class NotificationControllerTest {
             instantNow,
             instantNow,
             NotificationStatus.SENT,
-            "messageId2"
+            "messageId2",
+            PRIMARY_CLIENT
         );
 
         given(notificationService.findByDate(date))
@@ -342,7 +346,8 @@ public class NotificationControllerTest {
                 now(),
                 now(),
                 NotificationStatus.SENT,
-                "messageId1"
+                "messageId1",
+                PRIMARY_CLIENT
         );
 
         given(notificationService.findByZipFileName(zipFileName))
@@ -384,7 +389,8 @@ public class NotificationControllerTest {
                 now(),
                 now(),
                 NotificationStatus.PENDING,
-                "messageId1"
+                "messageId1",
+                PRIMARY_CLIENT
         );
         var notification2 = new Notification(
                 2L,
@@ -399,7 +405,8 @@ public class NotificationControllerTest {
                 now(),
                 now(),
                 NotificationStatus.PENDING,
-                "messageId2"
+                "messageId2",
+                PRIMARY_CLIENT
         );
 
         given(notificationService.getAllPendingNotifications())

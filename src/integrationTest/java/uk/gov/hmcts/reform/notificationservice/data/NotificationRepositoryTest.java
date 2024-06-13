@@ -31,6 +31,8 @@ public class NotificationRepositoryTest {
         jdbcTemplate.update("DELETE FROM notifications", Collections.emptyMap());
     }
 
+    private static final String PRIMARY_CLIENT = "primary";
+
     @Test
     void should_save_and_read_notification() {
         // given
@@ -78,7 +80,8 @@ public class NotificationRepositoryTest {
             "dcn",
             ErrorCode.ERR_AV_FAILED,
             "error_description",
-            "123456"
+            "123456",
+            PRIMARY_CLIENT
         );
 
         // when
@@ -104,6 +107,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(PENDING);
                 assertThat(n.messageId).isEqualTo(newNotification.messageId);
+                assertThat(n.client).isEqualTo(PRIMARY_CLIENT);
             });
     }
 
@@ -121,7 +125,8 @@ public class NotificationRepositoryTest {
             "dcn1",
             ErrorCode.ERR_AV_FAILED,
             "error_description1",
-            "12345"
+            "12345",
+            PRIMARY_CLIENT
         );
         final var newNotificationFromOtherService = new NewNotification(
             zipFileName,
@@ -131,7 +136,8 @@ public class NotificationRepositoryTest {
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2",
-            "1234445"
+            "1234445",
+            PRIMARY_CLIENT
         );
         final var newNotification3 = new NewNotification(
             zipFileName,
@@ -141,7 +147,8 @@ public class NotificationRepositoryTest {
             "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
             "error_description3",
-            "124355676"
+            "124355676",
+            PRIMARY_CLIENT
         );
 
         final var newNotification4 = new NewNotification(
@@ -152,7 +159,8 @@ public class NotificationRepositoryTest {
             "dcn4",
             ErrorCode.ERR_METAFILE_INVALID,
             "error_description4",
-            "124355666"
+            "124355666",
+            PRIMARY_CLIENT
         );
 
         // when
@@ -183,7 +191,8 @@ public class NotificationRepositoryTest {
                     null,
                     null,
                     PENDING,
-                    newNotification4.messageId
+                    newNotification4.messageId,
+                    PRIMARY_CLIENT
                 ),
                 new Notification(
                     id1,
@@ -198,7 +207,8 @@ public class NotificationRepositoryTest {
                     null,
                     null,
                     PENDING,
-                    newNotification1.messageId
+                    newNotification1.messageId,
+                    PRIMARY_CLIENT
                 ),
                 new Notification(
                     id3,
@@ -213,7 +223,8 @@ public class NotificationRepositoryTest {
                     null,
                     null,
                     PENDING,
-                    newNotification3.messageId
+                    newNotification3.messageId,
+                    PRIMARY_CLIENT
                 )
             )
         ;
@@ -233,7 +244,8 @@ public class NotificationRepositoryTest {
             "dcn1",
             ErrorCode.ERR_AV_FAILED,
             "error_description1",
-            "1234555"
+            "1234555",
+            PRIMARY_CLIENT
         );
         final var newNotificationForOtherZipFile = new NewNotification(
             "other_zip_file_name",
@@ -243,7 +255,8 @@ public class NotificationRepositoryTest {
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2",
-            "12121331"
+            "12121331",
+            PRIMARY_CLIENT
         );
         final var newNotification3 = new NewNotification(
             zipFileName,
@@ -253,7 +266,8 @@ public class NotificationRepositoryTest {
             "dcn3",
             ErrorCode.ERR_METAFILE_INVALID,
             "error_description3",
-            "54321"
+            "54321",
+            PRIMARY_CLIENT
         );
 
         // when
@@ -283,7 +297,8 @@ public class NotificationRepositoryTest {
                     null,
                     null,
                     PENDING,
-                    newNotification1.messageId
+                    newNotification1.messageId,
+                    PRIMARY_CLIENT
                 ),
                 new Notification(
                     id3,
@@ -298,7 +313,8 @@ public class NotificationRepositoryTest {
                     null,
                     null,
                     PENDING,
-                    newNotification3.messageId
+                    newNotification3.messageId,
+                    PRIMARY_CLIENT
                 )
             )
         ;
@@ -420,7 +436,8 @@ public class NotificationRepositoryTest {
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2",
-            "123455"
+            "123455",
+            PRIMARY_CLIENT
         );
         notificationRepository.insert(newNotification);
 
@@ -450,6 +467,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(PENDING);
                 assertThat(n.messageId).isEqualTo(newNotification.messageId);
+                assertThat(n.client).isEqualTo(PRIMARY_CLIENT);
             });
     }
 
@@ -464,7 +482,8 @@ public class NotificationRepositoryTest {
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2",
-            "123455"
+            "123455",
+            PRIMARY_CLIENT
         );
         notificationRepository.insert(newNotification);
 
@@ -488,6 +507,7 @@ public class NotificationRepositoryTest {
                 assertThat(n.processedAt).isNull();
                 assertThat(n.status).isEqualTo(PENDING);
                 assertThat(n.messageId).isEqualTo(newNotification.messageId);
+                assertThat(n.client).isEqualTo(PRIMARY_CLIENT);
             });
     }
 
@@ -503,7 +523,8 @@ public class NotificationRepositoryTest {
             "dcn1",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description1",
-            messageId
+            messageId,
+            PRIMARY_CLIENT
         );
         final var newNotification2 = new NewNotification(
             "zip_file_2.zip",
@@ -513,7 +534,8 @@ public class NotificationRepositoryTest {
             "dcn2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             "error_description2",
-            messageId
+            messageId,
+            PRIMARY_CLIENT
         );
 
         // when
@@ -535,7 +557,8 @@ public class NotificationRepositoryTest {
             "dcn",
             ErrorCode.ERR_AV_FAILED,
             "error_description",
-            UUID.randomUUID().toString()
+            UUID.randomUUID().toString(),
+            PRIMARY_CLIENT
         );
     }
 }

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
+import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClientSecondary;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
@@ -24,13 +25,16 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final ErrorNotificationClient notificationClient;
+    private final ErrorNotificationClientSecondary notificationClientSecondary;
 
     public NotificationService(
         NotificationRepository notificationRepository,
-        ErrorNotificationClient notificationClient
+        ErrorNotificationClient notificationClient,
+        ErrorNotificationClientSecondary notificationClientSecondary
     ) {
         this.notificationRepository = notificationRepository;
         this.notificationClient = notificationClient;
+        this.notificationClientSecondary = notificationClientSecondary;
     }
 
     public void processPendingNotifications() {
@@ -43,10 +47,12 @@ public class NotificationService {
         var postponedCount = 0;
 
         for (var notification : notifications) {
-            log.info("Sending error notification. {}", notification);
 
             try {
-                ErrorNotificationResponse response = notificationClient.notify(mapToRequest(notification));
+                log.info("Sending error notification: {}", notification);
+                ErrorNotificationResponse response = notification.client.equals("primary")
+                    ? notificationClient.notify(mapToRequest(notification))
+                    : notificationClientSecondary.notify(mapToRequest(notification));
 
                 notificationRepository.markAsSent(notification.id, response.getNotificationId());
 

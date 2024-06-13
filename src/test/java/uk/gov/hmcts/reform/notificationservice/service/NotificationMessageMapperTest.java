@@ -25,12 +25,13 @@ class NotificationMessageMapperTest {
                 "orchestrator"
             );
 
-        NewNotification request = notificationMessageMapper.map(notificationMsg, "1234");
+        NewNotification request = notificationMessageMapper.map(notificationMsg, "1234", "primary");
         assertThat(request.zipFileName).isEqualTo("zipfile.zip");
         assertThat(request.poBox).isEqualTo("pobox");
         assertThat(request.documentControlNumber).isEqualTo("1342411414214");
         assertThat(request.errorCode).isEqualTo(ErrorCode.ERR_SIG_VERIFY_FAILED);
         assertThat(request.errorDescription).isEqualTo("error description signature not valid");
         assertThat(request.service).isEqualTo("orchestrator");
+        assertThat(request.client).isEqualTo("primary");
     }
 }
