@@ -9,9 +9,9 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.1.4'
-  id 'org.springframework.boot' version '3.2.2'
-  id 'org.owasp.dependencycheck' version '9.0.9'
+  id 'io.spring.dependency-management' version '1.1.5'
+  id 'org.springframework.boot' version '3.2.7'
+  id 'org.owasp.dependencycheck' version '9.0.10'
   id 'com.github.ben-manes.versions' version '0.50.0'
   id 'org.sonarqube' version '4.4.1.3373'
   id 'org.flywaydb.flyway' version '10.13.0'
@@ -22,7 +22,7 @@ version = '0.0.1'
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
+    languageVersion = JavaLanguageVersion.of(21)
   }
 }
 
@@ -131,7 +131,6 @@ sonarqube {
   properties {
     property "sonar.projectName", "Reform :: reform-scan-notification-service"
     property "sonar.projectKey", "uk.gov.hmcts.reform:reform-scan-notification-service"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
     property "sonar.exclusions", "**/config/**,**/service/JmsNotificationMessageProcessor.java"
   }
 }
