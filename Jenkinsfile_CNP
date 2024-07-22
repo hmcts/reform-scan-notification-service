@@ -12,6 +12,8 @@ def component = "notification-service"
 
 def channel = '#bsp-build-notices'
 
+env.TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX = 'hmctspublic.azurecr.io/imported/'
+
 GradleBuilder builder = new GradleBuilder(this, product)
 
 def nonPrSecrets = [
