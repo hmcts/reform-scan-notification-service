@@ -71,7 +71,7 @@ withPipeline(type, product, component) {
       kubectl.login()
 
       env.NOTIFICATION_QUEUE_NAME = "${aksServiceName}-servicebus-notifications"
-      env.NOTIFICATION_QUEUE_NAMESPACE = "rreform-scan-servicebus-preview"
+      env.NOTIFICATION_QUEUE_NAMESPACE = "reform-scan-servicebus-preview"
       env.NOTIFICATION_QUEUE_ACCESS_KEY_WRITE = kubectl.getSecret(serviceBusSecret, namespace, "{.data.primaryKey}")
       env.NOTIFICATION_QUEUE_ACCESS_KEY_NAME_WRITE = "RootManageSharedAccessKey"
     }
