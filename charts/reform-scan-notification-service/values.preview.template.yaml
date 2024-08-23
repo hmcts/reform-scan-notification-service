@@ -1,10 +1,10 @@
 java:
   secrets:
     SB_ACCESS_KEY:
-      secretRef: reform-scan-sb-preview
+      secretRef: reform-scan-servicebus-preview
       key: primaryKey
     SB_CONNECTION_STRING:
-      secretRef: reform-scan-sb-preview
+      secretRef: reform-scan-servicebus-preview
       key: connectionString
   environment:
     DB_HOST: "{{ .Release.Name }}-postgresql"
@@ -16,12 +16,12 @@ java:
     FLYWAY_SKIP_MIGRATIONS: false
     QUEUE_ACCESS_KEY_LISTEN_NAME: "RootManageSharedAccessKey"
     QUEUE_NAME: "{{ .Release.Name }}-servicebus-notifications"
-    QUEUE_NAMESPACE: "reform-scan-sb-preview"
+    QUEUE_NAMESPACE: "reform-scan-servicebus-preview"
     QUEUE_READ_ACCESS_KEY: "$(SB_ACCESS_KEY)"
     S2S_URL: "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
     PENDING_NOTIFICATIONS_TASK_DELAY_IN_MS: 500
     PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE: 0
-    SB_NAMESPACE: "reform-scan-sb-preview"
+    SB_NAMESPACE: "reform-scan-servicebus-preview"
     CLIENTS_ERROR_NOTIFICATIONS_SECONDARY_JURISDICTIONS: ""
   keyVaults:
     "reform-scan":
@@ -52,7 +52,7 @@ servicebus:
   teamName: "BSP"
   location: uksouth
   serviceplan: basic
-  sbNamespace: reform-scan-sb-preview
+  sbNamespace: reform-scan-servicebus-preview
   setup:
     queues:
       - name: notifications
