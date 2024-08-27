@@ -23,7 +23,7 @@ Retrieves service bus queue messages from notifications queue and then processes
 An alternative faster way getting started is by using the automated setup script. This script will help set up all
 bulk scan/print repos including reform-scan-notification-service and its dependencies.
 See [common-dev-env-bsbp](https://github.com/hmcts/common-dev-env-bsbp) repository for more information.
- 
+
 ## Building and deploying the application
 
 ### Building the application
@@ -76,3 +76,4 @@ You should get a response similar to this:
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+
