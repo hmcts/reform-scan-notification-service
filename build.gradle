@@ -182,7 +182,8 @@ def versions = [
   reformLogging   : '6.1.4',
   apiguardian     : '1.1.2',
   flyway          : "$flywayVersion",
-  postgresql      : "$postgresqlVersion"
+  postgresql      : "$postgresqlVersion",
+  shedlock        : '5.15.1'
 ]
 
 ext.libraries = [
@@ -202,8 +203,8 @@ dependencies {
   implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
   implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
 
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: '5.10.2'
-  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: '5.10.2'
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-spring', version: versions.shedlock
+  implementation group: 'net.javacrumbs.shedlock', name: 'shedlock-provider-jdbc-template', version: versions.shedlock
 
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
