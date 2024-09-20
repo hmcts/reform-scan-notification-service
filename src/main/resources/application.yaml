@@ -59,6 +59,10 @@ scheduling:
       send-delay-in-minute: ${PENDING_NOTIFICATIONS_SEND_DELAY_IN_MINUTE}
 
 # clients region
+clients:
+  error-notifications:
+    secondary:
+      url: ${ERROR_NOTIFICATIONS_URL:AAAAAAA}
 
 idam:
   s2s-auth:
