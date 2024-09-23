@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-  <suppress>
-        <packageUrl regex="true">^pkg:maven/com.fasterxml.jackson.core/jackson-databind@.*$</packageUrl>
-        <cve>CVE-2023-35116</cve>
-    </suppress>
     <suppress>
-      <notes>Azure cli. Wait for fix.</notes>
+      <notes>
+        Latest current stable version of Azure Messaging Servicebus (7.17.3) is still bringing
+        in vulnerable Azure libraries.
+      </notes>
       <cve>CVE-2023-36052</cve>
     </suppress>
 </suppressions>
