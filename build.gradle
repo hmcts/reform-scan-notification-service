@@ -229,7 +229,7 @@ dependencies {
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.1'
 
   implementation group: 'com.azure', name: 'azure-messaging-servicebus', version: '7.14.7'
-  implementation group: 'com.google.guava', name: 'guava', version: '33.2.1-jre'
+  implementation group: 'com.google.guava', name: 'guava', version: '33.3.0-jre'
 
   // region: feign clients
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '4.1.3'
