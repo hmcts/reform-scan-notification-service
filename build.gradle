@@ -183,7 +183,8 @@ def versions = [
   apiguardian     : '1.1.2',
   flyway          : "$flywayVersion",
   postgresql      : "$postgresqlVersion",
-  shedlock        : '5.15.1'
+  shedlock        : '5.15.1',
+  restAssured     : '5.5.0'
 ]
 
 ext.libraries = [
@@ -265,16 +266,16 @@ dependencies {
   smokeTestImplementation libraries.junit5
   smokeTestImplementation group: 'org.assertj', name: 'assertj-core', version: '3.26.3'
   smokeTestImplementation group: 'com.typesafe', name: 'config', version: '1.4.3'
-  smokeTestImplementation(group: 'io.rest-assured', name: 'rest-assured', version: '5.3.2') {
+  smokeTestImplementation(group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured) {
     exclude group: 'org.apache.groovy', module: 'groovy-xml'
     exclude group: 'org.apache.groovy', module: 'groovy-json'
     exclude group: 'org.codehaus.groovy', module: 'groovy-xml'
     exclude group: 'org.codehaus.groovy', module: 'groovy-json'
   }
-  smokeTestImplementation(group: 'io.rest-assured', name: 'json-path', version: '5.3.2') {
+  smokeTestImplementation(group: 'io.rest-assured', name: 'json-path', version: versions.restAssured) {
     exclude group: 'org.apache.groovy', module: 'groovy-json'
   }
-  smokeTestImplementation(group: 'io.rest-assured', name: 'rest-assured-all', version: '4.5.1') {
+  smokeTestImplementation(group: 'io.rest-assured', name: 'rest-assured-all', version: versions.restAssured) {
     exclude group: 'org.codehaus.groovy', module: 'groovy'
   }
 
