@@ -1,16 +1,27 @@
 package uk.gov.hmcts.reform.notificationservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import feign.FeignException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
+import uk.gov.hmcts.reform.notificationservice.exception.BadRequestException;
+import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
+import uk.gov.hmcts.reform.notificationservice.exception.UnprocessableEntityException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 import uk.gov.hmcts.reform.notificationservice.service.AuthService;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
@@ -19,6 +30,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
@@ -27,9 +40,13 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
 @WebMvcTest(controllers = NotificationController.class)
 public class NotificationControllerTest {
@@ -43,7 +60,13 @@ public class NotificationControllerTest {
     @MockBean
     protected AuthService authService;
 
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private static final String PRIMARY_CLIENT = "primary";
+
+    private static final String PATH = "/notifications";
+
+    private static final Integer NOTIFICATION_ID = 1;
 
     @Test
     void should_get_notifications_by_file_name_and_service() throws Exception {
@@ -66,7 +89,7 @@ public class NotificationControllerTest {
             "invalid metafile1",
             instant,
             instant,
-            NotificationStatus.SENT,
+            SENT,
             "messageId1",
             PRIMARY_CLIENT
         );
@@ -100,7 +123,7 @@ public class NotificationControllerTest {
             trimmedErrorDesc + "_should_not_seen",
             instant,
             instant,
-            NotificationStatus.SENT,
+            SENT,
             "messageId3",
             PRIMARY_CLIENT
         );
@@ -257,7 +280,7 @@ public class NotificationControllerTest {
             "invalid metafile1",
             instantNow,
             instantNow,
-            NotificationStatus.SENT,
+            SENT,
             "messageId1",
             PRIMARY_CLIENT
         );
@@ -273,7 +296,7 @@ public class NotificationControllerTest {
             "invalid metafile_2",
             instantNow,
             instantNow,
-            NotificationStatus.SENT,
+            SENT,
             "messageId2",
             PRIMARY_CLIENT
         );
@@ -345,7 +368,7 @@ public class NotificationControllerTest {
                 "invalid metafile1",
                 now(),
                 now(),
-                NotificationStatus.SENT,
+                SENT,
                 "messageId1",
                 PRIMARY_CLIENT
         );
@@ -438,4 +461,178 @@ public class NotificationControllerTest {
                 .andExpect(jsonPath("$.notifications[1].document_control_number")
                         .value(notification2.documentControlNumber));
     }
+
+    @Test
+    void should_get_notifications_by_notification_id() throws Exception {
+
+        var notification1 = new Notification(
+            NOTIFICATION_ID,
+            "confirmation-id-1",
+            "zip_file_name_123.zip",
+            "po_box1",
+            "container",
+            "bulk_scan",
+            "33245532341",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            now(),
+            now(),
+            NotificationStatus.PENDING,
+            "messageId1",
+            PRIMARY_CLIENT
+        );
+
+        when(notificationService.findByNotificationId(NOTIFICATION_ID)).thenReturn(notification1);
+
+        final String notificationJson = OBJECT_MAPPER.writeValueAsString(notification1);
+        mockMvc.perform(get(PATH + NOTIFICATION_ID))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().string(notificationJson));
+
+    }
+
+    @Test
+    void should_not_return_notification_by_id_if_not_found() throws Exception {
+        var notification1 = new Notification(
+            NOTIFICATION_ID,
+            "confirmation-id-1",
+            "zip_file_name_123.zip",
+            "po_box1",
+            "container",
+            "bulk_scan",
+            "33245532341",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile1",
+            now(),
+            now(),
+            NotificationStatus.PENDING,
+            "messageId1",
+            PRIMARY_CLIENT
+        );
+
+        when(notificationService.findByNotificationId(2)).thenReturn(notification1).thenThrow(new NotFoundException("Notification not found with ID: " + 2));
+
+        mockMvc.perform(get(PATH + NOTIFICATION_ID))
+            .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_save_new_notification() throws Exception {
+        String auth = "auth";
+        String service = "service";
+        var notificationMsg = new NotificationMsg(
+            "zip_file_name_123.zip",
+            "civil",
+            "14620",
+            "sscs",
+            "36222789074101144",
+            ErrorCode.ERR_SIG_VERIFY_FAILED,
+            "invalid signature - gif reactions not allowed",
+            "reform_scan_notification_tests"
+        );
+
+        var notificationInfo = new NotificationInfo(
+            NOTIFICATION_ID,
+            "exela id",
+            "zip_file_name_123.zip",
+            "14620",
+            "sscs",
+            "36222789074101144",
+            "invalid signature - gif reactions not allowed",
+            ErrorCode.ERR_SIG_VERIFY_FAILED.toString(),
+            "invalid signature - gif reactions not allowed",
+            Instant.now(),
+            Instant.now(),
+            SENT.toString()
+        );
+
+        when(notificationService.saveNotificationMsg(notificationMsg)).thenReturn(notificationInfo);
+        when(authService.authenticate(auth)).thenReturn(service);
+
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationInfo);
+
+        mockMvc.perform(post(PATH)
+                            .header("ServiceAuthorization", auth)
+                            .content(notificationInfoJson)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isCreated())
+            .andReturn();
+    }
+
+    @Test
+    void should_return_status_400_when_bad_request_received_from_external_supplier() throws Exception {
+        String auth = "auth";
+        String service = "service";
+        var notificationMsg = new NotificationMsg(
+            "zip_file_name_123.zip",
+            "civil",
+            "14620",
+            "sscs",
+            "36222789074101144",
+            ErrorCode.ERR_SIG_VERIFY_FAILED,
+            "invalid signature - gif reactions not allowed",
+            "reform_scan_notification_tests"
+        );
+
+        when(authService.authenticate(auth)).thenReturn(service);
+        when(notificationService.saveNotificationMsg(notificationMsg)).thenThrow(new BadRequestException(NOTIFICATION_ID));
+
+        mockMvc.perform(post(PATH)
+                            .header("ServiceAuthorization", auth))
+            .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    void should_return_status_422_when_notification_does_not_pass_validation() throws Exception {
+        String auth = "auth";
+        String service = "service";
+        var notificationMsg = new NotificationMsg(
+            null,
+            "civil",
+            "14620",
+            "sscs",
+            "36222789074101144",
+           null,
+            null,
+            "reform_scan_notification_tests"
+        );
+
+        List<String> fields = Arrays.asList("zipFileName", "errorCode", "errorDescription");
+
+        when(authService.authenticate(auth)).thenReturn(service);
+        when(notificationService.saveNotificationMsg(notificationMsg)).thenThrow(new UnprocessableEntityException(fields));
+
+        mockMvc.perform(post(PATH)
+                            .header("ServiceAuthorization", auth))
+            .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    void should_not_save_notification_if_not_authenticated() throws Exception {
+        String auth = "auth";
+        String service = "service";
+        var notificationMsg = new NotificationMsg(
+            "zip_file_name_123.zip",
+            "civil",
+            "14620",
+            "sscs",
+            "36222789074101144",
+            ErrorCode.ERR_SIG_VERIFY_FAILED,
+            "invalid signature - gif reactions not allowed",
+            "reform_scan_notification_tests"
+        );
+
+        when(authService.authenticate(auth)).thenReturn(service);
+        when(notificationService.saveNotificationMsg(notificationMsg)).thenThrow(new BadRequestException(NOTIFICATION_ID));
+
+        mockMvc.perform(post(PATH))
+            .andExpect(status().isUnauthorized());
+    }
+
 }

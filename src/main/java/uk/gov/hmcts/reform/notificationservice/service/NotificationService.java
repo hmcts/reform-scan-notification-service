@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -102,6 +104,15 @@ public class NotificationService {
     @Transactional(readOnly = true)
     public List<Notification> findByZipFileName(String zipFileName) {
         return notificationRepository.findByZipFileName(zipFileName);
+    }
+
+    @Transactional(readOnly = true)
+    public Notification findByNotificationId(Integer notificationId) {
+        return null;
+    }
+    @Transactional
+    public NotificationInfo saveNotificationMsg(NotificationMsg notificationMsg) {
+        return null;
     }
 
     private ErrorNotificationRequest mapToRequest(Notification notification) {
