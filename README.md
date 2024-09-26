@@ -16,7 +16,7 @@ Retrieves service bus queue messages from notifications queue and then processes
 ## Getting Started
 ### Prerequisites
 
-- [JDK 17](https://www.oracle.com/java)
+- [JDK 21](https://www.oracle.com/java)
 - Project requires Spring Boot v3.x to be present
 
 ## Quick Start
