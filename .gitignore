@@ -25,3 +25,5 @@ bin/main/application.yaml
 /bin/setup-env.sh
 /bin/create-env-file.sh
 /bin/substitutions.json
+/bin/setup-azurite.sh
+/bin/setup-sftp.sh
