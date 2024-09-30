@@ -12,8 +12,10 @@ import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
+import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
+import uk.gov.hmcts.reform.notificationservice.util.NotificationConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -107,8 +109,10 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public Notification findByNotificationId(Integer notificationId) {
-        return null;
+    public NotificationInfo findByNotificationId(Integer notificationId) {
+        return notificationRepository.find(notificationId)
+            .map(NotificationConverter::toNotificationResponse)
+            .orElseThrow(() -> new NotFoundException("Notification not found with ID: " + notificationId));
     }
     @Transactional
     public NotificationInfo saveNotificationMsg(NotificationMsg notificationMsg) {

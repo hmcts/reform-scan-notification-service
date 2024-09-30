@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.notificationservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import feign.FeignException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
@@ -465,7 +463,7 @@ public class NotificationControllerTest {
     @Test
     void should_get_notifications_by_notification_id() throws Exception {
 
-        var notification1 = new Notification(
+        var notificationInfo = new NotificationInfo(
             NOTIFICATION_ID,
             "confirmation-id-1",
             "zip_file_name_123.zip",
@@ -473,19 +471,17 @@ public class NotificationControllerTest {
             "container",
             "bulk_scan",
             "33245532341",
-            ErrorCode.ERR_METAFILE_INVALID,
+            ErrorCode.ERR_METAFILE_INVALID.toString(),
             "invalid metafile1",
             now(),
             now(),
-            NotificationStatus.PENDING,
-            "messageId1",
-            PRIMARY_CLIENT
+            SENT.toString()
         );
 
-        when(notificationService.findByNotificationId(NOTIFICATION_ID)).thenReturn(notification1);
+        when(notificationService.findByNotificationId(NOTIFICATION_ID)).thenReturn(notificationInfo);
 
-        final String notificationJson = OBJECT_MAPPER.writeValueAsString(notification1);
-        mockMvc.perform(get(PATH + NOTIFICATION_ID))
+        final String notificationJson = OBJECT_MAPPER.writeValueAsString(notificationInfo);
+        mockMvc.perform(get(PATH + "/" + NOTIFICATION_ID))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(content().string(notificationJson));
@@ -494,26 +490,10 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_return_notification_by_id_if_not_found() throws Exception {
-        var notification1 = new Notification(
-            NOTIFICATION_ID,
-            "confirmation-id-1",
-            "zip_file_name_123.zip",
-            "po_box1",
-            "container",
-            "bulk_scan",
-            "33245532341",
-            ErrorCode.ERR_METAFILE_INVALID,
-            "invalid metafile1",
-            now(),
-            now(),
-            NotificationStatus.PENDING,
-            "messageId1",
-            PRIMARY_CLIENT
-        );
 
-        when(notificationService.findByNotificationId(2)).thenReturn(notification1).thenThrow(new NotFoundException("Notification not found with ID: " + 2));
+        when(notificationService.findByNotificationId(2)).thenThrow(new NotFoundException("Notification not found with ID: " + 2));
 
-        mockMvc.perform(get(PATH + NOTIFICATION_ID))
+        mockMvc.perform(get(PATH + "/" + 2))
             .andExpect(status().isNotFound());
     }
 

@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +29,7 @@ import java.util.List;
 import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping(path = "/notifications", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,6 +39,8 @@ public class NotificationController {
     private final AuthService authService;
 
     private static final int MAX_ERROR_DESCRIPTION_LENGTH = 1024;
+    private static final String SUCCESS_CODE = "200";
+    private static final String NOT_FOUND_CODE = "404";
 
     public NotificationController(
         NotificationService notificationService,
@@ -151,6 +156,14 @@ public class NotificationController {
         @RequestParam(name = "zip_file_name") String zipFileName
     ) {
         return mapToNotificationsResponse(notificationService.findByZipFileName(zipFileName));
+    }
+
+    @GetMapping("{notificationId}")
+    @Operation(summary = "Get a Notification by its ID")
+    @ApiResponse(responseCode = SUCCESS_CODE, description = "Successful - Notification Found")
+    @ApiResponse(responseCode = NOT_FOUND_CODE, description = "Notification Not Found")
+    public ResponseEntity<NotificationInfo> getNotificationByNotificationId(@PathVariable Integer notificationId) {
+        return ok(notificationService.findByNotificationId(notificationId));
     }
 
     @ApiResponses(value =

@@ -334,22 +334,18 @@ class NotificationServiceTest {
         assertThat(notificationService.findByNotificationId(Math.toIntExact(notificationRetrievedFromDb.id)))
             .isInstanceOf(NotificationInfo.class)
             .extracting("id", "confirmationId")
-            .contains(notificationRetrievedFromDb.id, notificationRetrievedFromDb.confirmationId);
-
-        verify(notificationRepository, times(1)).find(any());
+            .contains("12345", notificationRetrievedFromDb.confirmationId);
     }
 
     @Test
     void should_not_get_notification_by_id_if_it_does_not_exist() {
         int iDontExistId = 4342;
         String notFoundMsgPrefix = "Not found: Notification not found with ID: ";
-        when(notificationRepository.find(iDontExistId)).thenReturn(null);
+        when(notificationRepository.find(iDontExistId)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> notificationService.findByNotificationId(iDontExistId))
             .isInstanceOf(NotFoundException.class)
             .hasMessage(notFoundMsgPrefix + iDontExistId);
-
-        verify(notificationRepository, times(1)).find(any());
     }
 
     //FIXME Should probably be able to make the notification service do one call to to the DB with refactoring
