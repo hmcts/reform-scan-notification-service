@@ -11,19 +11,28 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClientSecondary;
+import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
+import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
+import uk.gov.hmcts.reform.notificationservice.exception.BadRequestException;
+import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
+import uk.gov.hmcts.reform.notificationservice.exception.UnprocessableEntityException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -34,6 +43,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
@@ -46,6 +56,12 @@ class NotificationServiceTest {
 
     @Mock
     private ErrorNotificationClientSecondary errorNotificationClientSecondary;
+
+    @Mock
+    private NotificationMessageMapper notificationMessageMapper;
+
+    @Mock
+    private ErrorNotificationClient errorNotificationClient;
 
     private NotificationService notificationService;
 
@@ -310,6 +326,96 @@ class NotificationServiceTest {
         assertThat(res).isSameAs(notifications);
     }
 
+    @Test
+    void should_get_notification_by_id() {
+        Notification notificationRetrievedFromDb = getSampleNotification();
+        when(notificationRepository.find(notificationRetrievedFromDb.id)).thenReturn(Optional.of(notificationRetrievedFromDb));
+
+        assertThat(notificationService.findByNotificationId(Math.toIntExact(notificationRetrievedFromDb.id)))
+            .isInstanceOf(NotificationInfo.class)
+            .extracting("id", "confirmationId")
+            .contains(notificationRetrievedFromDb.id, notificationRetrievedFromDb.confirmationId);
+
+        verify(notificationRepository, times(1)).find(any());
+    }
+
+    @Test
+    void should_not_get_notification_by_id_if_it_does_not_exist() {
+        int iDontExistId = 4342;
+        String notFoundMsgPrefix = "Not found: Notification not found with ID: ";
+        when(notificationRepository.find(iDontExistId)).thenReturn(null);
+
+        assertThatThrownBy(() -> notificationService.findByNotificationId(iDontExistId))
+            .isInstanceOf(NotFoundException.class)
+            .hasMessage(notFoundMsgPrefix + iDontExistId);
+
+        verify(notificationRepository, times(1)).find(any());
+    }
+
+    //FIXME Should probably be able to make the notification service do one call to to the DB with refactoring
+    @Test
+    void should_save_a_notification_message_to_db() {
+        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
+        NewNotification msgMappedToNotification = getSampleNewNotification();
+        Notification savedNotificationFromdb = getSampleNotification();
+
+        when(notificationMessageMapper.map(notificationMsgFromMicroservice, null, "primary")).thenReturn(msgMappedToNotification);
+        when(notificationRepository.insert(msgMappedToNotification)).thenReturn(1L);
+        when(errorNotificationClient.notify(new ErrorNotificationRequest(
+            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
+            savedNotificationFromdb.errorDescription)));
+        when(notificationRepository.markAsSent(1L, "54321")).thenReturn(true);
+        when(notificationRepository.find(1L)).thenReturn(Optional.of(savedNotificationFromdb));
+
+        assertThat(notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
+            .isInstanceOf(NotificationInfo.class)
+            .extracting("id", "confirmation_id")
+            .contains("1", "54321");
+    }
+
+    //TODO: Update with Exela Bad Request message
+    @Test
+    void should_throw_exception_when_supplier_returns_bad_request_after_being_notified() {
+        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
+        NewNotification msgMappedToNotification = getSampleNewNotification();
+        Notification savedNotificationFromdb = getSampleNotification();
+        String badRequestMsgPrefix = "A BadRequestException was received from supplier. Notification has been marked as a fail. Notification ID: ";
+
+        when(notificationMessageMapper.map(notificationMsgFromMicroservice, null, "primary")).thenReturn(msgMappedToNotification);
+        when(notificationRepository.insert(msgMappedToNotification)).thenReturn(1L);
+        when(errorNotificationClient.notify(new ErrorNotificationRequest(
+            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
+            savedNotificationFromdb.errorDescription))).thenThrow(new FeignException.BadRequest(
+                "Supplier could not save notification",
+                null, null, null ));
+
+        assertThatThrownBy(() -> notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage(badRequestMsgPrefix + 1L);
+    }
+
+    //TODO: Need to check Exela do this and update controller/tests respectively
+    //TODO: Update with Exela message
+    @Test
+    void should_throw_exception_when_supplier_returns_unprocessable_entity_after_being_notified() {
+        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
+        NewNotification msgMappedToNotification = getSampleNewNotification();
+        Notification savedNotificationFromdb = getSampleNotification();
+        String UnprocessableEntityMsgPrefix = "Supplier was unable to process the notification request. Notification ID: ";
+
+        when(notificationMessageMapper.map(notificationMsgFromMicroservice, null, "primary")).thenReturn(msgMappedToNotification);
+        when(notificationRepository.insert(msgMappedToNotification)).thenReturn(1L);
+        when(errorNotificationClient.notify(new ErrorNotificationRequest(
+            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
+            savedNotificationFromdb.errorDescription))).thenThrow(new FeignException.UnprocessableEntity(
+            "Supplier could not save notification",
+            null, null, null ));
+
+        assertThatThrownBy(() -> notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
+            .isInstanceOf(UnprocessableEntityException.class)
+            .hasMessage(UnprocessableEntityMsgPrefix + 1L);
+    }
+
     private Tuple getTupleFromNotification(Notification notification) {
         return new Tuple(
             notification.confirmationId,
@@ -325,10 +431,35 @@ class NotificationServiceTest {
         );
     }
 
+    private NewNotification getSampleNewNotification() {
+        return new NewNotification(
+            "zip_file_name",
+            "12837",
+            "bulkscan",
+            "nfd",
+            null,
+            ErrorCode.ERR_METAFILE_INVALID,
+            "Invalid metadata file.",
+            null,
+            "primary"
+        );
+    }
+    private NotificationMsg getSampleNotificationMsg() {
+        return new NotificationMsg(
+            "zip_file_name",
+            null,
+            "12837",
+            "bulkscan",
+            null,
+            ErrorCode.ERR_METAFILE_INVALID,
+            "Invalid metadata file.",
+            "nfd"
+        );
+    }
     private Notification getSampleNotification() {
         return new Notification(
-            1L,
-            null,
+            12345,
+            "54321",
             "zip_file_name",
             "po_box",
             "bulkscan",
