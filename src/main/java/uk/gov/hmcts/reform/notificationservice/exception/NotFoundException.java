@@ -10,10 +10,10 @@ public class NotFoundException extends RuntimeException {
     /**
      * Constructs a new not found exception with the specified detail message.
      *
-     * @param searchCriteria the detail message
+     * @param message the detail message
      */
-    public NotFoundException(String searchCriteria) {
-        super("Not found: " + searchCriteria);
+    public NotFoundException(String message) {
+        super("Not found: " + message);
     }
 
     /**

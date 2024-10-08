@@ -241,6 +241,7 @@ dependencies {
   implementation group: 'org.apache.qpid', name: 'qpid-jms-client', version: '2.5.0'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '6.3.0'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
   testImplementation libraries.junit5
   testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', {

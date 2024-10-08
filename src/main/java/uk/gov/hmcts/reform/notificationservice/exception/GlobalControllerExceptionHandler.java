@@ -2,15 +2,20 @@ package uk.gov.hmcts.reform.notificationservice.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ControllerAdvice
 @Slf4j
@@ -34,5 +39,33 @@ public class GlobalControllerExceptionHandler {
         responseHeaders.set(CONTENT_TYPE, APPLICATION_JSON);
         error.put(MESSAGE, ex.getMessage());
         return new ResponseEntity<>(new ObjectMapper().writeValueAsString(error), responseHeaders, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FailedDependencyException.class)
+    ResponseEntity<NotificationInfo> failedDependencyExceptionHandler(final FailedDependencyException ex) throws JsonProcessingException {
+        HashMap<String, String> error = new HashMap<>();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(CONTENT_TYPE, APPLICATION_JSON);
+        error.put(MESSAGE, ex.getMessage());
+        return new ResponseEntity<>(ex.getNotificationInfo(), responseHeaders, HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handle(MethodArgumentNotValidException ex) {
+        Map<String, String> errorMap = new ConcurrentHashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> errorMap.put(error.getField(),
+                                                                             error.getDefaultMessage()));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMap);
+    }
+
+    @ExceptionHandler(NumberFormatException.class)
+    ResponseEntity<String> notFoundExceptionHandler(final NumberFormatException ex, HttpServletRequest request) throws JsonProcessingException {
+        HashMap<String, String> error = new HashMap<>();
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set(CONTENT_TYPE, APPLICATION_JSON);
+        error.put("Info", ex.getMessage());
+        error.put(MESSAGE, "Invalid number. You must use a whole number e.g. not decimals like 13.0 and not letters");
+        return new ResponseEntity<>(new ObjectMapper().writeValueAsString(error), responseHeaders, HttpStatus.BAD_REQUEST);
     }
 }

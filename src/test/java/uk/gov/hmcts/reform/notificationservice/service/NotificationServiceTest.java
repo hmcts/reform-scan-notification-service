@@ -1,27 +1,36 @@
 package uk.gov.hmcts.reform.notificationservice.service;
 
 import feign.FeignException;
+import feign.Request;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClientSecondary;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
+import uk.gov.hmcts.reform.notificationservice.config.SecondaryClientJurisdictionsConfig;
 import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.exception.BadRequestException;
+import uk.gov.hmcts.reform.notificationservice.exception.FailedDependencyException;
 import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnprocessableEntityException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsgRequest;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 
 import java.time.Instant;
@@ -36,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
@@ -45,7 +55,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 @ExtendWith(MockitoExtension.class)
+@ContextConfiguration(classes = SecondaryClientJurisdictionsConfig.class)
 class NotificationServiceTest {
 
     @Mock
@@ -63,13 +75,24 @@ class NotificationServiceTest {
     @Mock
     private ErrorNotificationClient errorNotificationClient;
 
+    @Mock
+    private SecondaryClientJurisdictionsConfig secondaryClientJurisdictionsConfig;
+
+    @Captor
+    ArgumentCaptor<NewNotification> newNotificationCaptor;
+
+    @Captor
+    ArgumentCaptor<Long> idCaptor;
+
     private NotificationService notificationService;
 
     @BeforeEach
     void setUp() {
+        when(secondaryClientJurisdictionsConfig.getJurisdictionList()).thenReturn(new String[] { "civil","cat" });
         notificationService = new NotificationService(notificationRepository,
                                                       notificationClient,
-                                                      errorNotificationClientSecondary);
+                                                      errorNotificationClientSecondary,
+                                                      secondaryClientJurisdictionsConfig);
     }
 
     @Test
@@ -83,7 +106,7 @@ class NotificationServiceTest {
     @Test
     void should_send_error_notification_to_client_and_update_db() {
         // given
-        var notification = getSampleNotification();
+        var notification = getSampleNotification("primary");
         var notificationId = "notification ID";
         given(notificationRepository.findPending()).willReturn(singletonList(notification));
         given(notificationClient.notify(any())).willReturn(new ErrorNotificationResponse(notificationId));
@@ -101,7 +124,7 @@ class NotificationServiceTest {
         Class<FeignException> exceptionClass
     ) {
         // given
-        var notification = getSampleNotification();
+        var notification = getSampleNotification("primary");
         given(notificationRepository.findPending()).willReturn(singletonList(notification));
         willThrow(instantiateFeignException(exceptionClass)).given(notificationClient).notify(any());
 
@@ -122,7 +145,7 @@ class NotificationServiceTest {
         Class<FeignException> exceptionClass
     ) {
         // given
-        var notification = getSampleNotification();
+        var notification = getSampleNotification("primary");
         var exception = exceptionClass.equals(FeignException.class)
             ? getDefaultFeignException()
             : instantiateFeignException(exceptionClass);
@@ -139,7 +162,7 @@ class NotificationServiceTest {
     @Test
     void should_leave_notification_as_is_when_unexpected_exception_is_thrown_and_continue() {
         // given
-        given(notificationRepository.findPending()).willReturn(singletonList(getSampleNotification()));
+        given(notificationRepository.findPending()).willReturn(singletonList(getSampleNotification("primary")));
         willThrow(new RuntimeException()).given(notificationClient).notify(any());
 
         // when
@@ -328,7 +351,7 @@ class NotificationServiceTest {
 
     @Test
     void should_get_notification_by_id() {
-        Notification notificationRetrievedFromDb = getSampleNotification();
+        Notification notificationRetrievedFromDb = getSampleNotification("primary");
         when(notificationRepository.find(notificationRetrievedFromDb.id)).thenReturn(Optional.of(notificationRetrievedFromDb));
 
         assertThat(notificationService.findByNotificationId(Math.toIntExact(notificationRetrievedFromDb.id)))
@@ -348,68 +371,110 @@ class NotificationServiceTest {
             .hasMessage(notFoundMsgPrefix + iDontExistId);
     }
 
-    //FIXME Should probably be able to make the notification service do one call to to the DB with refactoring
-    @Test
-    void should_save_a_notification_message_to_db() {
-        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
-        NewNotification msgMappedToNotification = getSampleNewNotification();
-        Notification savedNotificationFromdb = getSampleNotification();
+//    @Test
+//    void should_initially_save_a_notification_message_to_db_with_status_created() {
+//        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
+//        NewNotification msgMappedToNotification = getSampleNewNotification();
+//        Notification savedNotificationFromdb = getSampleNotification();
+//        ErrorNotificationResponse supplierResponse = new ErrorNotificationResponse();
+//
+//        when(notificationRepository.save(newNotificationCaptor.capture())).thenReturn(getSampleNotification());
+//        when(errorNotificationClient.notify(new ErrorNotificationRequest(
+//            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
+//            savedNotificationFromdb.errorDescription))).thenReturn()
+//        when(notificationRepository.markAsSent(1L, "54321")).thenReturn(true);
+//        when(notificationRepository.find(1L)).thenReturn(Optional.of(savedNotificationFromdb));
+//
+//        assertThat(notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
+//            .isInstanceOf(NotificationInfo.class)
+//            .extracting("id", "confirmation_id")
+//            .contains("1", "54321");
+//    }
 
-        when(notificationMessageMapper.map(notificationMsgFromMicroservice, null, "primary")).thenReturn(msgMappedToNotification);
-        when(notificationRepository.insert(msgMappedToNotification)).thenReturn(1L);
-        when(errorNotificationClient.notify(new ErrorNotificationRequest(
-            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
-            savedNotificationFromdb.errorDescription)));
-        when(notificationRepository.markAsSent(1L, "54321")).thenReturn(true);
-        when(notificationRepository.find(1L)).thenReturn(Optional.of(savedNotificationFromdb));
+    @Test
+    void should_notify_supplier_using_primary_client_when_notification_message_has_no_jurisdiction() {
+        NotificationMsgRequest notificationMsgFromMicroservice = getSampleNotificationMsgRequest(null);
+        Notification savedNotificationFromdb = getSampleNotification("primary", null, NotificationStatus.CREATED);
+        Notification creatednotification = getSampleNotification("primary", null, NotificationStatus.SENT);
+        ErrorNotificationResponse supplierResponse = new ErrorNotificationResponse(String.valueOf(54321));
+
+        when(notificationRepository.save(any())).thenReturn(creatednotification);
+        when(notificationClient.notify(any())).thenReturn(supplierResponse);
+        when(notificationRepository.updateNotificationStatusAsSent(creatednotification.id, String.valueOf(creatednotification.confirmationId))).thenReturn(savedNotificationFromdb);
 
         assertThat(notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
             .isInstanceOf(NotificationInfo.class)
-            .extracting("id", "confirmation_id")
-            .contains("1", "54321");
+            .extracting("id", "confirmationId")
+            .contains("12345", "54321");
+
+        verify(notificationRepository).save(newNotificationCaptor.capture());
+        verify(errorNotificationClientSecondary, never()).notify(any());
+        assertThat(newNotificationCaptor.getValue())
+            .extracting("client")
+            .isEqualTo("primary");
     }
 
-    //TODO: Update with Exela Bad Request message
     @Test
-    void should_throw_exception_when_supplier_returns_bad_request_after_being_notified() {
-        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
-        NewNotification msgMappedToNotification = getSampleNewNotification();
-        Notification savedNotificationFromdb = getSampleNotification();
-        String badRequestMsgPrefix = "A BadRequestException was received from supplier. Notification has been marked as a fail. Notification ID: ";
+    void should_notify_supplier_using_secondary_client_when_notification_message_jurisdiction_is_present_in_config() {
+        NotificationMsgRequest notificationMsgFromMicroservice = getSampleNotificationMsgRequest("cat");
+        Notification savedNotification = getSampleNotification("secondary", null, NotificationStatus.CREATED);
+        Notification statusUpdatednotification = getSampleNotification("secondary", null, NotificationStatus.SENT);
+        ErrorNotificationResponse supplierResponse = new ErrorNotificationResponse(String.valueOf(54321));
 
-        when(notificationMessageMapper.map(notificationMsgFromMicroservice, null, "primary")).thenReturn(msgMappedToNotification);
-        when(notificationRepository.insert(msgMappedToNotification)).thenReturn(1L);
-        when(errorNotificationClient.notify(new ErrorNotificationRequest(
-            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
-            savedNotificationFromdb.errorDescription))).thenThrow(new FeignException.BadRequest(
-                "Supplier could not save notification",
-                null, null, null ));
+        when(notificationRepository.save(newNotificationCaptor.capture())).thenReturn(savedNotification);
+        when(errorNotificationClientSecondary.notify(any())).thenReturn(supplierResponse);
+        when(notificationRepository.updateNotificationStatusAsSent(statusUpdatednotification.id, String.valueOf(statusUpdatednotification.confirmationId))).thenReturn(savedNotification);
 
-        assertThatThrownBy(() -> notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
-            .isInstanceOf(BadRequestException.class)
-            .hasMessage(badRequestMsgPrefix + 1L);
+        assertThat(notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
+            .isInstanceOf(NotificationInfo.class)
+            .extracting("id", "confirmationId")
+            .contains("12345", "54321");
+
+        verify(notificationClient, never()).notify(any());
+        verify(notificationRepository, never()).updateNotificationStatusAsFail(anyLong());
+        assertThat(newNotificationCaptor.getValue())
+            .extracting("client")
+            .isEqualTo("secondary");
     }
 
-    //TODO: Need to check Exela do this and update controller/tests respectively
-    //TODO: Update with Exela message
-    @Test
-    void should_throw_exception_when_supplier_returns_unprocessable_entity_after_being_notified() {
-        NotificationMsg notificationMsgFromMicroservice = getSampleNotificationMsg();
-        NewNotification msgMappedToNotification = getSampleNewNotification();
-        Notification savedNotificationFromdb = getSampleNotification();
-        String UnprocessableEntityMsgPrefix = "Supplier was unable to process the notification request. Notification ID: ";
+    @ParameterizedTest
+    @ValueSource(classes = {FeignException.BadRequest.class, FeignException.UnprocessableEntity.class, FeignException.class})
+    void should_throw_failed_dependency_exception_when_trying_to_notify_supplier_causes_feign_exception(Class<FeignException> exceptionClass) {
+        NotificationMsgRequest notificationMsgFromMicroservice = getSampleNotificationMsgRequest("cat");
+        Notification savedNotification = getSampleNotification("secondary", null, NotificationStatus.CREATED);
+        FeignException mockbadrequestFeignException = mock(exceptionClass);
 
-        when(notificationMessageMapper.map(notificationMsgFromMicroservice, null, "primary")).thenReturn(msgMappedToNotification);
-        when(notificationRepository.insert(msgMappedToNotification)).thenReturn(1L);
-        when(errorNotificationClient.notify(new ErrorNotificationRequest(
-            savedNotificationFromdb.zipFileName, savedNotificationFromdb.poBox, savedNotificationFromdb.errorCode.toString(),
-            savedNotificationFromdb.errorDescription))).thenThrow(new FeignException.UnprocessableEntity(
-            "Supplier could not save notification",
-            null, null, null ));
+        when(notificationRepository.save(newNotificationCaptor.capture())).thenReturn(savedNotification);
+        when(errorNotificationClientSecondary.notify(any(ErrorNotificationRequest.class))).thenThrow(mockbadrequestFeignException);
 
         assertThatThrownBy(() -> notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
-            .isInstanceOf(UnprocessableEntityException.class)
-            .hasMessage(UnprocessableEntityMsgPrefix + 1L);
+            .isInstanceOf(FailedDependencyException.class)
+            .satisfies( e -> {
+                assertThat(e).extracting("notificationInfo").isNotNull();
+            })
+            .hasMessageContaining("The service's client failed to make a request to an external endpoint: Client received status code:");
+
+        verify(notificationRepository, never()).updateNotificationStatusAsSent(anyLong(), anyString());
+        verify(notificationRepository).updateNotificationStatusAsFail(idCaptor.capture());
+        assertThat(idCaptor.getValue())
+            .isEqualTo(12345);
+    }
+
+    @Test
+    void should_update_notification_status_to_fail_when_trying_to_notify_supplier_causes_unexpected_exception() {
+        NotificationMsgRequest notificationMsgFromMicroservice = getSampleNotificationMsgRequest("cat");
+        Notification savedNotification = getSampleNotification("secondary", null, NotificationStatus.CREATED);
+
+        when(notificationRepository.save(newNotificationCaptor.capture())).thenReturn(savedNotification);
+        when(errorNotificationClientSecondary.notify(any(ErrorNotificationRequest.class))).thenThrow(new RuntimeException("unexpected"));
+
+        assertThatThrownBy(() -> notificationService.saveNotificationMsg(notificationMsgFromMicroservice))
+            .hasMessage("unexpected");
+
+        verify(notificationRepository, never()).updateNotificationStatusAsSent(anyLong(), anyString());
+        verify(notificationRepository).updateNotificationStatusAsFail(idCaptor.capture());
+        assertThat(idCaptor.getValue())
+            .isEqualTo(12345);
     }
 
     private Tuple getTupleFromNotification(Notification notification) {
@@ -427,7 +492,7 @@ class NotificationServiceTest {
         );
     }
 
-    private NewNotification getSampleNewNotification() {
+    private NewNotification getSampleNewNotification(String client) {
         return new NewNotification(
             "zip_file_name",
             "12837",
@@ -437,22 +502,35 @@ class NotificationServiceTest {
             ErrorCode.ERR_METAFILE_INVALID,
             "Invalid metadata file.",
             null,
-            "primary"
+            client
         );
     }
-    private NotificationMsg getSampleNotificationMsg() {
+    private NotificationMsg getSampleNotificationMsg(String jurisdiction) {
         return new NotificationMsg(
             "zip_file_name",
-            null,
+            jurisdiction,
             "12837",
             "bulkscan",
             null,
             ErrorCode.ERR_METAFILE_INVALID,
             "Invalid metadata file.",
-            "nfd"
+            "service"
         );
     }
-    private Notification getSampleNotification() {
+
+    private NotificationMsgRequest getSampleNotificationMsgRequest(String jurisdiction) {
+        return new NotificationMsgRequest(
+            "zip_file_name",
+            jurisdiction,
+            "12837",
+            "bulkscan",
+            null,
+            ErrorCode.ERR_METAFILE_INVALID,
+            "Invalid metadata file.",
+            "service"
+        );
+    }
+    private Notification getSampleNotification(String client) {
         return new Notification(
             12345,
             "54321",
@@ -467,10 +545,45 @@ class NotificationServiceTest {
             null,
             NotificationStatus.PENDING,
             "messageId1",
-            "primary"
+            client
         );
     }
 
+    private Notification getSampleNotification(String client, String messageId, NotificationStatus status) {
+        return new Notification(
+            12345,
+            "54321",
+            "zip_file_name",
+            "po_box",
+            "bulkscan",
+            "service",
+            "DCN",
+            ErrorCode.ERR_METAFILE_INVALID,
+            "invalid metafile",
+            Instant.now(),
+            null,
+            status,
+            messageId,
+            client
+        );
+    }
+
+    private NotificationInfo getSampleNotificationInfo(NotificationStatus status) {
+        return new NotificationInfo(
+            12345,
+            "54321",
+            "zip_file_name",
+            "po_box",
+            "bulkscan",
+            "service",
+            null,
+            ErrorCode.ERR_METAFILE_INVALID.name(),
+            "invalid metafile",
+            Instant.now(),
+            Instant.now(),
+            status.name()
+        );
+    }
     private FeignException instantiateFeignException(Class<FeignException> exceptionClass) {
         return mock(exceptionClass);
     }

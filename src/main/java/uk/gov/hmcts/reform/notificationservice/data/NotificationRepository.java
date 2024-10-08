@@ -10,10 +10,12 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.CREATED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
@@ -128,6 +130,46 @@ public class NotificationRepository {
         }
     }
 
+    public Notification save(NewNotification notification) {
+        try {
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            jdbcTemplate.update(
+                "INSERT INTO notifications (zip_file_name, po_box, container, service, document_control_number, "
+                    + "error_code, error_description, created_at, status, message_id, client) "
+                    + "VALUES ( :zipFileName, :poBox, :container, :service, :DCN, :errorCode, "
+                    + ":errorDescription, CURRENT_TIMESTAMP, :status, :messageId, :client"
+                    + ")",
+                new MapSqlParameterSource()
+                    .addValue(ZIP_FILE_NAME, notification.zipFileName)
+                    .addValue("poBox", notification.poBox)
+                    .addValue("container", notification.container)
+                    .addValue("service", notification.service)
+                    .addValue("DCN", notification.documentControlNumber)
+                    .addValue("errorCode", notification.errorCode.name())
+                    .addValue("errorDescription", notification.errorDescription)
+                    .addValue(STATUS, CREATED.name())
+                    .addValue("messageId", notification.messageId)
+                    .addValue("client", notification.client),
+                keyHolder,
+                new String[]{"id"}
+            );
+
+            return jdbcTemplate.queryForObject(
+                "SELECT * FROM notifications WHERE id = :id",
+                new MapSqlParameterSource("id", keyHolder.getKey()),
+                mapper
+            );
+
+        } catch (DuplicateKeyException ex) {
+            throw new DuplicateMessageIdException(
+                String.format(
+                    "Failed to save notification message for duplicate message id - %s", notification.messageId
+                )
+            );
+        }
+    }
+
     /**
      * Mark notification as sent.
      * @param id notification ID
@@ -168,5 +210,58 @@ public class NotificationRepository {
         );
 
         return rowsUpdated == 1;
+    }
+
+    /**
+     * Updates the status column of a notification row in the Notifications table
+     * to have the status of FAIL.
+     *
+     * @param notificationId the ID of the notification whose status should be updated
+     * @return notification that was updated
+     */
+    public Notification updateNotificationStatusAsFail(long notificationId) {
+        jdbcTemplate.update(
+            "UPDATE notifications "
+                + "SET processed_at = NOW(), "
+                + "  status = :status "
+                + "WHERE id = :id",
+            new MapSqlParameterSource()
+                .addValue(STATUS, FAILED.name())
+                .addValue("id", notificationId)
+        );
+
+        return jdbcTemplate.queryForObject(
+            "SELECT * FROM notifications WHERE id = :id",
+            new MapSqlParameterSource("id", notificationId),
+            mapper
+        );
+    }
+
+    /**
+     * Updates the status column of a notification row in the Notifications table
+     * to have the status of SENT. Also updates the confirmation ID column with the
+     * ID from the supplier.
+     * @param notificationId the ID of the notification that should be updated
+     * @param confirmationId the ID returned by the supplier when it was notified
+     * @return notification that was updated
+     */
+    public Notification updateNotificationStatusAsSent(long notificationId, String confirmationId) {
+        jdbcTemplate.update(
+            "UPDATE notifications "
+                + "SET confirmation_id = :confirmationId, "
+                + "  processed_at = NOW(), "
+                + "  status = :status "
+                + "WHERE id = :id",
+            new MapSqlParameterSource()
+                .addValue("confirmationId", confirmationId)
+                .addValue(STATUS, SENT.name())
+                .addValue("id", notificationId)
+        );
+
+        return jdbcTemplate.queryForObject(
+            "SELECT * FROM notifications WHERE id = :id",
+            new MapSqlParameterSource("id", notificationId),
+            mapper
+        );
     }
 }

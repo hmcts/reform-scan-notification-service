@@ -8,27 +8,35 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsgRequest;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationsResponse;
 import uk.gov.hmcts.reform.notificationservice.service.AuthService;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.Math.min;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE;
+import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -41,6 +49,11 @@ public class NotificationController {
     private static final int MAX_ERROR_DESCRIPTION_LENGTH = 1024;
     private static final String SUCCESS_CODE = "200";
     private static final String NOT_FOUND_CODE = "404";
+
+    private static final String UNAUTHORISED_CODE = "401";
+
+    private static final String UNAUTHORISED_USER = "Unauthorised user";
+
 
     public NotificationController(
         NotificationService notificationService,
@@ -158,11 +171,12 @@ public class NotificationController {
         return mapToNotificationsResponse(notificationService.findByZipFileName(zipFileName));
     }
 
-    @GetMapping("{notificationId}")
+    @GetMapping("/{notificationId}")
     @Operation(summary = "Get a Notification by its ID")
     @ApiResponse(responseCode = SUCCESS_CODE, description = "Successful - Notification Found")
     @ApiResponse(responseCode = NOT_FOUND_CODE, description = "Notification Not Found")
-    public ResponseEntity<NotificationInfo> getNotificationByNotificationId(@PathVariable Integer notificationId) {
+    public ResponseEntity<NotificationInfo> getNotificationByNotificationId(
+        @PathVariable @Valid Integer notificationId) {
         return ok(notificationService.findByNotificationId(notificationId));
     }
 
@@ -194,6 +208,26 @@ public class NotificationController {
     )
     public NotificationsResponse getAllPendingNotifications() {
         return mapToNotificationsResponse(notificationService.getAllPendingNotifications());
+    }
+
+    /**
+     * Add a notification message.
+     * This endpoint can be used to add a new notification message to the notifications table.
+     * It will also notify the supplier about this notification message.
+     * @path /notifications
+     * @body {@link NotificationMsg}
+     * @return {@link NotificationInfo} info from the added notification.
+     */
+    @PostMapping
+    @Operation(summary = "Add a new notification")
+    @ApiResponse(responseCode = "201", description = "Successfully created notification")
+    @ApiResponse(responseCode = UNAUTHORISED_CODE, description = UNAUTHORISED_USER)
+    public ResponseEntity<NotificationInfo> addNotification(
+        @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
+        @RequestBody @Validated NotificationMsgRequest notificationMsg) {
+        authService.authenticate(serviceAuthHeader);
+        return created(URI.create("/notifications"))
+            .body(notificationService.saveNotificationMsg(notificationMsg));
     }
 
     private NotificationsResponse mapToNotificationsResponse(List<Notification> list) {

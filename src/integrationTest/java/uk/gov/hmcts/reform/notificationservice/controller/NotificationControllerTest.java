@@ -14,11 +14,9 @@ import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
 import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
-import uk.gov.hmcts.reform.notificationservice.exception.BadRequestException;
 import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
-import uk.gov.hmcts.reform.notificationservice.exception.UnprocessableEntityException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
-import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsgRequest;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 import uk.gov.hmcts.reform.notificationservice.service.AuthService;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
@@ -29,7 +27,9 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
@@ -38,6 +38,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -498,10 +499,18 @@ public class NotificationControllerTest {
     }
 
     @Test
+    void should_not_return_notification_if_id_is_not_integer() throws Exception {
+
+        mockMvc.perform(get(PATH + "/" + 2.4))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("Invalid number. You must use a whole number e.g. not decimals like 13.0 and not letters"));
+    }
+
+    @Test
     void should_save_new_notification() throws Exception {
         String auth = "auth";
         String service = "service";
-        var notificationMsg = new NotificationMsg(
+        var notificationMsg = new NotificationMsgRequest(
             "zip_file_name_123.zip",
             "civil",
             "14620",
@@ -545,59 +554,8 @@ public class NotificationControllerTest {
     }
 
     @Test
-    void should_return_status_400_when_bad_request_received_from_external_supplier() throws Exception {
-        String auth = "auth";
-        String service = "service";
-        var notificationMsg = new NotificationMsg(
-            "zip_file_name_123.zip",
-            "civil",
-            "14620",
-            "sscs",
-            "36222789074101144",
-            ErrorCode.ERR_SIG_VERIFY_FAILED,
-            "invalid signature - gif reactions not allowed",
-            "reform_scan_notification_tests"
-        );
-
-        when(authService.authenticate(auth)).thenReturn(service);
-        when(notificationService.saveNotificationMsg(notificationMsg)).thenThrow(new BadRequestException(NOTIFICATION_ID));
-
-        mockMvc.perform(post(PATH)
-                            .header("ServiceAuthorization", auth))
-            .andExpect(status().isBadRequest());
-
-    }
-
-    @Test
-    void should_return_status_422_when_notification_does_not_pass_validation() throws Exception {
-        String auth = "auth";
-        String service = "service";
-        var notificationMsg = new NotificationMsg(
-            null,
-            "civil",
-            "14620",
-            "sscs",
-            "36222789074101144",
-           null,
-            null,
-            "reform_scan_notification_tests"
-        );
-
-        List<String> fields = Arrays.asList("zipFileName", "errorCode", "errorDescription");
-
-        when(authService.authenticate(auth)).thenReturn(service);
-        when(notificationService.saveNotificationMsg(notificationMsg)).thenThrow(new UnprocessableEntityException(fields));
-
-        mockMvc.perform(post(PATH)
-                            .header("ServiceAuthorization", auth))
-            .andExpect(status().isUnprocessableEntity());
-    }
-
-    @Test
     void should_not_save_notification_if_not_authenticated() throws Exception {
-        String auth = "auth";
-        String service = "service";
-        var notificationMsg = new NotificationMsg(
+        var notificationMsg = new NotificationMsgRequest(
             "zip_file_name_123.zip",
             "civil",
             "14620",
@@ -607,12 +565,50 @@ public class NotificationControllerTest {
             "invalid signature - gif reactions not allowed",
             "reform_scan_notification_tests"
         );
+        given(authService.authenticate(null)).willCallRealMethod();
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        when(authService.authenticate(auth)).thenReturn(service);
-        when(notificationService.saveNotificationMsg(notificationMsg)).thenThrow(new BadRequestException(NOTIFICATION_ID));
+        final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
 
-        mockMvc.perform(post(PATH))
-            .andExpect(status().isUnauthorized());
+        mockMvc.perform(post(PATH)
+                            .content(notificationInfoJson)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isUnauthorized())
+            .andReturn();
     }
 
+    @Test
+    void should_apply_constraints_on_notification_msg_request_body() throws Exception {
+        String auth = "auth";
+        var notificationMsg = new NotificationMsgRequest(
+            "",
+            "jurisdiction",
+            "14620",
+            null,
+            "36222789074101144",
+            null,
+            "",
+            null
+        );
+
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
+
+        mockMvc.perform(post(PATH)
+                            .header("ServiceAuthorization", auth)
+                            .content(notificationInfoJson)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errorCode").value("An error code must be provided"))
+            .andExpect(jsonPath("$.container").value("must not be blank"))
+            .andExpect(jsonPath("$.zipFileName").value("must not be blank"))
+            .andExpect(jsonPath("$.errorDescription").value("must not be blank"))
+            .andExpect(jsonPath("$.service").value("must not be blank"))
+            .andReturn();
+    }
 }
