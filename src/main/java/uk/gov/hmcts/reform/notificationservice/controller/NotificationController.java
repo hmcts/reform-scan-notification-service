@@ -233,7 +233,7 @@ public class NotificationController {
     public ResponseEntity<NotificationInfo> addNotification(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @RequestBody @Validated NotifyRequest notifyRequest) {
-        authService.validate(serviceAuthHeader);
+        authService.authenticate(serviceAuthHeader);
         return created(URI.create("/notifications"))
             .body(notificationService.saveNotificationMsg(notifyRequest));
     }
