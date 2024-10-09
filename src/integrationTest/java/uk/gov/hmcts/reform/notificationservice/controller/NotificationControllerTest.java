@@ -471,7 +471,8 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_return_notification_by_id_if_not_found() throws Exception {
-        when(notificationService.findByNotificationId(2)).thenThrow(new NotFoundException("Notification not found with ID: " + 2));
+        when(notificationService.findByNotificationId(2)).thenThrow(new NotFoundException(
+            "Notification not found with ID: " + 2));
 
         mockMvc.perform(get(PATH + "/" + 2))
             .andExpect(status().isNotFound());
@@ -481,7 +482,8 @@ public class NotificationControllerTest {
     void should_not_return_notification_if_id_is_not_integer() throws Exception {
         mockMvc.perform(get(PATH + "/" + 2.4))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value("Invalid number. You must use a whole number e.g. not decimals like 13.0 and not letters"));
+            .andExpect(jsonPath("$.message").value("Invalid number. You must use a whole number "
+                                                       + "e.g. not decimals like 13.0 and not letters"));
     }
 
     @Test
@@ -534,6 +536,8 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_save_notification_if_authentication_not_present() throws Exception {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         var notificationMsg = new NotifyRequest(
             "zip_file_name_123.zip",
             "civil",
@@ -545,8 +549,6 @@ public class NotificationControllerTest {
             "reform_scan_notification_tests"
         );
         given(authService.authenticate(null)).willCallRealMethod();
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
-        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
 
@@ -560,6 +562,8 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_save_notification_if_authentication_not_valid() throws Exception {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         var notificationMsg = new NotifyRequest(
             "zip_file_name_123.zip",
             "civil",
@@ -571,8 +575,6 @@ public class NotificationControllerTest {
             "reform_scan_notification_tests"
         );
         given(authService.authenticate("imnotvalid")).willThrow(new InvalidTokenException("msg"));
-        OBJECT_MAPPER.registerModule(new JavaTimeModule());
-        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
 

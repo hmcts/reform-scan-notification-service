@@ -222,7 +222,7 @@ public class NotificationController {
      * @body {@link NotifyRequest}
      * @header ServiceAuthorisation token to be authenticated by {@link AuthService}
      * @return {@link NotificationInfo} info about the added notification. Including the confirmation
-     * ID that is returned when the supplier is notified.
+     *          ID that is returned when the supplier is notified.
      */
     @PostMapping
     @Operation(summary = "Add a new notification")
@@ -233,7 +233,7 @@ public class NotificationController {
     public ResponseEntity<NotificationInfo> addNotification(
         @RequestHeader(name = "ServiceAuthorization", required = false) String serviceAuthHeader,
         @RequestBody @Validated NotifyRequest notifyRequest) {
-        authService.authenticate(serviceAuthHeader);
+        authService.validate(serviceAuthHeader);
         return created(URI.create("/notifications"))
             .body(notificationService.saveNotificationMsg(notifyRequest));
     }

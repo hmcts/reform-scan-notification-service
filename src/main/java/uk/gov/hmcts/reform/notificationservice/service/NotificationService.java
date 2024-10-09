@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
 import uk.gov.hmcts.reform.notificationservice.exception.FailedDependencyException;
 import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
-import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsgRequest;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotifyRequest;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 import uk.gov.hmcts.reform.notificationservice.util.NotificationConverter;
 
@@ -119,34 +119,57 @@ public class NotificationService {
         return notificationRepository.findByZipFileName(zipFileName);
     }
 
+    /**
+     * Finds a notification by its notification ID.
+     * The notification entity is piped to a converter to map it into a class that represents
+     * the notification's info.
+     * @param notificationId the ID of the notification to be found
+     * @return the info of the found notification
+     * @throws NotFoundException if a notification with the given ID cannot be found
+     */
     @Transactional(readOnly = true)
     public NotificationInfo findByNotificationId(Integer notificationId) {
         return notificationRepository.find(notificationId)
             .map(NotificationConverter::toNotificationResponse)
             .orElseThrow(() -> new NotFoundException("Notification not found with ID: " + notificationId));
     }
-    //TODO: Multiple calls to database that could be reduced. Needs better exception handling.
+
+    /**
+     * Saves a new notification request.
+     * First identifies whether the notification should be sent via the primary or secondary client by looking at the
+     * jurisdiction of the request. The request is then converted into the representation of a new notification for the
+     * database which is then saved.
+     * Then an attempt is made to notify the supplier which returns an ID. The saved notification is then updated with
+     * this ID.
+     * @param notifyRequest the notification information that should be saved to the database and sent to the supplier
+     * @return the info of the saved notification
+     * @throws FailedDependencyException if there is an issue trying to notify the supplier
+     */
     @Transactional
-    public NotificationInfo saveNotificationMsg(NotificationMsgRequest notificationMsg) {
-        String jurisdiction = Objects.requireNonNullElse(notificationMsg.jurisdiction, "").toLowerCase(Locale.ROOT);
+    public NotificationInfo saveNotificationMsg(NotifyRequest notifyRequest) {
+        String jurisdiction = Objects.requireNonNullElse(notifyRequest.jurisdiction, "").toLowerCase(Locale.ROOT);
         String client = Arrays.asList(secondaryClientJurisdictions).contains(jurisdiction) ? "secondary" : "primary";
         //Save notification as Pending
-        NewNotification newNotificationForDb = NotificationConverter.toNewNotification(notificationMsg, client);
+        NewNotification newNotificationForDb = NotificationConverter.toNewNotification(notifyRequest, client);
         Notification notificationFromDb = notificationRepository.save(newNotificationForDb);
         try {
             ErrorNotificationResponse response = newNotificationForDb.client.equals("primary")
                 ? notificationClient.notify(mapToRequest(notificationFromDb))
                 : notificationClientSecondary.notify(mapToRequest(notificationFromDb));
             //Update notification as Sent if Exela ok
-            return NotificationConverter.toNotificationResponse(notificationRepository.updateNotificationStatusAsSent(notificationFromDb.id, response.getNotificationId()));
+            return NotificationConverter.toNotificationResponse(
+                notificationRepository.updateNotificationStatusAsSent(
+                    notificationFromDb.id, response.getNotificationId()));
         } catch (FeignException exception) {
-            log.error("Error occurred trying to notify supplier. " +
-                          "Updating notification status to fail. Notification ID: " + notificationFromDb.id);
-            notificationRepository.updateNotificationStatusAsFail(notificationFromDb.id);
-            throw new FailedDependencyException(NotificationConverter.toNotificationResponse(notificationFromDb), exception);
+            log.error("Error occurred trying to notify supplier. "
+                          + "Updating notification status to fail. Notification ID: " + notificationFromDb.id);
+            throw new FailedDependencyException(NotificationConverter
+                                                    .toNotificationResponse(
+                                                        notificationRepository.updateNotificationStatusAsFail(
+                                                            notificationFromDb.id)), exception);
         }  catch (Exception e) {
-            log.error("An unexpected error occurred trying to notify supplier. " +
-                          "Updating notification status to fail. Notification ID: " + notificationFromDb.id);
+            log.error("An unexpected error occurred trying to notify supplier. "
+                          + "Updating notification status to fail. Notification ID: " + notificationFromDb.id);
             notificationRepository.updateNotificationStatusAsFail(notificationFromDb.id);
             throw e;
         }
@@ -171,16 +194,6 @@ public class NotificationService {
             exception
         );
 
-        notificationRepository.markAsFailure(notification.id);
-    }
-
-    private void fail(Notification notification, Exception exception) {
-        log.error(
-            "Marking as failure. {}. Exception message: {}",
-            exception.getMessage(),
-            notification,
-            exception
-        );
         notificationRepository.markAsFailure(notification.id);
     }
 

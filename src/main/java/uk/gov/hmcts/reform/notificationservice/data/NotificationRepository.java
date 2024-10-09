@@ -43,8 +43,8 @@ public class NotificationRepository {
 
     /**
      * Uses JDBC 'SELECT' to find a notification by its ID.
-     * Wraps result of query in option to return to method caller.
-     * @param id
+     * Wraps result of query in optional to return to method caller.
+     * @param id notification ID of the notification to be found
      * @return Optional of a Notification
      */
     public Optional<Notification> find(long id) {

@@ -19,4 +19,12 @@ public class AuthService {
             return authTokenValidator.getServiceName(authHeader);
         }
     }
+
+    public void validate(String authHeader) {
+        if (authHeader == null) {
+            throw new UnauthenticatedException("Missing ServiceAuthorization header");
+        } else {
+            authTokenValidator.validate(authHeader);
+        }
+    }
 }

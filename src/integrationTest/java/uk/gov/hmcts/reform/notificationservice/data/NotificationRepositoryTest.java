@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.assertj.core.api.Assertions.not;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.CREATED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;

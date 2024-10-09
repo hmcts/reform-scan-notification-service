@@ -24,8 +24,8 @@ public class FailedDependencyException extends RuntimeException {
      * @param dependencyException the original exception that occurred when trying to make the request to the dependency
      */
     public FailedDependencyException(NotificationInfo notificationInfo, FeignException dependencyException) {
-        super(String.format("The service's client failed to make a request to an external endpoint: Client received status code: %s. " +
-                                "Client received response: %s.",
+        super(String.format("The service's client failed to make a request to an external endpoint: "
+                                + "Client received status code: %s. " + "Client received response: %s.",
                             dependencyException.status(),
                             dependencyException.contentUTF8()));
         this.notificationInfo = notificationInfo;
