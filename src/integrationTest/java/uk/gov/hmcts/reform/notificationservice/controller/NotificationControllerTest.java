@@ -26,10 +26,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static java.time.Instant.now;
 import static java.util.Arrays.asList;
@@ -38,7 +34,6 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -60,18 +55,18 @@ public class NotificationControllerTest {
     protected AuthService authService;
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
     private static final String PRIMARY_CLIENT = "primary";
-
     private static final String PATH = "/notifications";
-
     private static final Integer NOTIFICATION_ID = 1;
+    private static final String AUTH = "auth";
+    private static final String SERVICE = "service";
+    private static final String FILENAME = "zip_file_name.zip";
+    private static final String FILENAME2 = "hello.zip";
+
+
 
     @Test
     void should_get_notifications_by_file_name_and_service() throws Exception {
-        final String fileName = "zip_file_name.zip";
-        final String auth = "auth";
-        final String service = "service";
         Instant instant
             = Instant.parse("2020-03-23T13:17:20.00Z");
         final String instantString = "2020-03-23T13:17:20";
@@ -79,10 +74,10 @@ public class NotificationControllerTest {
         var notification1 = new Notification(
             1L,
             "confirmation-id-1",
-            fileName,
+            FILENAME,
             "po_box1",
             "container",
-            service,
+            SERVICE,
             "DCN1",
             ErrorCode.ERR_METAFILE_INVALID,
             "invalid metafile1",
@@ -95,10 +90,10 @@ public class NotificationControllerTest {
         var notification2 = new Notification(
             2L,
             "confirmation-id-2",
-            fileName,
+            FILENAME,
             "po_box2",
             "container",
-            service,
+            SERVICE,
             "DCN2",
             ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
             null,
@@ -113,10 +108,10 @@ public class NotificationControllerTest {
         var notification3 = new Notification(
             3L,
             "confirmation-id-3",
-            fileName,
+            FILENAME,
             "po_box3",
             "container",
-            service,
+            SERVICE,
             "DCN3",
             ErrorCode.ERR_PAYMENTS_DISABLED,
             trimmedErrorDesc + "_should_not_seen",
@@ -126,15 +121,15 @@ public class NotificationControllerTest {
             "messageId3",
             PRIMARY_CLIENT
         );
-        given(authService.authenticate(auth)).willReturn(service);
-        given(notificationService.findByFileNameAndService(fileName, service))
+        given(authService.authenticate(AUTH)).willReturn(SERVICE);
+        given(notificationService.findByFileNameAndService(FILENAME, SERVICE))
             .willReturn(asList(notification1, notification2, notification3));
 
         mockMvc
             .perform(
                 get("/notifications")
-                    .header("ServiceAuthorization", auth)
-                    .queryParam("file_name", fileName)
+                    .header("ServiceAuthorization", AUTH)
+                    .queryParam("file_name", FILENAME)
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(3)))
@@ -189,18 +184,15 @@ public class NotificationControllerTest {
 
     @Test
     void should_return_empty_list_if_no_notifications_found_for_given_file_name_and_service() throws Exception {
-        final String fileName = "hello.zip";
-        final String auth = "auth";
-        final String service = "service";
 
-        given(authService.authenticate(auth)).willReturn(service);
-        given(notificationService.findByFileNameAndService(fileName, service)).willReturn(emptyList());
+        given(authService.authenticate(AUTH)).willReturn(SERVICE);
+        given(notificationService.findByFileNameAndService(FILENAME2, SERVICE)).willReturn(emptyList());
 
         mockMvc
             .perform(
                 get("/notifications")
-                    .header("ServiceAuthorization", auth)
-                    .queryParam("file_name", fileName)
+                    .header("ServiceAuthorization", AUTH)
+                    .queryParam("file_name", FILENAME2)
             )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count", is(0)))
@@ -212,13 +204,12 @@ public class NotificationControllerTest {
 
     @Test
     void should_respond_with_unauthenticated_if_service_authorization_header_missing() throws Exception {
-        final String fileName = "hello.zip";
         given(authService.authenticate(null)).willCallRealMethod();
 
         mockMvc
             .perform(
                 get("/notifications")
-                    .queryParam("file_name", fileName)
+                    .queryParam("file_name", FILENAME2)
             )
             .andExpect(status().isUnauthorized())
         ;
@@ -226,16 +217,13 @@ public class NotificationControllerTest {
 
     @Test
     void should_respond_with_unauthenticated_if_invalid_token_exception() throws Exception {
-        final String fileName = "hello.zip";
-        final String auth = "auth";
-
-        given(authService.authenticate(auth)).willThrow(new InvalidTokenException("msg"));
+        given(authService.authenticate("notvalid")).willThrow(new InvalidTokenException("msg"));
 
         mockMvc
             .perform(
                 get("/notifications")
-                    .queryParam("file_name", fileName)
-                    .header("ServiceAuthorization", auth)
+                    .queryParam("file_name", FILENAME2)
+                    .header("ServiceAuthorization", "notvalid")
             )
             .andExpect(status().isUnauthorized())
         ;
@@ -243,23 +231,19 @@ public class NotificationControllerTest {
 
     @Test
     void should_respond_with_unauthenticated_if_service_exception() throws Exception {
-        final String fileName = "hello.zip";
-        final String auth = "auth";
-
-        given(authService.authenticate(auth)).willThrow(new ServiceException("msg", new RuntimeException()));
+        given(authService.authenticate(AUTH)).willThrow(new ServiceException("msg", new RuntimeException()));
 
         mockMvc
             .perform(
                 get("/notifications")
-                    .queryParam("file_name", fileName)
-                    .header("ServiceAuthorization", auth)
+                    .queryParam("file_name", FILENAME2)
+                    .header("ServiceAuthorization", AUTH)
             )
             .andExpect(status().isInternalServerError());
     }
 
     @Test
     void should_get_notifications_by_date() throws Exception {
-
         LocalDate date = LocalDate.now();
         Instant instantNow = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 
@@ -353,7 +337,6 @@ public class NotificationControllerTest {
 
     @Test
     void should_get_notifications_by_zip_file_name() throws Exception {
-
         String zipFileName = "zip_file_name_123.zip";
         var notification1 = new Notification(
                 1L,
@@ -397,7 +380,6 @@ public class NotificationControllerTest {
 
     @Test
     void should_get_all_pending_notifications() throws Exception {
-
         var notification1 = new Notification(
                 1L,
                 "confirmation-id-1",
@@ -463,7 +445,6 @@ public class NotificationControllerTest {
 
     @Test
     void should_get_notifications_by_notification_id() throws Exception {
-
         var notificationInfo = new NotificationInfo(
             NOTIFICATION_ID,
             "confirmation-id-1",
@@ -486,12 +467,10 @@ public class NotificationControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(content().string(notificationJson));
-
     }
 
     @Test
     void should_not_return_notification_by_id_if_not_found() throws Exception {
-
         when(notificationService.findByNotificationId(2)).thenThrow(new NotFoundException("Notification not found with ID: " + 2));
 
         mockMvc.perform(get(PATH + "/" + 2))
@@ -500,7 +479,6 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_return_notification_if_id_is_not_integer() throws Exception {
-
         mockMvc.perform(get(PATH + "/" + 2.4))
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.message").value("Invalid number. You must use a whole number e.g. not decimals like 13.0 and not letters"));
@@ -508,8 +486,6 @@ public class NotificationControllerTest {
 
     @Test
     void should_save_new_notification() throws Exception {
-        String auth = "auth";
-        String service = "service";
         var notificationMsg = new NotificationMsgRequest(
             "zip_file_name_123.zip",
             "civil",
@@ -537,24 +513,27 @@ public class NotificationControllerTest {
         );
 
         when(notificationService.saveNotificationMsg(notificationMsg)).thenReturn(notificationInfo);
-        when(authService.authenticate(auth)).thenReturn(service);
+        when(authService.authenticate(AUTH)).thenReturn(SERVICE);
 
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
         OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
+        final String notificationMsgJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
         final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationInfo);
 
         mockMvc.perform(post(PATH)
-                            .header("ServiceAuthorization", auth)
-                            .content(notificationInfoJson)
+                            .header("ServiceAuthorization", AUTH)
+                            .content(notificationMsgJson)
                             .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .accept(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().string(notificationInfoJson))
             .andReturn();
     }
 
     @Test
-    void should_not_save_notification_if_not_authenticated() throws Exception {
+    void should_not_save_notification_if_authentication_not_present() throws Exception {
         var notificationMsg = new NotificationMsgRequest(
             "zip_file_name_123.zip",
             "civil",
@@ -580,7 +559,34 @@ public class NotificationControllerTest {
     }
 
     @Test
-    void should_apply_constraints_on_notification_msg_request_body() throws Exception {
+    void should_not_save_notification_if_authentication_not_valid() throws Exception {
+        var notificationMsg = new NotificationMsgRequest(
+            "zip_file_name_123.zip",
+            "civil",
+            "14620",
+            "sscs",
+            "36222789074101144",
+            ErrorCode.ERR_SIG_VERIFY_FAILED,
+            "invalid signature - gif reactions not allowed",
+            "reform_scan_notification_tests"
+        );
+        given(authService.authenticate("imnotvalid")).willThrow(new InvalidTokenException("msg"));
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
+
+        mockMvc.perform(post(PATH)
+                            .header("ServiceAuthorization", "imnotvalid")
+                            .content(notificationInfoJson)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isUnauthorized())
+            .andReturn();
+    }
+
+    @Test
+    void should_apply_constraints_on_notification_request_body() throws Exception {
         String auth = "auth";
         var notificationMsg = new NotificationMsgRequest(
             "",
@@ -609,6 +615,54 @@ public class NotificationControllerTest {
             .andExpect(jsonPath("$.zipFileName").value("must not be blank"))
             .andExpect(jsonPath("$.errorDescription").value("must not be blank"))
             .andExpect(jsonPath("$.service").value("must not be blank"))
+            .andReturn();
+    }
+
+    @Test
+    void should_not_put_constraints_on_certain_fields() throws Exception {
+        var notificationMsg = new NotificationMsgRequest(
+            "zip_file_name_123.zip",
+            null,
+            null,
+            "sscs",
+            null,
+            ErrorCode.ERR_SIG_VERIFY_FAILED,
+            "invalid signature - gif reactions not allowed",
+            "reform_scan_notification_tests"
+        );
+
+        var notificationInfo = new NotificationInfo(
+            NOTIFICATION_ID,
+            "exela id",
+            "zip_file_name_123.zip",
+            "14620",
+            "sscs",
+            "36222789074101144",
+            "invalid signature - gif reactions not allowed",
+            ErrorCode.ERR_SIG_VERIFY_FAILED.toString(),
+            "invalid signature - gif reactions not allowed",
+            Instant.now(),
+            Instant.now(),
+            SENT.toString()
+        );
+
+        when(notificationService.saveNotificationMsg(notificationMsg)).thenReturn(notificationInfo);
+        when(authService.authenticate(AUTH)).thenReturn(SERVICE);
+
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        final String notificationMsgJson = OBJECT_MAPPER.writeValueAsString(notificationMsg);
+        final String notificationInfoJson = OBJECT_MAPPER.writeValueAsString(notificationInfo);
+
+        mockMvc.perform(post(PATH)
+                            .header("ServiceAuthorization", AUTH)
+                            .content(notificationMsgJson)
+                            .contentType(MediaType.APPLICATION_JSON_VALUE)
+                            .accept(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().string(notificationInfoJson))
             .andReturn();
     }
 }
