@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.notificationservice.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -10,13 +13,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import uk.gov.hmcts.reform.authorisation.exceptions.InvalidTokenException;
+import uk.gov.hmcts.reform.authorisation.exceptions.ServiceException;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
+import uk.gov.hmcts.reform.notificationservice.service.UnauthenticatedException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.springframework.http.ResponseEntity.status;
+
+@OpenAPIDefinition(
+    info = @Info(
+        title = "Error Notification Service",
+        version = "1",
+        description = "API consuming Azure ServiceBus messages and publishing error messages to the scan supplier",
+        license = @License(name = "MIT", url = "https://opensource.org/licenses/MIT")
+    )
+)
 @ControllerAdvice
 @Slf4j
 public class GlobalControllerExceptionHandler {
@@ -67,5 +82,23 @@ public class GlobalControllerExceptionHandler {
         error.put("Info", ex.getMessage());
         error.put(MESSAGE, "Invalid number. You must use a whole number e.g. not decimals like 13.0 and not letters");
         return new ResponseEntity<>(new ObjectMapper().writeValueAsString(error), responseHeaders, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    protected ResponseEntity<Void> handleUnauthenticatedException(UnauthenticatedException ex) {
+        log.error(ex.getMessage(), ex);
+        return status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    protected ResponseEntity<Void> handleInvalidTokenException(InvalidTokenException ex) {
+        log.error(ex.getMessage(), ex);
+        return status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    protected ResponseEntity<Void> handleServiceException(ServiceException ex) {
+        log.error(ex.getMessage(), ex);
+        return status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
