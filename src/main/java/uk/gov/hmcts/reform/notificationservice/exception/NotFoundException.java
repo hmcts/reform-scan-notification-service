@@ -2,6 +2,10 @@ package uk.gov.hmcts.reform.notificationservice.exception;
 
 import java.io.Serial;
 
+/**
+ * Exception class - should be thrown when an item cannot be found from a given input e.g. when there has been a request
+ * to fetch an item by ID for which the database returns nothing.
+ */
 public class NotFoundException extends RuntimeException {
 
     @Serial
