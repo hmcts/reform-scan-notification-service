@@ -16,6 +16,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.assertj.core.api.Assertions.not;
+import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.CREATED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
@@ -546,6 +548,68 @@ public class NotificationRepositoryTest {
         assertThat(exception)
             .isInstanceOf(DuplicateMessageIdException.class)
             .hasMessage("Failed to save notification message for duplicate message id - " + messageId);
+    }
+
+    @Test
+    void should_allow_saving_item_with_null_message_id() {
+        final var newNotification = new NewNotification(
+            "zip_file_1.zip",
+            "po_box1",
+            "bulkscan",
+            "other_service",
+            "dcn1",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "error_description1",
+            null,
+            PRIMARY_CLIENT
+        );
+
+        assertThat(notificationRepository.save(newNotification))
+            .satisfies(savedNotification -> {
+                assertThat(savedNotification.zipFileName).isEqualTo(newNotification.zipFileName);
+                assertThat(savedNotification.poBox).isEqualTo(newNotification.poBox);
+                assertThat(savedNotification.service).isEqualTo(newNotification.service);
+                assertThat(savedNotification.container).isEqualTo(newNotification.container);
+                assertThat(savedNotification.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
+                assertThat(savedNotification.errorCode).isEqualTo(newNotification.errorCode);
+                assertThat(savedNotification.errorDescription).isEqualTo(newNotification.errorDescription);
+                assertThat(savedNotification.createdAt).isNotNull();
+                assertThat(savedNotification.processedAt).isNull();
+                assertThat(savedNotification.status).isEqualTo(CREATED);
+                assertThat(savedNotification.messageId).isEqualTo(newNotification.messageId);
+                assertThat(savedNotification.client).isEqualTo(PRIMARY_CLIENT);
+            });
+    }
+
+    @Test
+    void should_update_an_item_to_have_status_fail() {
+        long notificationId = notificationRepository.insert(createNewNotification());
+
+        assertThat(notificationRepository.find(notificationId))
+            .get()
+            .isNotNull()
+            .extracting("status")
+            .isNotEqualTo(FAILED);
+
+        assertThat(notificationRepository.updateNotificationStatusAsFail(notificationId))
+            .extracting("status")
+            .isEqualTo(FAILED);
+
+    }
+
+    @Test
+    void should_update_an_item_to_have_status_sent() {
+        long notificationId = notificationRepository.insert(createNewNotification());
+
+        assertThat(notificationRepository.find(notificationId))
+            .get()
+            .isNotNull()
+            .extracting("status")
+            .isNotEqualTo(SENT);
+
+        assertThat(notificationRepository.updateNotificationStatusAsSent(notificationId, "exela"))
+            .extracting("status")
+            .isEqualTo(SENT);
     }
 
     private NewNotification createNewNotification() {

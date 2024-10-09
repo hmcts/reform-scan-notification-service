@@ -10,7 +10,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
 
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +41,12 @@ public class NotificationRepository {
         this.delayDurationToProcessPending = delayDurationToProcessPending;
     }
 
+    /**
+     * Uses JDBC 'SELECT' to find a notification by its ID.
+     * Wraps result of query in option to return to method caller.
+     * @param id
+     * @return Optional of a Notification
+     */
     public Optional<Notification> find(long id) {
         try {
             Notification notification = jdbcTemplate.queryForObject(
@@ -130,6 +135,15 @@ public class NotificationRepository {
         }
     }
 
+    /**
+     * Saves a notification to the notifications table.
+     * Uses JDBC to first insert the notification into the table. The notification is
+     * saved with an initial status of CREATED. The primary key (notification ID)
+     * that is generated for the item is then captured to use in a 'SELECT' query so that the newly
+     * inserted notification can be found and returned to the method caller.
+     * @param notification the notification that should be saved
+     * @return notification that was saved
+     */
     public Notification save(NewNotification notification) {
         try {
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -214,8 +228,9 @@ public class NotificationRepository {
 
     /**
      * Updates the status column of a notification row in the Notifications table
-     * to have the status of FAIL.
-     *
+     * to have the status of FAILED.
+     * Uses JDBC update to set the processed at column to now and the status column to FAILED.
+     * It then uses a 'SELECT' to find the updated notification and return to the method caller.
      * @param notificationId the ID of the notification whose status should be updated
      * @return notification that was updated
      */
@@ -239,8 +254,10 @@ public class NotificationRepository {
 
     /**
      * Updates the status column of a notification row in the Notifications table
-     * to have the status of SENT. Also updates the confirmation ID column with the
-     * ID from the supplier.
+     * to have the status of SENT.
+     * Uses JDBC update to set the processed at column to now, the status column to SENT
+     * and the confirmation ID (supplier ID) column to the given ID.
+     * It then uses a 'SELECT' to find the notification that was updated to return to method caller
      * @param notificationId the ID of the notification that should be updated
      * @param confirmationId the ID returned by the supplier when it was notified
      * @return notification that was updated
