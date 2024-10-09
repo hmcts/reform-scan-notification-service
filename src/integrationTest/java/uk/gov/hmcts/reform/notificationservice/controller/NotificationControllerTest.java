@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationStatus;
 import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
-import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsgRequest;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotifyRequest;
 import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
 import uk.gov.hmcts.reform.notificationservice.service.AuthService;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
@@ -486,7 +486,7 @@ public class NotificationControllerTest {
 
     @Test
     void should_save_new_notification() throws Exception {
-        var notificationMsg = new NotificationMsgRequest(
+        var notificationMsg = new NotifyRequest(
             "zip_file_name_123.zip",
             "civil",
             "14620",
@@ -534,7 +534,7 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_save_notification_if_authentication_not_present() throws Exception {
-        var notificationMsg = new NotificationMsgRequest(
+        var notificationMsg = new NotifyRequest(
             "zip_file_name_123.zip",
             "civil",
             "14620",
@@ -560,7 +560,7 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_save_notification_if_authentication_not_valid() throws Exception {
-        var notificationMsg = new NotificationMsgRequest(
+        var notificationMsg = new NotifyRequest(
             "zip_file_name_123.zip",
             "civil",
             "14620",
@@ -588,7 +588,7 @@ public class NotificationControllerTest {
     @Test
     void should_apply_constraints_on_notification_request_body() throws Exception {
         String auth = "auth";
-        var notificationMsg = new NotificationMsgRequest(
+        var notificationMsg = new NotifyRequest(
             "",
             "jurisdiction",
             "14620",
@@ -620,7 +620,7 @@ public class NotificationControllerTest {
 
     @Test
     void should_not_put_constraints_on_certain_fields() throws Exception {
-        var notificationMsg = new NotificationMsgRequest(
+        var notificationMsg = new NotifyRequest(
             "zip_file_name_123.zip",
             null,
             null,
