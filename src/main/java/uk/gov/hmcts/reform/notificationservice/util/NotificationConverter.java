@@ -50,6 +50,8 @@ public final class NotificationConverter {
      * Maps an API request notification to a notification for the database to save.
      * There are several fields of the request notification that are allowed to be null. To
      * avoid saving nulls to the database where we can, they are set to empty strings if null.
+     * Message ID comes from the queue and are not present in API requests so this field is set as an
+     * empty string.
      * @param notifyRequest the external request version of a notification
      * @param client the client that should be used to notify the supplier
      * @return a new notification for the database to save
@@ -63,7 +65,7 @@ public final class NotificationConverter {
             StringUtils.defaultIfEmpty(notifyRequest.documentControlNumber, ""),
             notifyRequest.errorCode,
             notifyRequest.errorDescription,
-            null,
+            "",
             StringUtils.defaultIfEmpty(client, "primary")
         );
     }
