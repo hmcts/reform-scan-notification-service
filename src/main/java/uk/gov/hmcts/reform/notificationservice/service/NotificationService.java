@@ -149,13 +149,17 @@ public class NotificationService {
     public NotificationInfo saveNotificationMsg(NotifyRequest notifyRequest) {
         String jurisdiction = Objects.requireNonNullElse(notifyRequest.jurisdiction, "").toLowerCase(Locale.ROOT);
         String client = Arrays.asList(secondaryClientJurisdictions).contains(jurisdiction) ? "secondary" : "primary";
-        //Save notification as Pending
+        //Save notification as Created
         NewNotification newNotificationForDb = NotificationConverter.toNewNotification(notifyRequest, client);
         Notification notificationFromDb = notificationRepository.save(newNotificationForDb);
+        log.info("New request has been received to notify an external supplier. Notification ID: "
+                     + notificationFromDb.id);
         try {
             ErrorNotificationResponse response = newNotificationForDb.client.equals("primary")
                 ? notificationClient.notify(mapToRequest(notificationFromDb))
                 : notificationClientSecondary.notify(mapToRequest(notificationFromDb));
+            log.info(String.format("New request has been received to notify an external supplier. Notification ID: %s. "
+                                       + "Supplier ID: %s", notificationFromDb.id, notificationFromDb.confirmationId));
             //Update notification as Sent if Exela ok
             return NotificationConverter.toNotificationResponse(
                 notificationRepository.updateNotificationStatusAsSent(
