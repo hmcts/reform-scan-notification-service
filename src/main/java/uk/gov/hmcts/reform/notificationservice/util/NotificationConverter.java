@@ -48,6 +48,8 @@ public final class NotificationConverter {
 
     /**
      * Maps an API request notification to a notification for the database to save.
+     * There are several fields of the request notification that are allowed to be null. To
+     * avoid saving nulls to the database where we can, they are set to empty strings if null.
      * @param notifyRequest the external request version of a notification
      * @param client the client that should be used to notify the supplier
      * @return a new notification for the database to save
@@ -55,14 +57,14 @@ public final class NotificationConverter {
     public static NewNotification toNewNotification(NotifyRequest notifyRequest, String client) {
         return new NewNotification(
             notifyRequest.zipFileName,
-            notifyRequest.poBox,
+            StringUtils.defaultIfEmpty(notifyRequest.poBox, ""),
             notifyRequest.container,
             notifyRequest.service,
-            StringUtils.isEmpty(notifyRequest.documentControlNumber) ? "" : notifyRequest.documentControlNumber,
+            StringUtils.defaultIfEmpty(notifyRequest.documentControlNumber, ""),
             notifyRequest.errorCode,
             notifyRequest.errorDescription,
             null,
-            client
+            StringUtils.defaultIfEmpty(client, "primary")
         );
     }
 }
