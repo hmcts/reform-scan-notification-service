@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
@@ -15,8 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.CREATED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
@@ -513,6 +515,7 @@ public class NotificationRepositoryTest {
     }
 
     @Test
+    @Disabled //Message ID is no longer unique column. Dropped constraint in FACT-1963
     void should_throw_exception_for_duplicate_message_id() {
         // given
         String messageId = UUID.randomUUID().toString();
@@ -550,7 +553,7 @@ public class NotificationRepositoryTest {
     }
 
     @Test
-    void should_allow_saving_item_with_null_message_id() {
+    void should_not_allow_saving_item_with_null_message_id() {
         final var newNotification = new NewNotification(
             "zip_file_1.zip",
             "po_box1",
@@ -563,21 +566,8 @@ public class NotificationRepositoryTest {
             PRIMARY_CLIENT
         );
 
-        assertThat(notificationRepository.save(newNotification))
-            .satisfies(savedNotification -> {
-                assertThat(savedNotification.zipFileName).isEqualTo(newNotification.zipFileName);
-                assertThat(savedNotification.poBox).isEqualTo(newNotification.poBox);
-                assertThat(savedNotification.service).isEqualTo(newNotification.service);
-                assertThat(savedNotification.container).isEqualTo(newNotification.container);
-                assertThat(savedNotification.documentControlNumber).isEqualTo(newNotification.documentControlNumber);
-                assertThat(savedNotification.errorCode).isEqualTo(newNotification.errorCode);
-                assertThat(savedNotification.errorDescription).isEqualTo(newNotification.errorDescription);
-                assertThat(savedNotification.createdAt).isNotNull();
-                assertThat(savedNotification.processedAt).isNull();
-                assertThat(savedNotification.status).isEqualTo(CREATED);
-                assertThat(savedNotification.messageId).isEqualTo(newNotification.messageId);
-                assertThat(savedNotification.client).isEqualTo(PRIMARY_CLIENT);
-            });
+        assertThatThrownBy(() -> notificationRepository.save(newNotification))
+            .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
