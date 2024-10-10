@@ -3,9 +3,19 @@
 ![](https://github.com/hmcts/reform-scan-notification-service/workflows/CI/badge.svg)
 [![](https://github.com/hmcts/reform-scan-notification-service/workflows/Publish%20Swagger%20Specs/badge.svg)](https://hmcts.github.io/reform-api-docs/swagger.html?url=https://hmcts.github.io/reform-api-docs/specs/reform-scan-notification-service.json)
 
+## Overview
+
+Reform Scan Notification is a microservice that provides the Bulk Scan ecosystem a way of notifying an external
+supplier when something has gone wrong.
+
 ## Purpose
 
-Retrieves service bus queue messages from notifications queue and then processes them by notifying external supplier's API and finally saves results to database in notifications table.
+Retrieves service bus queue messages from notifications queue and then processes them by notifying external supplier's
+API and finally saves results to database in notifications table.
+
+Also exposes several API endpoints related to notifications. Through this microservice you can retrieve information about
+a specific notification, get a list of all notifications that have not yet been processed in the queue and also request
+that the external supplier is notified of an error.
 
 ## Features
   - Retrieves messages from service bus queue
