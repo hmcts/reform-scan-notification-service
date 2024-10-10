@@ -36,3 +36,7 @@ java:
           alias: QUEUE_READ_ACCESS_KEY
   postgresql:
     enabled: true
+    image:
+      registry: hmctspublic.azurecr.io
+      repository: imported/bitnami/postgresql
+      tag: '16-alpine'
