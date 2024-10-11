@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import static java.time.Instant.now;
 import static org.slf4j.LoggerFactory.getLogger;
 
+//TODO: FACT-2026 - whole class can go
 @Configuration
 @EnableScheduling
 public class SchedulerConfiguration implements SchedulingConfigurer {

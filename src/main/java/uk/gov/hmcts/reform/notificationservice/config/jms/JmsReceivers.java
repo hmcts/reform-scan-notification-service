@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.JmsListener;
 import uk.gov.hmcts.reform.notificationservice.service.JmsNotificationMessageProcessor;
 
+//TODO: FACT-2026 - whole class can go
 @Configuration()
 @ConditionalOnProperty(name = "jms.enabled", havingValue = "true")
 public class JmsReceivers {

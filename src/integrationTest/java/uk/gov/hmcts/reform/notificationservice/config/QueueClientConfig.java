@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.Mockito.mock;
 
+//TODO: FACT-2026 - Whole config can go
 @Configuration
 public class QueueClientConfig {
 

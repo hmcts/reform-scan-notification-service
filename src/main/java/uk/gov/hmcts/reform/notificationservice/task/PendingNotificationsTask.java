@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.notificationservice.service.NotificationService;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
+//TODO: FACT-2026 - whole class can go
 @Component
 @ConditionalOnProperty(
     prefix = "scheduling.task",

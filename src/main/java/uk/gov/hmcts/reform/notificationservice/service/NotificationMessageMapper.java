@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
+//TODO: FACT-2026 - whole class can go
 @Component
 public class NotificationMessageMapper {
 

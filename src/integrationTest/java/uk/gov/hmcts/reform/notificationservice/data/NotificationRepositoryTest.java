@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdException;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.FAILED;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
@@ -33,7 +36,7 @@ public class NotificationRepositoryTest {
 
     private static final String PRIMARY_CLIENT = "primary";
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_save_and_read_notification() {
         // given
         var newNotification = createNewNotification();
@@ -320,7 +323,7 @@ public class NotificationRepositoryTest {
         ;
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_all_pending_notifications_to_be_sent_out() {
         // given
         var newNotification = createNewNotification();
@@ -363,7 +366,7 @@ public class NotificationRepositoryTest {
             });
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_false_when_mark_as_sent_did_not_find_any_notification_to_update() {
         // when
         boolean isMarked = notificationRepository.markAsSent(1_000, "foo");
@@ -372,7 +375,7 @@ public class NotificationRepositoryTest {
         assertThat(isMarked).isFalse();
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_true_when_mark_as_sent_was_successful() {
         // given
         long id = notificationRepository.insert(createNewNotification());
@@ -395,7 +398,7 @@ public class NotificationRepositoryTest {
             });
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_false_when_mark_as_failure_did_not_find_any_notification_to_update() {
         // when
         boolean isMarked = notificationRepository.markAsFailure(1_000);
@@ -404,7 +407,7 @@ public class NotificationRepositoryTest {
         assertThat(isMarked).isFalse();
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_true_when_mark_as_failure_was_successful() {
         // given
         long id = notificationRepository.insert(createNewNotification());
@@ -512,6 +515,7 @@ public class NotificationRepositoryTest {
     }
 
     @Test
+    @Disabled //Message ID is no longer unique column. Dropped constraint in FACT-1963
     void should_throw_exception_for_duplicate_message_id() {
         // given
         String messageId = UUID.randomUUID().toString();
@@ -546,6 +550,55 @@ public class NotificationRepositoryTest {
         assertThat(exception)
             .isInstanceOf(DuplicateMessageIdException.class)
             .hasMessage("Failed to save notification message for duplicate message id - " + messageId);
+    }
+
+    @Test
+    void should_not_allow_saving_item_with_null_message_id() {
+        final var newNotification = new NewNotification(
+            "zip_file_1.zip",
+            "po_box1",
+            "bulkscan",
+            "other_service",
+            "dcn1",
+            ErrorCode.ERR_FILE_LIMIT_EXCEEDED,
+            "error_description1",
+            null,
+            PRIMARY_CLIENT
+        );
+
+        assertThatThrownBy(() -> notificationRepository.save(newNotification))
+            .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void should_update_an_item_to_have_status_fail() {
+        long notificationId = notificationRepository.insert(createNewNotification());
+
+        assertThat(notificationRepository.find(notificationId))
+            .get()
+            .isNotNull()
+            .extracting("status")
+            .isNotEqualTo(FAILED);
+
+        assertThat(notificationRepository.updateNotificationStatusAsFail(notificationId))
+            .extracting("status")
+            .isEqualTo(FAILED);
+
+    }
+
+    @Test
+    void should_update_an_item_to_have_status_sent() {
+        long notificationId = notificationRepository.insert(createNewNotification());
+
+        assertThat(notificationRepository.find(notificationId))
+            .get()
+            .isNotNull()
+            .extracting("status")
+            .isNotEqualTo(SENT);
+
+        assertThat(notificationRepository.updateNotificationStatusAsSent(notificationId, "exela"))
+            .extracting("status")
+            .isEqualTo(SENT);
     }
 
     private NewNotification createNewNotification() {

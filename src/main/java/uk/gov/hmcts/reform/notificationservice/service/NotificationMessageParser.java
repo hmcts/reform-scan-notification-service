@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
 import java.io.IOException;
 
+//TODO: FACT-2026 - whole class can go
 @Service
 public class NotificationMessageParser {
 

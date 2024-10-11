@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
+//TODO: FACT-2026 - Whole class can go
 @SpringBootTest(properties = {
     // consume task is not under shedlock. including config for future in case it will be
     "scheduling.task.notifications-consume.enable=true",

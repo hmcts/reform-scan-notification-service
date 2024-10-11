@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import static com.google.common.io.Resources.getResource;
 import static java.util.UUID.randomUUID;
 
+//TODO: FACT-2026 - Whole class can go
 final class QueueMessageHelper {
 
     private static final String FILENAME_SUFFIX_SEARCH = "{suffix}";

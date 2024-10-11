@@ -11,6 +11,7 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.core.JmsTemplate;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
+//TODO: FACT-2026 - Whole class can go
 public class JmsNotificationsMessageSender {
 
     private static final Logger log = LoggerFactory.getLogger(JmsNotificationsMessageSender.class);
