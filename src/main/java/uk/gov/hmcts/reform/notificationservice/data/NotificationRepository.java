@@ -91,7 +91,7 @@ public class NotificationRepository {
         );
     }
 
-    public List<Notification> findPending() {
+    public List<Notification> findPending() { //TODO: FACT-2026
         return jdbcTemplate.query(
             "SELECT * FROM notifications WHERE status = :status and confirmation_id IS NULL and "
                 + "created_at < (now()::timestamp - interval '" + delayDurationToProcessPending + " minutes')",
@@ -190,7 +190,7 @@ public class NotificationRepository {
      * @param confirmationId ID provided by API after successfully sending notification
      * @return update was successful
      */
-    public boolean markAsSent(long id, String confirmationId) {
+    public boolean markAsSent(long id, String confirmationId) { //TODO: FACT-2026
         int rowsUpdated = jdbcTemplate.update(
             "UPDATE notifications "
                 + "SET confirmation_id = :confirmationId, "
@@ -212,7 +212,7 @@ public class NotificationRepository {
      * @param id notification ID
      * @return update was successful
      */
-    public boolean markAsFailure(long id) {
+    public boolean markAsFailure(long id) { //TODO: FACT-2026
         int rowsUpdated = jdbcTemplate.update(
             "UPDATE notifications "
                 + "SET processed_at = NOW(), "

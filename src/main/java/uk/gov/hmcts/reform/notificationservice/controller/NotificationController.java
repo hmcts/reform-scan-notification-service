@@ -203,7 +203,7 @@ public class NotificationController {
             )
         }
     )
-    @GetMapping(path = "/all-pending")
+    @GetMapping(path = "/all-pending") //TODO: FACT-2026
     @Operation(
             method = "GET",
             summary = "Get list of error notifications",

@@ -10,7 +10,7 @@ dependencies:
   - name: java
     version: 5.2.1
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
-  - name: servicebus
+  - name: servicebus #TODO: FACT-2026
     version: 1.0.7
     repository: https://hmctspublic.azurecr.io/helm/v1/repo/
     condition: servicebus.enabled

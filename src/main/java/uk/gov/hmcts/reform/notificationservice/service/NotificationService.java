@@ -52,7 +52,7 @@ public class NotificationService {
         this.secondaryClientJurisdictions = secondaryClientJurisdictions.getJurisdictionList();;
     }
 
-    public void processPendingNotifications() {
+    public void processPendingNotifications() { //TODO: FACT-2026
         List<Notification> notifications = notificationRepository.findPending();
 
         log.info("Number of notifications to process: {}", notifications.size());
@@ -99,7 +99,7 @@ public class NotificationService {
         );
     }
 
-    public List<Notification> getAllPendingNotifications() {
+    public List<Notification> getAllPendingNotifications() { //TODO: FACT-2026
         return notificationRepository.findPending();
     }
 
@@ -189,7 +189,7 @@ public class NotificationService {
         );
     }
 
-    private void fail(Notification notification, FeignException.FeignClientException exception) {
+    private void fail(Notification notification, FeignException.FeignClientException exception) { //TODO: FACT-2026
         log.error(
             "Received http status {} from client. Marking as failure. {}. Client response: {}",
             exception.status(),
@@ -201,7 +201,7 @@ public class NotificationService {
         notificationRepository.markAsFailure(notification.id);
     }
 
-    private void postpone(Notification notification, FeignException exception) {
+    private void postpone(Notification notification, FeignException exception) { //TODO: FACT-2026
         log.error(
             "Received http status {} from client. Postponing notification for later. {}. Client response: {}",
             exception.status(),
@@ -211,7 +211,7 @@ public class NotificationService {
         );
     }
 
-    private void postpone(Notification notification, Exception exc) {
+    private void postpone(Notification notification, Exception exc) { //TODO: FACT-2026
         log.error("Error processing pending notifications. {}", notification, exc);
     }
 }

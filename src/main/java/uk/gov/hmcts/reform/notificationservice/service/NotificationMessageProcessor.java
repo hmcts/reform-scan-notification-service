@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.notificationservice.exception.DuplicateMessageIdExcep
 import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException;
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 
+//TODO: FACT-2026 - whole class can go
 @Service
 public class NotificationMessageProcessor {
 

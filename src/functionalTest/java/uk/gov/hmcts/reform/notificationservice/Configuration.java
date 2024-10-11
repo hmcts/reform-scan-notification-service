@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.notificationservice;
+package uk.gov.hmcts.reform.notificationservice; //TODO: FACT-2026 - Whole config can go
 
 import com.azure.messaging.servicebus.ServiceBusClientBuilder;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;

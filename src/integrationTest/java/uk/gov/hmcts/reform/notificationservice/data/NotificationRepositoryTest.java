@@ -36,7 +36,7 @@ public class NotificationRepositoryTest {
 
     private static final String PRIMARY_CLIENT = "primary";
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_save_and_read_notification() {
         // given
         var newNotification = createNewNotification();
@@ -323,7 +323,7 @@ public class NotificationRepositoryTest {
         ;
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_all_pending_notifications_to_be_sent_out() {
         // given
         var newNotification = createNewNotification();
@@ -366,7 +366,7 @@ public class NotificationRepositoryTest {
             });
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_false_when_mark_as_sent_did_not_find_any_notification_to_update() {
         // when
         boolean isMarked = notificationRepository.markAsSent(1_000, "foo");
@@ -375,7 +375,7 @@ public class NotificationRepositoryTest {
         assertThat(isMarked).isFalse();
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_true_when_mark_as_sent_was_successful() {
         // given
         long id = notificationRepository.insert(createNewNotification());
@@ -398,7 +398,7 @@ public class NotificationRepositoryTest {
             });
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_false_when_mark_as_failure_did_not_find_any_notification_to_update() {
         // when
         boolean isMarked = notificationRepository.markAsFailure(1_000);
@@ -407,7 +407,7 @@ public class NotificationRepositoryTest {
         assertThat(isMarked).isFalse();
     }
 
-    @Test
+    @Test //TODO: FACT-2026
     void should_return_flag_true_when_mark_as_failure_was_successful() {
         // given
         long id = notificationRepository.insert(createNewNotification());
