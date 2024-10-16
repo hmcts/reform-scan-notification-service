@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LaunchDarklyClient {
 
-    public final LDContext REFORM_SCAN_NOTIFICATION_SERVICE_USER;
+    public final LDContext reformScanNotificationContext;
 
     private final LDClientInterface internalClient;
 
@@ -22,11 +22,11 @@ public class LaunchDarklyClient {
         @Value("${launchdarkly.offline-mode:false}") Boolean offlineMode
     ) {
         this.internalClient = launchDarklyClientFactory.create(sdkKey, offlineMode);
-        this.REFORM_SCAN_NOTIFICATION_SERVICE_USER = LDContext.builder(sdkKey).build();
+        this.reformScanNotificationContext = LDContext.builder(sdkKey).build();
     }
 
     public boolean isFeatureEnabled(String feature) {
-        return internalClient.boolVariation(feature, REFORM_SCAN_NOTIFICATION_SERVICE_USER,
+        return internalClient.boolVariation(feature, reformScanNotificationContext,
                                             false);
     }
 
