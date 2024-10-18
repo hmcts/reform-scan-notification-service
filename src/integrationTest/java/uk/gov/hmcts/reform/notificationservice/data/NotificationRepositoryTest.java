@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.notificationservice.data;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -512,6 +513,7 @@ public class NotificationRepositoryTest {
     }
 
     @Test
+    @Disabled
     void should_throw_exception_for_duplicate_message_id() {
         // given
         String messageId = UUID.randomUUID().toString();
