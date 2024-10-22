@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 
+//TODO: FACT-2026 - whole class can go
 @Service
 public class NotificationMessageHandler {
     private static final Logger log = LoggerFactory.getLogger(NotificationMessageHandler.class);

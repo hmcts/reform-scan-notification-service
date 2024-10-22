@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.notificationservice.model.in;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import uk.gov.hmcts.reform.notificationservice.model.common.ErrorCode;
 
+//TODO: FACT-2026 - whole class can go
 public class NotificationMsg {
 
     public final String zipFileName;

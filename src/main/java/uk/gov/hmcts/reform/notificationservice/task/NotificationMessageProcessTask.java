@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+//TODO: FACT-2026 - whole class can go
 @Service
 @ConditionalOnProperty(value = "scheduling.task.notifications-consume.enabled", matchIfMissing = true)
 @ConditionalOnExpression("!${jms.enabled}")
