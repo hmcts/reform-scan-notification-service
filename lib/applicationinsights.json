@@ -22,7 +22,7 @@
           "attributes": [
             {
               "key": "name",
-              "value": ".*run.*",
+              "value": ".*\\.run.*",
               "matchType": "regexp"
             }
           ],
