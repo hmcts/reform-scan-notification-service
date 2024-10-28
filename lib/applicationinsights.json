@@ -21,8 +21,8 @@
           "telemetryType": "request",
           "attributes": [
             {
-              "key": "name",
-              "value": ".*\\.run.*",
+              "key": "operation.name",
+              "value": ".*run.*",
               "matchType": "regexp"
             }
           ],
