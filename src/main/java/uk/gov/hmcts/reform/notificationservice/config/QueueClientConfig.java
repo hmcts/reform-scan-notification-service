@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.notificationservice.service.NotificationMessageProcessor;
 
+//TODO: FACT-2026 - whole class can go
 @Configuration
 @ConditionalOnExpression("!${jms.enabled}")
 public class QueueClientConfig {

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.notificationservice.exception.InvalidMessageException
 import uk.gov.hmcts.reform.notificationservice.exception.UnknownMessageProcessingResultException;
 import uk.gov.hmcts.reform.notificationservice.model.in.NotificationMsg;
 
+//TODO: FACT-2026 - whole class can go
 @Service
 public class JmsNotificationMessageProcessor {
 

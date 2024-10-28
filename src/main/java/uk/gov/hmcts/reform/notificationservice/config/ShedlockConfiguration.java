@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.notificationservice.config;
 
+//TODO: FACT-2026 - whole class can go
 import net.javacrumbs.shedlock.core.LockProvider;
 import net.javacrumbs.shedlock.provider.jdbctemplate.JdbcTemplateLockProvider;
 import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;

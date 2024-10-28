@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+//TODO: FACT-2026 - whole class can go
 @Component
 public class NotificationMapper implements RowMapper<Notification> {
 

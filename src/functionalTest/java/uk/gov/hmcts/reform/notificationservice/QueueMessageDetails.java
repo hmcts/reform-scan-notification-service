@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.notificationservice;
 import com.azure.core.util.BinaryData;
 import org.springframework.http.MediaType;
 
+//TODO: FACT-2026 - Whole class can go
 class QueueMessageDetails {
 
     final String messageId;
