@@ -10,11 +10,21 @@ import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClient;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationClientSecondary;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationRequest;
 import uk.gov.hmcts.reform.notificationservice.clients.ErrorNotificationResponse;
+import uk.gov.hmcts.reform.notificationservice.config.SecondaryClientJurisdictionsConfig;
+import uk.gov.hmcts.reform.notificationservice.data.NewNotification;
 import uk.gov.hmcts.reform.notificationservice.data.Notification;
 import uk.gov.hmcts.reform.notificationservice.data.NotificationRepository;
+import uk.gov.hmcts.reform.notificationservice.exception.FailedDependencyException;
+import uk.gov.hmcts.reform.notificationservice.exception.NotFoundException;
+import uk.gov.hmcts.reform.notificationservice.model.in.NotifyRequest;
+import uk.gov.hmcts.reform.notificationservice.model.out.NotificationInfo;
+import uk.gov.hmcts.reform.notificationservice.util.NotificationConverter;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,20 +34,25 @@ public class NotificationService {
     private static final Logger log = getLogger(NotificationService.class);
 
     private final NotificationRepository notificationRepository;
+
     private final ErrorNotificationClient notificationClient;
     private final ErrorNotificationClientSecondary notificationClientSecondary;
 
+    private final String[] secondaryClientJurisdictions;
+
     public NotificationService(
-        NotificationRepository notificationRepository,
-        ErrorNotificationClient notificationClient,
-        ErrorNotificationClientSecondary notificationClientSecondary
+            NotificationRepository notificationRepository,
+            ErrorNotificationClient notificationClient,
+            ErrorNotificationClientSecondary notificationClientSecondary,
+            SecondaryClientJurisdictionsConfig secondaryClientJurisdictions
     ) {
         this.notificationRepository = notificationRepository;
         this.notificationClient = notificationClient;
         this.notificationClientSecondary = notificationClientSecondary;
+        this.secondaryClientJurisdictions = secondaryClientJurisdictions.getJurisdictionList();;
     }
 
-    public void processPendingNotifications() {
+    public void processPendingNotifications() { //TODO: FACT-2026
         List<Notification> notifications = notificationRepository.findPending();
 
         log.info("Number of notifications to process: {}", notifications.size());
@@ -84,7 +99,7 @@ public class NotificationService {
         );
     }
 
-    public List<Notification> getAllPendingNotifications() {
+    public List<Notification> getAllPendingNotifications() { //TODO: FACT-2026
         return notificationRepository.findPending();
     }
 
@@ -104,6 +119,66 @@ public class NotificationService {
         return notificationRepository.findByZipFileName(zipFileName);
     }
 
+    /**
+     * Finds a notification by its notification ID.
+     * The notification entity is piped to a converter to map it into a class that represents
+     * the notification's info.
+     * @param notificationId the ID of the notification to be found
+     * @return the info of the found notification
+     * @throws NotFoundException if a notification with the given ID cannot be found
+     */
+    @Transactional(readOnly = true)
+    public NotificationInfo findByNotificationId(Integer notificationId) {
+        return notificationRepository.find(notificationId)
+            .map(NotificationConverter::toNotificationResponse)
+            .orElseThrow(() -> new NotFoundException("Notification not found with ID: " + notificationId));
+    }
+
+    /**
+     * Saves a new notification request.
+     * First identifies whether the notification should be sent via the primary or secondary client by looking at the
+     * jurisdiction of the request. The request is then converted into the representation of a new notification for the
+     * database which is then saved.
+     * Then an attempt is made to notify the supplier which returns an ID. The saved notification is then updated with
+     * this ID.
+     * @param notifyRequest the notification information that should be saved to the database and sent to the supplier
+     * @return the info of the saved notification
+     * @throws FailedDependencyException if there is an issue trying to notify the supplier
+     */
+    @Transactional
+    public NotificationInfo saveNotificationMsg(NotifyRequest notifyRequest) {
+        String jurisdiction = Objects.requireNonNullElse(notifyRequest.jurisdiction, "").toLowerCase(Locale.ROOT);
+        String client = Arrays.asList(secondaryClientJurisdictions).contains(jurisdiction) ? "secondary" : "primary";
+        //Save notification as Created
+        NewNotification newNotificationForDb = NotificationConverter.toNewNotification(notifyRequest, client);
+        Notification notificationFromDb = notificationRepository.save(newNotificationForDb);
+        log.info("New request has been received to notify an external supplier. Notification ID: "
+                     + notificationFromDb.id);
+        try {
+            ErrorNotificationResponse response = newNotificationForDb.client.equals("primary")
+                ? notificationClient.notify(mapToRequest(notificationFromDb))
+                : notificationClientSecondary.notify(mapToRequest(notificationFromDb));
+            log.info(String.format("New request has been received to notify an external supplier. Notification ID: %s. "
+                                       + "Supplier ID: %s", notificationFromDb.id, notificationFromDb.confirmationId));
+            //Update notification as Sent if Exela ok
+            return NotificationConverter.toNotificationResponse(
+                notificationRepository.updateNotificationStatusAsSent(
+                    notificationFromDb.id, response.getNotificationId()));
+        } catch (FeignException exception) {
+            log.error("Error occurred trying to notify supplier. "
+                          + "Updating notification status to fail. Notification ID: " + notificationFromDb.id);
+            throw new FailedDependencyException(NotificationConverter
+                                                    .toNotificationResponse(
+                                                        notificationRepository.updateNotificationStatusAsFail(
+                                                            notificationFromDb.id)), exception);
+        }  catch (Exception e) {
+            log.error("An unexpected error occurred trying to notify supplier. "
+                          + "Updating notification status to fail. Notification ID: " + notificationFromDb.id);
+            notificationRepository.updateNotificationStatusAsFail(notificationFromDb.id);
+            throw e;
+        }
+    }
+
     private ErrorNotificationRequest mapToRequest(Notification notification) {
         return new ErrorNotificationRequest(
             notification.zipFileName,
@@ -114,7 +189,7 @@ public class NotificationService {
         );
     }
 
-    private void fail(Notification notification, FeignException.FeignClientException exception) {
+    private void fail(Notification notification, FeignException.FeignClientException exception) { //TODO: FACT-2026
         log.error(
             "Received http status {} from client. Marking as failure. {}. Client response: {}",
             exception.status(),
@@ -126,7 +201,7 @@ public class NotificationService {
         notificationRepository.markAsFailure(notification.id);
     }
 
-    private void postpone(Notification notification, FeignException exception) {
+    private void postpone(Notification notification, FeignException exception) { //TODO: FACT-2026
         log.error(
             "Received http status {} from client. Postponing notification for later. {}. Client response: {}",
             exception.status(),
@@ -136,7 +211,7 @@ public class NotificationService {
         );
     }
 
-    private void postpone(Notification notification, Exception exc) {
+    private void postpone(Notification notification, Exception exc) { //TODO: FACT-2026
         log.error("Error processing pending notifications. {}", notification, exc);
     }
 }

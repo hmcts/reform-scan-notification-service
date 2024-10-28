@@ -22,6 +22,7 @@ import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.stereotype.Component;
 
+//TODO: FACT-2026 - whole class can go
 @Configuration
 @EnableJms
 @ConditionalOnProperty(name = "jms.enabled", havingValue = "true")
