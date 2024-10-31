@@ -7,5 +7,5 @@ COPY lib/applicationinsights.json /opt/app/
 COPY build/libs/reform-scan-notification-service.jar /opt/app/
 
 
-EXPOSE 8586
+EXPOSE 8585
 CMD [ "reform-scan-notification-service.jar" ]
