@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    flywayVersion = '10.17.3'
+    flywayVersion = '10.20.1'
     postgresqlVersion = '42.7.4'
   }
   dependencies {
@@ -106,7 +106,7 @@ task fortifyScan(type: JavaExec)  {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '10.15.0'
+  toolVersion = '10.19.0'
   getConfigDirectory().set(new File(rootDir, 'config/checkstyle'))
 }
 
@@ -215,7 +215,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq'
-  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.3.1'
+  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.4.1'
   implementation group: 'javax.jms', name: 'javax.jms-api', version: '2.0.1'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
