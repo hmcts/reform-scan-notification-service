@@ -238,7 +238,7 @@ dependencies {
   implementation group: 'io.github.openfeign', name: 'feign-jackson', version: '13.2.1'
   // end region
 
-  implementation group: 'org.apache.qpid', name: 'qpid-jms-client', version: '2.5.0'
+  implementation group: 'org.apache.qpid', name: 'qpid-jms-client', version: '2.6.1'
 
   implementation group: 'com.launchdarkly', name: 'launchdarkly-java-server-sdk', version: '7.5.0'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
