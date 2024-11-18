@@ -13,6 +13,7 @@ import static org.awaitility.Awaitility.await;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.PENDING;
 import static uk.gov.hmcts.reform.notificationservice.data.NotificationStatus.SENT;
 
+//TODO: FACT-2026 - Whole class can go
 class ProcessNotificationTest {
 
     @Test
