@@ -184,8 +184,8 @@ def versions = [
   apiguardian     : '1.1.2',
   flyway          : "$flywayVersion",
   postgresql      : "$postgresqlVersion",
-  shedlock        : '6.3.0',
-  restAssured     : '5.5.1'
+  shedlock        : '5.15.1',
+  restAssured     : '5.5.0'
 ]
 
 ext.libraries = [
@@ -215,7 +215,7 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-activemq'
-  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.4.2'
+  implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.3.1'
   implementation group: 'javax.jms', name: 'javax.jms-api', version: '2.0.1'
 
   implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.6.0'
@@ -225,7 +225,7 @@ dependencies {
   implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0' // until logging-appinsights supports SB 3.x
 
   implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
-  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '5.3.0'
+  implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.4'
 
