@@ -9,7 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import static org.mockito.Mockito.verify;
 
 //TODO: FACT-2026 - whole class can go
-@SpringBootTest(properties = {"scheduling.task.notifications-consume.enable=true"})
+@SpringBootTest(properties = {"scheduling.task.notifications-consume.enabled=true"})
 public class NotificationMessageProcessTaskTest {
 
     @MockitoSpyBean
