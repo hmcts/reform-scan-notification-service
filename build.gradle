@@ -185,7 +185,7 @@ def versions = [
   flyway          : "$flywayVersion",
   postgresql      : "$postgresqlVersion",
   shedlock        : '5.15.1',
-  restAssured     : '5.5.0'
+  restAssured     : '5.5.5'
 ]
 
 ext.libraries = [
