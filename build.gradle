@@ -224,7 +224,7 @@ dependencies {
   implementation group: 'com.github.hmcts.java-logging', name: 'logging-appinsights', version: versions.reformLogging
   implementation group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0' // until logging-appinsights supports SB 3.x
 
-  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.0'
+  implementation group: 'net.logstash.logback', name: 'logstash-logback-encoder', version: '8.1'
   implementation group: 'com.github.hmcts', name: 'service-auth-provider-java-client', version: '4.1.2'
 
   implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-bootstrap', version: '4.1.4'
