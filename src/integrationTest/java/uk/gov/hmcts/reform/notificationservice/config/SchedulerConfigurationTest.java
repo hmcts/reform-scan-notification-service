@@ -5,7 +5,7 @@ import net.javacrumbs.shedlock.core.LockProvider;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.notificationservice.task.PendingNotificationsTask;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 })
 public class SchedulerConfigurationTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private LockProvider lockProvider;
 
     @Test

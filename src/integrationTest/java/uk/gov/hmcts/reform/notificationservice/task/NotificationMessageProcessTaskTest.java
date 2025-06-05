@@ -3,19 +3,19 @@ package uk.gov.hmcts.reform.notificationservice.task;
 import com.azure.messaging.servicebus.ServiceBusProcessorClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import static org.mockito.Mockito.verify;
 
 //TODO: FACT-2026 - whole class can go
-@SpringBootTest(properties = {"scheduling.task.notifications-consume.enable=true"})
+@SpringBootTest(properties = {"scheduling.task.notifications-consume.enabled=true"})
 public class NotificationMessageProcessTaskTest {
 
-    @SpyBean
+    @MockitoSpyBean
     private NotificationMessageProcessTask notificationMessageProcessTask;
 
-    @MockBean
+    @MockitoBean
     private ServiceBusProcessorClient serviceBusProcessorClient;
 
     @Test
