@@ -183,7 +183,7 @@ def versions = [
   reformLogging   : '6.1.9',
   flyway          : "$flywayVersion",
   postgresql      : "$postgresqlVersion",
-  shedlock        : '6.9.2'
+  shedlock        : '6.10.0'
 ]
 
 dependencies {
