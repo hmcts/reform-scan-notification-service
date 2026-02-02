@@ -6,7 +6,7 @@
 ## Overview
 
 Reform Scan Notification is a microservice that provides the Bulk Scan ecosystem a way of notifying an external
-supplier when something has gone wrong.
+supplier when something has gone wrong
 
 ## Purpose
 
