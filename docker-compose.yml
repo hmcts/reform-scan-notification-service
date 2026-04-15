@@ -15,7 +15,7 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: hmctspublic.azurecr.io/reform-scan/notification-service
+    image: hmctsprod.azurecr.io/reform-scan/notification-service
     environment:
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
