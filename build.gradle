@@ -179,6 +179,12 @@ repositories {
   }
 }
 
+dependencyManagement {
+  imports {
+    mavenBom "org.testcontainers:testcontainers-bom:1.21.4"
+  }
+}
+
 def versions = [
   reformLogging   : '6.1.9',
   flyway          : "$flywayVersion",
