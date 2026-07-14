@@ -8,7 +8,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.logging.appinsights.SyntheticHeaders;
 
 import java.io.IOException;
 import java.util.Map;
@@ -21,6 +20,7 @@ import static uk.gov.hmcts.reform.notificationservice.Configuration.TEST_URL;
 final class RestAssuredHelper {
 
     private static final String SERVICE_AUTH_HEADER = "ServiceAuthorization";
+    private static final String SYNTHETIC_TEST_SOURCE_HEADER = "SyntheticTest-Source";
     private static final String SYNTHETIC_HEADER_VALUE = "Reform Scan Notification Service functional test";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -39,7 +39,7 @@ final class RestAssuredHelper {
             .relaxedHTTPSValidation()
             .baseUri(TEST_S2S_URL)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_HEADER_VALUE)
+            .header(SYNTHETIC_TEST_SOURCE_HEADER, SYNTHETIC_HEADER_VALUE)
             .body(params)
             .when()
             .post("/lease")
@@ -61,7 +61,7 @@ final class RestAssuredHelper {
             .baseUri(TEST_URL)
             .header(SERVICE_AUTH_HEADER, "Bearer " + s2sToken)
             .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .header(SyntheticHeaders.SYNTHETIC_TEST_SOURCE, SYNTHETIC_HEADER_VALUE)
+            .header(SYNTHETIC_TEST_SOURCE_HEADER, SYNTHETIC_HEADER_VALUE)
             .queryParam("file_name", zipFilename)
             .when()
             .get("/notifications")
