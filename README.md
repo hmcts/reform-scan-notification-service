@@ -26,7 +26,7 @@ that the external supplier is notified of an error.
 ## Getting Started
 ### Prerequisites
 
-- [JDK 21](https://www.oracle.com/java)
+- [JDK 25](https://www.oracle.com/java)
 - Project requires Spring Boot v3.x to be present
 
 ## Quick Start
@@ -38,7 +38,7 @@ See [common-dev-env-bsbp](https://github.com/hmcts/common-dev-env-bsbp) reposito
 
 ### Building the application
 
-The project uses [Gradle](https://gradle.org) as a build tool. It already contains
+The project uses [Gradle 9.8.2](https://gradle.org) as a build tool. It already contains
 `./gradlew` wrapper script, so there's no need to install gradle.
 
 To build the project execute the following command:

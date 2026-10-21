@@ -27,3 +27,5 @@ bin/main/application.yaml
 /bin/substitutions.json
 /bin/setup-azurite.sh
 /bin/setup-sftp.sh
+
+.github/skills
