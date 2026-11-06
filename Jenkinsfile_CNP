@@ -1,5 +1,5 @@
 #!groovy @Library("Infrastructure") @Library("Infrastructure")
-@Library("Infrastructure@2.13.4")
+@Library("Infrastructure@2.13.6")
 
 import uk.gov.hmcts.contino.DockerImage
 import uk.gov.hmcts.contino.GradleBuilder
